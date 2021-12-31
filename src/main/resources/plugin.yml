@@ -1,0 +1,7 @@
+name: Waystones
+version: '${project.version}'
+main: com.simmgames.waystones.Waystones
+api-version: 1.18
+authors: [ sim2kid ]
+description: Adds Teleportation via Lodestones in Survival Minecraft
+website: https://simmgames.com
