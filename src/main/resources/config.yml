@@ -1,0 +1,4 @@
+# In blocks, the max distance you can be to use a waystone.
+# When outside this distance, you can't use any waystone commands
+# This value must be at least 1
+waystone-distance: 10

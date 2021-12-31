@@ -5,3 +5,12 @@ api-version: 1.18
 authors: [ sim2kid ]
 description: Adds Teleportation via Lodestones in Survival Minecraft
 website: https://simmgames.com
+commands:
+  waystone:
+    description: 'Teleport to another waystone'
+    usage: '/waystone <destination>'
+    aliases:
+      - ws
+      - way
+      - lodestone
+      - waypoint
