@@ -1,4 +1,4 @@
-package com.simmgames.waystones;
+package com.simmgames.waystones.data;
 
 import java.util.ArrayList;
 import java.util.List;

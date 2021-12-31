@@ -1,9 +1,10 @@
 package com.simmgames.waystones;
 
+import com.simmgames.waystones.commands.WaystoneCommand;
+import com.simmgames.waystones.data.Data;
+import com.simmgames.waystones.data.Waystone;
+import com.simmgames.waystones.structure.Vector3;
 import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.logging.Level;
@@ -21,12 +22,12 @@ public final class Waystones extends JavaPlugin {
         out.log(Level.INFO, "Waystones is now starting up...");
         getCommand("Waystone").setExecutor(new WaystoneCommand(out));
 
-        data = new Data(out);
+        data = new Data(out, this);
 
-        data.waystoneList.AllWaystones.add(new Waystone("Owner's UUID Goes here",
-                new Location(getServer().getWorld(".TestWorldOne"), 2.0, 1.0, 4.0), "Jessie", Accessibility.Public));
-        data.waystoneList.AllWaystones.add(new Waystone("Owner's GUID Doesn't Go here",
-                new Location(getServer().getWorld(".TestWorldOne"), -200.0, 16.0, 8.0), "Fuck", Accessibility.Discoverable));
+        data.waystoneList.AllWaystones.add(new Waystone("Owner's UUID Goes here", ".TestWorldOne",
+                new Vector3(2, 4, 1), "Jessie", Accessibility.Public));
+        data.waystoneList.AllWaystones.add(new Waystone("Owner's GUID Doesn't Go here",".TestWorldOne",
+                new Vector3(232, -64, 11), "Fuck", Accessibility.Discoverable));
 
         data.Save();
     }

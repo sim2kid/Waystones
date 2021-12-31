@@ -1,4 +1,4 @@
-package com.simmgames.waystones;
+package com.simmgames.waystones.commands;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
