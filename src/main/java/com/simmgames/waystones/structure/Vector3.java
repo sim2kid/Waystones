@@ -16,6 +16,15 @@ public class Vector3 {
         Z = zPos;
     }
 
+    @Override
+    public String toString() {
+        return "Vector3{" +
+                "" + X +
+                ", " + Y +
+                ", " + Z +
+                '}';
+    }
+
     public Vector3(Location location)
     {
         this(location.getBlockX(), location.getBlockY(), location.getBlockZ());
