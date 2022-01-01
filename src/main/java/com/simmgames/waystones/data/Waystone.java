@@ -28,13 +28,8 @@ public class Waystone {
 
     public Waystone(@NotNull String OwnerUUID, BlockLocation BlockLocation, @NotNull String WaystoneName, Accessibility WaystoneAccessibility)
     {
-        this(OwnerUUID, BlockLocation.WorldUUID, BlockLocation.Position, WaystoneName, WaystoneAccessibility);
-    }
-
-    public Waystone(@NotNull String OwnerUUID, String WorldUUID, Vector3 BlockLocation, @NotNull String WaystoneName, Accessibility WaystoneAccessibility)
-    {
         owner = OwnerUUID;
-        location = new BlockLocation(WorldUUID, BlockLocation);
+        location = BlockLocation;
         name = WaystoneName;
         if(name.trim() == "")
         {
@@ -45,6 +40,12 @@ public class Waystone {
         {
             access = Accessibility.Discoverable;
         }
+
+    }
+
+    public Waystone(@NotNull String OwnerUUID, String WorldUUID, Vector3 BlockLocation, String WorldName, @NotNull String WaystoneName, Accessibility WaystoneAccessibility)
+    {
+        this(OwnerUUID, new BlockLocation(WorldUUID,BlockLocation,WorldName), WaystoneName, WaystoneAccessibility);
     }
 
     @Override

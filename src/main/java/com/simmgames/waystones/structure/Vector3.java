@@ -5,13 +5,13 @@ import org.bukkit.Location;
 import java.util.Objects;
 
 public class Vector3 {
-    public float X;
-    public float Y;
-    public float Z;
+    public double X;
+    public double Y;
+    public double Z;
 
     public static Vector3 Zero = new Vector3(0,0,0);
 
-    public Vector3(float xPos, float yPos, float zPos)
+    public Vector3(double xPos, double yPos, double zPos)
     {
         X = xPos;
         Y = yPos;
@@ -20,10 +20,10 @@ public class Vector3 {
 
     @Override
     public String toString() {
-        return '[' + X +
+        return "[" + X +
                 ", " + Y +
                 ", " + Z +
-                ']';
+                "]";
     }
 
     public double getDistance(Vector3 other)
@@ -44,8 +44,23 @@ public class Vector3 {
         return Objects.hash(X, Y, Z);
     }
 
+    public Vector3 round()
+    {
+        return new Vector3(Math.round(X), Math.round(Y), Math.round(Z));
+    }
+    public Vector3 floor()
+    {
+        return new Vector3(Math.floor(X), Math.floor(Y), Math.floor(Z));
+    }
+
     public Vector3(Location location)
     {
         this(location.getBlockX(), location.getBlockY(), location.getBlockZ());
+    }
+    public Vector3(Location location, boolean useExact)
+    {
+        X = useExact ? location.getX() : location.getBlockX();
+        Y = useExact ? location.getY() : location.getBlockY();
+        Z = useExact ? location.getZ() : location.getBlockZ();
     }
 }

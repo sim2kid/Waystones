@@ -3,6 +3,8 @@ package com.simmgames.waystones.data;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import org.bukkit.Server;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.*;
@@ -16,6 +18,7 @@ import java.util.logging.Logger;
 public class Data {
     private Logger out;
     private String dataPath;
+    private Server server;
     public List<Waystone> AllWaystones;
     public List<WayPlayer> players;
 
@@ -24,12 +27,22 @@ public class Data {
         AllWaystones = new ArrayList<Waystone>();
         players = new ArrayList<WayPlayer>();
         dataPath = plugin.getDataFolder().getAbsolutePath();
+        server = plugin.getServer();
     }
 
     public void Save()
     {
         SaveWaystones();
-
+        // Retire offline players
+        List<String> online = new ArrayList<String>();
+        for(Player p: server.getOnlinePlayers())
+            online.add(p.getUniqueId().toString());
+        for(WayPlayer p: players)
+            if(!online.contains(p.UUID))
+                RetirePlayer(p);
+        // Save remaining players
+        for(String p: online)
+            SavePlayer(p);
     }
 
     public void Load()
@@ -107,6 +120,10 @@ public class Data {
         WayPlayer player = SavePlayer(playerUUID);
         players.remove(player);
     }
+    public void RetirePlayer(WayPlayer player)
+    {
+        players.remove(player);
+    }
 
     public double WaystoneUseDistance()
     {
@@ -128,7 +145,7 @@ public class Data {
         for(WayPlayer player : players)
         {
             if(player != null)
-                if(player.UUID == uuid)
+                if(player.UUID.equalsIgnoreCase(uuid))
                     return player;
         }
         return null;
@@ -147,6 +164,8 @@ public class Data {
             Type WaystoneListType = new TypeToken<ArrayList<Waystone>>() {
             }.getType();
             AllWaystones = gson.fromJson(json, WaystoneListType);
+            if (AllWaystones == null)
+                AllWaystones = new ArrayList<Waystone>();
             return true;
         }
         catch (Exception e)

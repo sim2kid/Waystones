@@ -93,6 +93,14 @@ public class WaystoneCommand implements CommandExecutor {
         if(lode == null)
         {
             p.sendMessage("No Lodestone nearby to turn into a Waystone. Make sure you are within " + data.LodestoneSearchRadius() + " blocks.");
+            return;
+        }
+
+        // check if waystone already exists there
+        if(events.GetWaystoneAt(lode) != null)
+        {
+            p.sendMessage("Lodestone is already a Waystone. Can't build a new one here.");
+            return;
         }
 
         if(args.length < 2)

@@ -12,6 +12,7 @@ public class BlockLocation
 {
     public Vector3 Position;
     public String WorldUUID;
+    public String WorldName;
 
     public BlockLocation()
     {
@@ -20,17 +21,28 @@ public class BlockLocation
 
     public BlockLocation(Location location)
     {
-        this(location.getWorld().getUID().toString(), new Vector3(location));
+        this(location.getWorld().getUID().toString(), new Vector3(location), location.getWorld().getName());
     }
 
-    public BlockLocation(@NotNull String worldUUID, @NotNull Vector3 position)
+    public BlockLocation(Location location, boolean useExact)
+    {
+        this(location.getWorld().getUID().toString(), new Vector3(location, useExact), location.getWorld().getName());
+    }
+
+    public BlockLocation(@NotNull String worldUUID, @NotNull Vector3 position, @NotNull String worldName)
     {
         Position = position;
         WorldUUID = worldUUID;
+        WorldName = worldName;
         if(WorldUUID.trim() == "")
         {
            WorldUUID = Default.UUIDZero;
         }
+    }
+
+    public BlockLocation(@NotNull String worldUUID, @NotNull Vector3 position)
+    {
+        this(worldUUID, position, "Unknown");
     }
 
     public BlockLocation(@NotNull String worldUUID, @NotNull float xPos, @NotNull float yPos, @NotNull float zPos)
@@ -38,15 +50,15 @@ public class BlockLocation
         this(worldUUID, new Vector3(xPos, yPos, zPos));
     }
 
-    public float getX()
+    public double getX()
     {
         return Position.X;
     }
-    public float getY()
+    public double getY()
     {
         return Position.Y;
     }
-    public float getZ()
+    public double getZ()
     {
         return Position.Z;
     }
@@ -58,21 +70,15 @@ public class BlockLocation
 
     public double getDistance(BlockLocation other)
     {
-        if(this.WorldUUID != other.WorldUUID)
+        if(!this.WorldUUID.equalsIgnoreCase(other.WorldUUID))
             return -1;
         return this.Position.getDistance(other.Position);
-    }
-
-    public String Formatted(Server server)
-    {
-        World w = server.getWorld(this.WorldUUID);
-        return w.getName() + " " + Position.toString();
     }
 
     @Override
     public String toString()
     {
-        return "{[World: " + WorldUUID + "]," + Position.toString() + '}';
+        return WorldName + " " + Position.toString();
     }
 
     @Override
