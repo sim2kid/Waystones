@@ -18,11 +18,10 @@ public class Vector3 {
 
     @Override
     public String toString() {
-        return "Vector3{" +
-                "" + X +
+        return '[' + X +
                 ", " + Y +
                 ", " + Z +
-                '}';
+                ']';
     }
 
     public Vector3(Location location)

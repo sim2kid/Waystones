@@ -130,6 +130,8 @@ public class WaystoneBlockEvents implements Listener
         // Load the player's data into the program
 
         // Update player's known Waystones list.
+        UpdatePlayerInformation(p);
+
         // If waystones are missing, let player know that they have been destroyed.
         // If player's owned waystones are missing, let them know that they have been destroyed
 
@@ -142,6 +144,8 @@ public class WaystoneBlockEvents implements Listener
     {
         Player p = event.getPlayer();
         out.log(Level.INFO, p.name().toString() + " has left the server, imo");
+
+        UpdatePlayerInformation(p);
         // Retire the player's data from the program
     }
 
@@ -160,14 +164,22 @@ public class WaystoneBlockEvents implements Listener
 
     private void DestroyWaystone(Location location)
     {
+        // Look for waystone at location in world
+        // delete waystone in the Waystone list
+        // Delete waystone in all "known waystones" for online players
 
     }
 
-
-    private Waystone nearbyWaystone(Location sourceLoc)
+    private void UpdateWaystones(Player player)
     {
+        // Update a player's known waystone list (remove bad waystones)
+    }
 
-        return null;
+    private void UpdatePlayerInformation(Player player)
+    {
+        // Update player's stored Username
+        // Update player's waystone list.
+        UpdateWaystones(player);
     }
 
     private boolean isLodestone(BlockEvent event) {

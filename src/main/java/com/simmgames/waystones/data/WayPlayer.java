@@ -1,7 +1,10 @@
 package com.simmgames.waystones.data;
 
+import com.simmgames.waystones.structure.BlockLocation;
 import com.simmgames.waystones.structure.Vector3;
+import com.simmgames.waystones.util.Default;
 import org.bukkit.Location;
+import org.checkerframework.checker.units.qual.N;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -10,18 +13,23 @@ import java.util.UUID;
 
 public class WayPlayer
 {
-    public UUID UUID;
+    public String UUID;
     public String lastUsername;
-    public List<Vector3> KnownWaystones;
+    public List<Waystone> KnownWaystones;
 
     public WayPlayer()
     {
-        this(java.util.UUID.fromString("00000000-0000-0000-0000-000000000000"), "Unknown");
+        this(java.util.UUID.fromString(Default.UUIDZero), "Unknown");
     }
     public WayPlayer(@NotNull UUID playerUUID, @NotNull String playerName)
     {
+        this(playerUUID.toString(), playerName);
+    }
+
+    public WayPlayer(@NotNull String playerUUID, @NotNull String playerName)
+    {
         UUID = playerUUID;
         lastUsername = playerName;
-        KnownWaystones = new ArrayList<Vector3>();
+        KnownWaystones = new ArrayList<Waystone>();
     }
 }
