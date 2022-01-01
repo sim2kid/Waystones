@@ -50,6 +50,72 @@ public class Data {
         }
     }
 
+    public WayPlayer GrabPlayer(String playerUUID)
+    {
+        WayPlayer player = playerInList(playerUUID);
+        if(player == null)
+            player = LoadPlayer(playerUUID);
+        return player;
+    }
+
+    private WayPlayer LoadPlayer(String playerUUID)
+    {
+        // Load Waystones List
+        String wayplayersLocation = dataPath + "/Players";
+        Gson gson = new Gson();
+        String json = ReadFile(wayplayersLocation + playerUUID + ".json");
+
+        try {
+            Type WayplayerType = new TypeToken<WayPlayer>() {
+            }.getType();
+            WayPlayer player = gson.fromJson(json, WayplayerType);
+            if(playerInList(playerUUID) == null)
+            {
+                players.add((player));
+            }
+            return player;
+        }
+        catch (Exception e)
+        {
+            out.log(Level.WARNING, "Could not load a waystone list. Remaking it...");
+            WayPlayer player = new WayPlayer(playerUUID, "Unknown");
+            if(playerInList(playerUUID) == null)
+            {
+                players.add((player));
+            }
+            return player;
+        }
+    }
+
+    public WayPlayer SavePlayer(String playerUUID)
+    {
+        WayPlayer player = GrabPlayer(playerUUID);
+
+        String wayplayersLocation = dataPath + "/Players";
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        String wayplayerData = gson.toJson(player);
+        WriteFile(wayplayersLocation + playerUUID + ".json", wayplayerData);
+        return player;
+    }
+
+    public void RetirePlayer(String playerUUID)
+    {
+        WayPlayer player = SavePlayer(playerUUID);
+        players.remove(player);
+    }
+
+    private WayPlayer playerInList(String uuid)
+    {
+        for(WayPlayer player : players)
+        {
+            if(player.UUID == uuid)
+                return player;
+        }
+        return null;
+    }
+
+
+
     private boolean LoadWaystones()
     {
         // Load Waystones List
