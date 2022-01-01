@@ -16,6 +16,9 @@ public class WayPlayer
     public String UUID;
     public String lastUsername;
     public List<Waystone> KnownWaystones;
+    public transient Waystone LastVisited;
+    public transient boolean InWaystoneUse;
+    public transient boolean InWaystoneDiscover;
 
     public WayPlayer()
     {

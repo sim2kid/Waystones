@@ -11,6 +11,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
+import java.util.Objects;
 import java.util.UUID;
 
 public class Waystone {
@@ -45,4 +46,16 @@ public class Waystone {
         }
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Waystone waystone = (Waystone) o;
+        return location.equals(waystone.location);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(location);
+    }
 }

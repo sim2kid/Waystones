@@ -9,10 +9,5 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Work {
-    public static List<Waystone> getNearbyWaystones(Data data, Player player)
-    {
-        List<Waystone> waystones = new ArrayList<Waystone>();
-        System.out.println("getNearbyWaystones is incomplete.");
-        return waystones;
-    }
+
 }

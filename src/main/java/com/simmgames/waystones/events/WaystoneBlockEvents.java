@@ -1,10 +1,13 @@
 package com.simmgames.waystones.events;
 
 import com.simmgames.waystones.data.Data;
+import com.simmgames.waystones.data.WayPlayer;
 import com.simmgames.waystones.data.Waystone;
+import com.simmgames.waystones.structure.BlockLocation;
 import com.simmgames.waystones.structure.Vector3;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Server;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -24,11 +27,13 @@ public class WaystoneBlockEvents implements Listener
 {
     Logger out;
     Data data;
+    Server server;
 
-    public WaystoneBlockEvents(Logger logger, Data pluginData)
+    public WaystoneBlockEvents(Logger logger, Data pluginData, Server server)
     {
         out = logger;
         data = pluginData;
+        this.server = server;
     }
 
     @EventHandler
@@ -119,6 +124,7 @@ public class WaystoneBlockEvents implements Listener
 
         // Check for waystones near the player
         // Update whether the player is in a waystone or not
+        GetClosestWaystone(p);
     }
 
     @EventHandler
@@ -128,15 +134,14 @@ public class WaystoneBlockEvents implements Listener
         p.sendMessage("You have joined the server");
 
         // Load the player's data into the program
+        WayPlayer player = data.GrabPlayer(p.getUniqueId().toString());
 
         // Update player's known Waystones list.
         UpdatePlayerInformation(p);
 
-        // If waystones are missing, let player know that they have been destroyed.
-        // If player's owned waystones are missing, let them know that they have been destroyed
-
         // Check for waystones near the player
         // Update whether the player is in a waystone or not
+        GetClosestWaystone(p);
     }
 
     @EventHandler
@@ -147,14 +152,15 @@ public class WaystoneBlockEvents implements Listener
 
         UpdatePlayerInformation(p);
         // Retire the player's data from the program
+        data.RetirePlayer(p.getUniqueId().toString());
     }
 
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event)
     {
-        Player p = event.getPlayer();
-        //p.sendMessage("You have moved.");
+        Player player = event.getPlayer();
         // Check if player is near a waystone or not.
+        GetClosestWaystone(player);
     }
 
     private void OnExploded(Block b)
@@ -172,14 +178,119 @@ public class WaystoneBlockEvents implements Listener
 
     private void UpdateWaystones(Player player)
     {
+        WayPlayer p = data.GrabPlayer(player.getUniqueId().toString());
         // Update a player's known waystone list (remove bad waystones)
+
+        // If waystones are missing, let player know that they have been destroyed.
+        // If player's owned waystones are missing, let them know that they have been destroyed
+        for (int i = p.KnownWaystones.size()-1; i >= 0 ; i--)
+        {
+            Waystone known = p.KnownWaystones.get(i);
+            int index = data.AllWaystones.indexOf(known);
+            if(index != -1)
+            {
+                p.KnownWaystones.set(i, data.AllWaystones.get(index));
+            }
+            else
+            {
+                if(known.owner == p.UUID)
+                {
+                    SendPlayerMessage(player, "Your Waystone '" + known.name + "' at '"
+                            + known.location.Formatted(server) + "' has been destroyed.");
+                } else {
+                    SendPlayerMessage(player, "Waystone '" + known.name + "' built by '" + known.owner + "' at '"
+                            + known.location.Formatted(server) + "' has been destroyed.");
+                }
+                p.KnownWaystones.remove(i);
+            }
+        }
+    }
+
+    private void SendPlayerMessage(Player player, String message)
+    {
+        player.sendMessage(message);
     }
 
     private void UpdatePlayerInformation(Player player)
     {
+        WayPlayer p = data.GrabPlayer(player.getUniqueId().toString());
         // Update player's stored Username
+        p.lastUsername = player.getName();
         // Update player's waystone list.
         UpdateWaystones(player);
+    }
+
+    private Waystone GetClosestWaystone(Player player)
+    {
+        Waystone closest = null;
+        double closestDistance = -1;
+
+        WayPlayer p = data.GrabPlayer(player.getUniqueId().toString());
+
+        for(Waystone wei : data.AllWaystones)
+        {
+            double distance = wei.location.getDistance(new BlockLocation(player.getLocation()));
+            if(distance == -1)
+            {
+                // In another world
+                continue;
+            }
+
+            if(distance < data.WaystoneUseDistance())
+            {
+                // Within waystone use distance
+                if(closestDistance == -1 || distance < closestDistance) {
+                    closestDistance = distance;
+                    closest = wei;
+                }
+
+                if(p.InWaystoneUse != true)
+                    OnUseEnter(player, wei);
+                p.InWaystoneUse = true;
+            } else {
+                if(p.InWaystoneUse != false)
+                    OnUseExit(player, wei);
+                p.InWaystoneUse = false;
+            }
+            if(distance < data.WaystoneDiscoverDistance())
+            {
+                if(p.InWaystoneDiscover != true)
+                {
+                    OnDiscoverEnter(player, wei);
+                }
+                p.InWaystoneDiscover = true;
+                // Waystone is now discovered
+                if(!p.KnownWaystones.contains(wei))
+                    DiscoverWaystone(player, wei);
+            } else {
+                if(p.InWaystoneDiscover != false)
+                    OnDiscoverExit(player, wei);
+                p.InWaystoneDiscover = false;
+            }
+        }
+        p.LastVisited = closest;
+        return closest;
+    }
+
+    private void OnDiscoverEnter(Player player, Waystone waystone)
+    {
+
+    }
+    private void OnDiscoverExit(Player player, Waystone waystone)
+    {
+
+    }
+    private void OnUseEnter(Player player, Waystone waystone)
+    {
+
+    }
+    private void OnUseExit(Player player, Waystone waystone)
+    {
+
+    }
+    private void DiscoverWaystone(Player player, Waystone waystone)
+    {
+
     }
 
     private boolean isLodestone(BlockEvent event) {

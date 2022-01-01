@@ -104,6 +104,16 @@ public class Data {
         players.remove(player);
     }
 
+    public double WaystoneUseDistance()
+    {
+        return 10;
+    }
+
+    public double WaystoneDiscoverDistance()
+    {
+        return 10;
+    }
+
     private WayPlayer playerInList(String uuid)
     {
         for(WayPlayer player : players)
