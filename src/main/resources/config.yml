@@ -1,4 +1,16 @@
+# Created by sim2kid
+# Code is on GitHub at https://github.com/sim2kid/waystones
+
 # In blocks, the max distance you can be to use a waystone.
 # When outside this distance, you can't use any waystone commands
 # This value must be at least 1
-waystone-distance: 10
+use-distance: 6
+
+# The distance the player has to be to discover a new waystone
+# If set to 0 or less, players have to click on the waystone to discover it
+discover-distance: 10
+
+# The distance to search from the player for lodestones
+# The bigger this is, the slower the game will run.
+# Try to keep this under 10.
+search-radius: 5

@@ -1,6 +1,7 @@
 package com.simmgames.waystones;
 
 import com.simmgames.waystones.commands.WaystoneCommand;
+import com.simmgames.waystones.commands.WaystoneTabComplete;
 import com.simmgames.waystones.data.Data;
 import com.simmgames.waystones.data.Waystone;
 import com.simmgames.waystones.events.WaystoneBlockEvents;
@@ -31,7 +32,8 @@ public final class Waystones extends JavaPlugin {
         getServer().getPluginManager().registerEvents(events, this);
 
         out.log(Level.INFO, "Registering Commands");
-        getCommand("Waystone").setExecutor(new WaystoneCommand(out, data, events));
+        getCommand("Waystone").setExecutor(new WaystoneCommand(out, data, events, this));
+        getCommand("Waystone").setTabCompleter(new WaystoneTabComplete(out, data, events, this));
 
         out.log(Level.INFO, "Waystones is now setup!");
     }

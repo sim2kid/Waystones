@@ -5,6 +5,7 @@ import com.simmgames.waystones.data.WayPlayer;
 import com.simmgames.waystones.data.Waystone;
 import com.simmgames.waystones.structure.BlockLocation;
 import com.simmgames.waystones.structure.Vector3;
+import com.simmgames.waystones.util.Work;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -18,6 +19,7 @@ import org.bukkit.inventory.EquipmentSlot;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -193,6 +195,10 @@ public class WaystoneBlockEvents implements Listener
 
     private void TouchWaystone(Player player, Waystone wei)
     {
+        if(!Work.UpdateHologram(wei.location.getLocation(server), UUID.fromString(wei.hologramUUID), wei.decodeName(data)))
+        {
+            wei.hologramUUID = Work.CreateHologram(wei.location.getLocation(server), wei.decodeName(data)).toString();
+        }
         WayPlayer p = data.GrabPlayer(player.getUniqueId().toString());
         if(!DiscoverWaystone(player, wei))
         {
@@ -207,6 +213,7 @@ public class WaystoneBlockEvents implements Listener
         Waystone wei = GetWaystoneAt(location);
         if(wei == null)
             return;
+        Work.DestroyHologram(location, UUID.fromString(wei.hologramUUID));
         // delete waystone in the Waystone list
         data.AllWaystones.remove(wei);
         // Delete waystone in all "known waystones" for online players
@@ -326,6 +333,10 @@ public class WaystoneBlockEvents implements Listener
                     OnDiscoverExit(player, closest);
                 p.InWaystoneDiscover = false;
             }
+        }
+        if(!Work.UpdateHologram(closest.location.getLocation(server), UUID.fromString(closest.hologramUUID), closest.decodeName(data)))
+        {
+            closest.hologramUUID = Work.CreateHologram(closest.location.getLocation(server), closest.decodeName(data)).toString();
         }
 
         p.LastVisited = closest;

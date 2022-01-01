@@ -8,19 +8,18 @@ import com.simmgames.waystones.events.WaystoneBlockEvents;
 import com.simmgames.waystones.structure.BlockLocation;
 import com.simmgames.waystones.util.Default;
 import com.simmgames.waystones.util.Work;
-import org.bukkit.Color;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 import java.util.Locale;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -28,12 +27,14 @@ public class WaystoneCommand implements CommandExecutor {
     Logger out;
     Data data;
     WaystoneBlockEvents events;
+    Server server;
 
-    public WaystoneCommand(Logger pluginLogger, Data data, WaystoneBlockEvents events)
+    public WaystoneCommand(Logger pluginLogger, Data data, WaystoneBlockEvents events, JavaPlugin plugin)
     {
         out = pluginLogger;
         this.data = data;
         this.events = events;
+        server = plugin.getServer();
     }
 
     @Override
@@ -45,6 +46,10 @@ public class WaystoneCommand implements CommandExecutor {
             } else if(args[0].equalsIgnoreCase("create"))
             {
                 create(sender, args);
+                return true;
+            } else if(args[0].equalsIgnoreCase("nametag"))
+            {
+                nametag(sender, args);
                 return true;
             }
 
@@ -157,7 +162,66 @@ public class WaystoneCommand implements CommandExecutor {
 
         // Create Waystone
         Waystone newWaystone = new Waystone(p.getUniqueId().toString(), new BlockLocation(lode), waystoneName.trim(), access);
+        newWaystone.hologramUUID = Work.CreateHologram(lode.getBlock().getLocation(), newWaystone.decodeName(data)).toString();
         data.AllWaystones.add(newWaystone);
         events.OnCreateWaystone(p, newWaystone);
+    }
+
+    void nametag(CommandSender sender, String[] args)
+    {
+        if(!(sender instanceof Player))
+        {
+            out.log(Level.INFO, Color.RED + "You must be a player to modify a Waystone.");
+            return;
+        }
+        Player p = (Player) sender;
+
+        // Check for create perms
+
+        // Check if there is a lodestone nearby
+        Location lode = Work.FindBlockType(data.LodestoneSearchRadius(), p.getLocation(), Material.LODESTONE);
+        if(lode == null)
+        {
+            p.sendMessage("No Waystone nearby. Make sure you are within " + data.LodestoneSearchRadius() + " blocks of one.");
+            return;
+        }
+
+        // check if waystone already exists there
+        Waystone wei = events.GetWaystoneAt(lode);
+        if(wei == null)
+        {
+            p.sendMessage("Lodestone is not currently a Waystone. Cannot toggle it's nametag.");
+            return;
+        }
+
+        // check if own waystone
+        if(!wei.owner.equalsIgnoreCase(p.getUniqueId().toString()))
+        {
+            p.sendMessage("You must be the owner of this Waystone to modify it's properties.");
+            return;
+        }
+
+
+        if(args.length < 2)
+        {
+            // Cannot Toggle
+            p.sendMessage("State cannot be blank for nametag. Please use\n/waystone nametag <true|false>");
+            return;
+        } else if(args[1].equalsIgnoreCase("true") || args[1].equalsIgnoreCase("t") || args[1].equalsIgnoreCase("on"))
+        {
+            // turn on
+            p.sendMessage("Turning on the NameTag for the nearest waystone.");
+            Work.HologramVisibility(wei.location.getLocation(server), UUID.fromString(wei.hologramUUID), true);
+        } else if(args[1].equalsIgnoreCase("false") || args[1].equalsIgnoreCase("f") || args[1].equalsIgnoreCase("off"))
+        {
+            // turn off
+            p.sendMessage("Turning off the NameTag for the nearest waystone.");
+            Work.HologramVisibility(wei.location.getLocation(server), UUID.fromString(wei.hologramUUID), false);
+        } else
+        {
+            // Unknown
+            p.sendMessage("'" + args[1] + "' is not a valid state for the nametags. Please use\n/waystone nametag <true|false>");
+            return;
+        }
     }
 }

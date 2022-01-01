@@ -20,10 +20,20 @@ public class Waystone {
     public BlockLocation location;
     public Accessibility access;
     public String name;
+    public String hologramUUID;
 
     public Location getLocation(Server server)
     {
         return new Location(server.getWorld(location.WorldUUID), location.getX(), location.getY(), location.getZ());
+    }
+
+    public Waystone()
+    {
+        owner = Default.UUIDZero;
+        location = new BlockLocation();
+        access = Accessibility.Discoverable;
+        name = "Unknown";
+        hologramUUID = Default.UUIDZero;
     }
 
     public Waystone(@NotNull String OwnerUUID, BlockLocation BlockLocation, @NotNull String WaystoneName, Accessibility WaystoneAccessibility)
@@ -41,11 +51,6 @@ public class Waystone {
             access = Accessibility.Discoverable;
         }
 
-    }
-
-    public Waystone(@NotNull String OwnerUUID, String WorldUUID, Vector3 BlockLocation, String WorldName, @NotNull String WaystoneName, Accessibility WaystoneAccessibility)
-    {
-        this(OwnerUUID, new BlockLocation(WorldUUID,BlockLocation,WorldName), WaystoneName, WaystoneAccessibility);
     }
 
     @Override

@@ -19,6 +19,7 @@ public class Data {
     private Logger out;
     private String dataPath;
     private Server server;
+    private JavaPlugin plugin;
     public List<Waystone> AllWaystones;
     public List<WayPlayer> players;
 
@@ -28,6 +29,7 @@ public class Data {
         players = new ArrayList<WayPlayer>();
         dataPath = plugin.getDataFolder().getAbsolutePath();
         server = plugin.getServer();
+        this.plugin = plugin;
     }
 
     public void Save()
@@ -127,17 +129,17 @@ public class Data {
 
     public double WaystoneUseDistance()
     {
-        return 10;
+        return Math.max(plugin.getConfig().getInt("use-distance"), 1);
     }
 
     public double WaystoneDiscoverDistance()
     {
-        return 10;
+        return Math.max(plugin.getConfig().getInt("discover-distance"), -1);
     }
 
     public int LodestoneSearchRadius()
     {
-        return 5;
+        return Math.max(plugin.getConfig().getInt("search-radius"), 0);
     }
 
     private WayPlayer playerInList(String uuid)

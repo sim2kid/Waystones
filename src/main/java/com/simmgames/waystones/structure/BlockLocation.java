@@ -7,6 +7,7 @@ import org.bukkit.World;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
+import java.util.UUID;
 
 public class BlockLocation
 {
@@ -65,7 +66,7 @@ public class BlockLocation
 
     public Location getLocation(Server server)
     {
-        return new Location(server.getWorld(this.WorldUUID), this.getX(), this.getY(), this.getZ());
+        return new Location(server.getWorld(UUID.fromString(this.WorldUUID)), this.getX(), this.getY(), this.getZ());
     }
 
     public double getDistance(BlockLocation other)
