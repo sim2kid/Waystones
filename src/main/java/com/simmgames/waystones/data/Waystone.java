@@ -4,6 +4,7 @@ package com.simmgames.waystones.data;
 import com.simmgames.waystones.Accessibility;
 import com.simmgames.waystones.structure.BlockLocation;
 import com.simmgames.waystones.structure.Vector3;
+import com.simmgames.waystones.util.Default;
 import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.World;
@@ -57,5 +58,19 @@ public class Waystone {
     @Override
     public int hashCode() {
         return Objects.hash(location);
+    }
+
+    public String decodeName(Data data)
+    {
+        String accessor = "";
+        if(this.access == Accessibility.Public)
+            accessor = " - Public Waystone";
+        if(this.access == Accessibility.Public)
+            accessor = " - Private Waystone";
+
+        String maker = "";
+        if(owner != Default.UUIDZero)
+            maker = " created by " + data.GrabPlayer(owner).lastUsername;
+        return  name + maker + accessor;
     }
 }

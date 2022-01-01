@@ -5,9 +5,7 @@ import com.simmgames.waystones.data.WayPlayer;
 import com.simmgames.waystones.data.Waystone;
 import com.simmgames.waystones.structure.BlockLocation;
 import com.simmgames.waystones.structure.Vector3;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Server;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -274,7 +272,7 @@ public class WaystoneBlockEvents implements Listener
 
     private void OnDiscoverEnter(Player player, Waystone waystone)
     {
-
+        player.sendTitle(Color.LIME + "Near New Waystone", Color.TEAL + waystone.decodeName(data), 1, 3, 1);
     }
     private void OnDiscoverExit(Player player, Waystone waystone)
     {
@@ -282,15 +280,27 @@ public class WaystoneBlockEvents implements Listener
     }
     private void OnUseEnter(Player player, Waystone waystone)
     {
-
+        player.sendTitle("", Color.BLUE + "Waystone is now Useable", 1, 3, 1);
     }
     private void OnUseExit(Player player, Waystone waystone)
     {
-
+        player.sendTitle("", Color.RED + "Waystone is nolonger Useable", 1, 3, 1);
     }
-    private void DiscoverWaystone(Player player, Waystone waystone)
+    public void DiscoverWaystone(Player player, Waystone waystone)
     {
-
+        player.resetTitle();
+        waystone.location.getLocation(server).getWorld().playSound(player.getLocation(),
+                Sound.UI_TOAST_CHALLENGE_COMPLETE, SoundCategory.BLOCKS, 8.0f, 1.0f);
+        player.sendTitle(Color.GREEN + "Waystone Discovered", Color.TEAL + waystone.decodeName(data), 1, 3, 1);
+    }
+    public void OnCreateWaystone(Player player, Waystone waystone)
+    {
+        player.resetTitle();
+        WayPlayer p = data.GrabPlayer(player.getUniqueId().toString());
+        p.KnownWaystones.add(waystone);
+        waystone.location.getLocation(server).getWorld().playSound(player.getLocation(),
+                Sound.UI_TOAST_CHALLENGE_COMPLETE, SoundCategory.BLOCKS, 8.0f, 1.0f);
+        player.sendTitle(Color.GREEN + "Waystone Created", Color.TEAL + waystone.decodeName(data), 1, 3, 1);
     }
 
     private boolean isLodestone(BlockEvent event) {

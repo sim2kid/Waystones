@@ -20,16 +20,18 @@ public final class Waystones extends JavaPlugin {
         // Plugin startup logic
         out = this.getLogger();
         out.log(Level.INFO, "Waystones is now starting up...");
-        out.log(Level.INFO, "Registering Commands");
-        getCommand("Waystone").setExecutor(new WaystoneCommand(out));
-
         out.log(Level.INFO, "Loading all waystones.");
         data = new Data(out, this);
         data.Load();
         out.log(Level.INFO, data.AllWaystones.size() + " waystones have been loaded!");
 
+
         out.log(Level.INFO, "Adding Event Listeners");
-        getServer().getPluginManager().registerEvents(new WaystoneBlockEvents(out, data, this.getServer()), this);
+        WaystoneBlockEvents events = new WaystoneBlockEvents(out, data, this.getServer());
+        getServer().getPluginManager().registerEvents(events, this);
+
+        out.log(Level.INFO, "Registering Commands");
+        getCommand("Waystone").setExecutor(new WaystoneCommand(out, data, events));
 
         out.log(Level.INFO, "Waystones is now setup!");
     }

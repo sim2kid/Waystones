@@ -114,6 +114,11 @@ public class Data {
         return 10;
     }
 
+    public int LodestoneSearchRadius()
+    {
+        return 5;
+    }
+
     private WayPlayer playerInList(String uuid)
     {
         for(WayPlayer player : players)
