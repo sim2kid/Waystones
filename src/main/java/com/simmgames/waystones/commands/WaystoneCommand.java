@@ -42,6 +42,10 @@ public class WaystoneCommand implements CommandExecutor {
             if(args[0].equalsIgnoreCase("help")) {
                 help(sender, args);
                 return true;
+            } else if(args[0].equalsIgnoreCase("create"))
+            {
+                create(sender, args);
+                return true;
             }
 
             if(sender instanceof Player)
@@ -114,6 +118,7 @@ public class WaystoneCommand implements CommandExecutor {
                 if(waystoneName.trim().equalsIgnoreCase(wei.name.trim()))
                 {
                     p.sendMessage("'" + waystoneName + "' already exists as one of your waystones or is already a public waystone.");
+                    return;
                 }
             }
         }

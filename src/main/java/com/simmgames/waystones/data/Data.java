@@ -61,7 +61,7 @@ public class Data {
     private WayPlayer LoadPlayer(String playerUUID)
     {
         // Load Waystones List
-        String wayplayersLocation = dataPath + "/Players";
+        String wayplayersLocation = dataPath + "/Players/";
         Gson gson = new Gson();
         String json = ReadFile(wayplayersLocation + playerUUID + ".json");
 
@@ -69,6 +69,10 @@ public class Data {
             Type WayplayerType = new TypeToken<WayPlayer>() {
             }.getType();
             WayPlayer player = gson.fromJson(json, WayplayerType);
+            if(player == null)
+            {
+                player = new WayPlayer(playerUUID, "Unknown");
+            }
             if(playerInList(playerUUID) == null)
             {
                 players.add((player));
@@ -91,7 +95,7 @@ public class Data {
     {
         WayPlayer player = GrabPlayer(playerUUID);
 
-        String wayplayersLocation = dataPath + "/Players";
+        String wayplayersLocation = dataPath + "/Players/";
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         String wayplayerData = gson.toJson(player);
         WriteFile(wayplayersLocation + playerUUID + ".json", wayplayerData);
@@ -123,8 +127,9 @@ public class Data {
     {
         for(WayPlayer player : players)
         {
-            if(player.UUID == uuid)
-                return player;
+            if(player != null)
+                if(player.UUID == uuid)
+                    return player;
         }
         return null;
     }

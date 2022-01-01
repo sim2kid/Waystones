@@ -41,7 +41,7 @@ public class WaystoneBlockEvents implements Listener
             return;
         Player p = event.getPlayer();
         // Ask to create Waystone
-        p.sendMessage("You have placed a Lodestone.");
+        p.sendMessage("If you would like to make this a Waystone, run\n/waystone create <name>");
         // Wait for command on creation.
     }
 
@@ -52,12 +52,24 @@ public class WaystoneBlockEvents implements Listener
             return;
 
         Player p = event.getPlayer();
-        p.sendMessage("You have touched a Lodestone.");
 
         // check if it is a waystone
+        Waystone wei = GetWaystoneAt(event.getBlock().getLocation());
+        if(wei == null)
+        {
+            p.sendMessage("This Lodestone is currently not a waystone. If you would like to make it a Waystone, please run \n/waystone create <name>");
+            return;
+        }
+
+
         // check if player owns waystone
         // IF player owns waystone, let them know they are about to destroy the waystone
+        if(wei.owner == p.getUniqueId().toString())
+        {
+            p.sendMessage("You're about to break your Waystone.");
+        }
         // ELSE let the player know who owns the waystone and what it's name is
+        TouchWaystone(p, wei);
         // Plus tell the player if they discovered the waystone
 
         // If not a waystone, ask player if they want to create a waystone
@@ -75,7 +87,11 @@ public class WaystoneBlockEvents implements Listener
             return;
 
         Player p = event.getPlayer();
-        p.sendMessage("You have interacted with a Lodestone.");
+
+        Waystone wei = GetWaystoneAt(event.getClickedBlock().getLocation());
+        if(wei == null)
+            return;
+        TouchWaystone(p, wei);
     }
 
     @EventHandler
@@ -85,10 +101,20 @@ public class WaystoneBlockEvents implements Listener
             return;
 
         Player p = event.getPlayer();
-        p.sendMessage("You have broke a Lodestone.");
 
         // Check if it is a waystone
+        Waystone wei = GetWaystoneAt(event.getBlock().getLocation());
+        if(wei == null)
+            return;
         // If it is a waystone, check if it's owned by the player initiating the command
+        if(wei.owner != p.getUniqueId().toString())
+        {
+            p.sendMessage("You must own this Waystone to break it.");
+            event.setCancelled(true);
+            return;
+        }
+
+        DestroyWaystone(event.getBlock().getLocation());
         // If it is, notify player that they destroyed the waystone
         // Update waystone data
         // Update all online player's data
@@ -163,15 +189,38 @@ public class WaystoneBlockEvents implements Listener
 
     private void OnExploded(Block b)
     {
+        DestroyWaystone(b.getLocation());
         out.log(Level.INFO, "Lodestone has Exploded!");
+    }
+
+    private void TouchWaystone(Player player, Waystone wei)
+    {
+        WayPlayer p = data.GrabPlayer(player.getUniqueId().toString());
+        if(!DiscoverWaystone(player, wei))
+        {
+            Title(player,"", wei.decodeName(data));
+            player.sendMessage(wei.decodeName(data));
+        }
     }
 
     private void DestroyWaystone(Location location)
     {
         // Look for waystone at location in world
+        Waystone wei = GetWaystoneAt(location);
+        if(wei == null)
+            return;
         // delete waystone in the Waystone list
+        data.AllWaystones.remove(wei);
         // Delete waystone in all "known waystones" for online players
+        UpdateOnlinePlayers();
+    }
 
+    private void UpdateOnlinePlayers()
+    {
+        for(Player p: server.getOnlinePlayers())
+        {
+            UpdateWaystones(p);
+        }
     }
 
     private void UpdateWaystones(Player player)
@@ -258,8 +307,7 @@ public class WaystoneBlockEvents implements Listener
                 }
                 p.InWaystoneDiscover = true;
                 // Waystone is now discovered
-                if(!p.KnownWaystones.contains(wei))
-                    DiscoverWaystone(player, wei);
+                DiscoverWaystone(player, wei);
             } else {
                 if(p.InWaystoneDiscover != false)
                     OnDiscoverExit(player, wei);
@@ -270,9 +318,21 @@ public class WaystoneBlockEvents implements Listener
         return closest;
     }
 
+    private Waystone GetWaystoneAt(Location location)
+    {
+        for(Waystone wei : data.AllWaystones)
+        {
+            if(wei.location.WorldUUID != location.getWorld().getUID().toString())
+                continue;
+            if(wei.location.Position.equals(new Vector3(location)))
+                return wei;
+        }
+        return null;
+    }
+
     private void OnDiscoverEnter(Player player, Waystone waystone)
     {
-        player.sendTitle(Color.LIME + "Near New Waystone", Color.TEAL + waystone.decodeName(data), 1, 3, 1);
+        Title(player,"Near New Waystone", waystone.decodeName(data));
     }
     private void OnDiscoverExit(Player player, Waystone waystone)
     {
@@ -280,31 +340,41 @@ public class WaystoneBlockEvents implements Listener
     }
     private void OnUseEnter(Player player, Waystone waystone)
     {
-        player.sendTitle("", Color.BLUE + "Waystone is now Useable", 1, 3, 1);
+        Title(player,"", "Waystone is now Useable");
     }
     private void OnUseExit(Player player, Waystone waystone)
     {
-        player.sendTitle("", Color.RED + "Waystone is nolonger Useable", 1, 3, 1);
+        Title(player,"", "Waystone is nolonger Useable");
     }
-    public void DiscoverWaystone(Player player, Waystone waystone)
+    public boolean DiscoverWaystone(Player player, Waystone waystone)
     {
+        WayPlayer p = data.GrabPlayer(player.getUniqueId().toString());
+        if(p.KnownWaystones.contains(waystone))
+            return false;
+        p.KnownWaystones.add(waystone);
         player.resetTitle();
-        waystone.location.getLocation(server).getWorld().playSound(player.getLocation(),
+        player.getLocation().getWorld().playSound(player.getLocation(),
                 Sound.UI_TOAST_CHALLENGE_COMPLETE, SoundCategory.BLOCKS, 8.0f, 1.0f);
-        player.sendTitle(Color.GREEN + "Waystone Discovered", Color.TEAL + waystone.decodeName(data), 1, 3, 1);
+        Title(player,"Waystone Discovered", waystone.decodeName(data));
+        return true;
     }
     public void OnCreateWaystone(Player player, Waystone waystone)
     {
         player.resetTitle();
         WayPlayer p = data.GrabPlayer(player.getUniqueId().toString());
         p.KnownWaystones.add(waystone);
-        waystone.location.getLocation(server).getWorld().playSound(player.getLocation(),
+        player.getLocation().getWorld().playSound(player.getLocation(),
                 Sound.UI_TOAST_CHALLENGE_COMPLETE, SoundCategory.BLOCKS, 8.0f, 1.0f);
-        player.sendTitle(Color.GREEN + "Waystone Created", Color.TEAL + waystone.decodeName(data), 1, 3, 1);
+        Title(player,"Waystone Created", waystone.decodeName(data));
     }
 
     private boolean isLodestone(BlockEvent event) {
         return event.getBlock().getBlockData().getMaterial() == Material.LODESTONE;
+    }
+
+    private void Title(Player player, String title, String subtitle)
+    {
+        player.sendTitle(title, subtitle, 1, 3, 1);
     }
 
     private List<Block> getLodestones(List<Block> blockList)
