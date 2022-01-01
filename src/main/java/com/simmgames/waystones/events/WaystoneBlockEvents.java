@@ -13,6 +13,7 @@ import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.EntityInteractEvent;
 import org.bukkit.event.player.*;
+import org.bukkit.inventory.EquipmentSlot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,16 +62,16 @@ public class WaystoneBlockEvents implements Listener
     }
 
     @EventHandler
-    public void onPlayerInteract(EntityInteractEvent event)
+    public void onPlayerInteract(PlayerInteractEvent event)
     {
-        if(!(event.getEntity() instanceof Player))
+        if(event.getAction() != Action.RIGHT_CLICK_BLOCK)
             return;
-        Player p = (Player)event.getEntity();
-        if(p == null)
+        if(event.getClickedBlock().getBlockData().getMaterial() != Material.LODESTONE)
             return;
-        if(!(event.getBlock().getBlockData().getMaterial() == Material.LODESTONE))
+        if(event.getHand() != EquipmentSlot.HAND)
             return;
 
+        Player p = event.getPlayer();
         p.sendMessage("You have interacted with a Lodestone.");
     }
 
