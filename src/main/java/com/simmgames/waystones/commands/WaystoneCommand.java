@@ -54,4 +54,26 @@ public class WaystoneCommand implements CommandExecutor {
             out.log(Level.INFO, message);
         }
     }
+
+    void create(CommandSender sender, String[] args)
+    {
+        String message = "";
+        if(args.length < 2)
+        {
+            message = "You need to include a name for your waystone.\n/waystone create <name>";
+        }
+        if(args[1].trim() == "")
+            message = "Your waystone name can not be blank.\n/waystone create <name>";
+
+        String waystoneName = args[1];
+        // Check if the waystone name already exists
+
+        if(sender instanceof Player)
+        {
+            Player p = (Player) sender;
+            p.sendMessage(message);
+        } else {
+            out.log(Level.INFO, message);
+        }
+    }
 }

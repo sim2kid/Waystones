@@ -86,7 +86,7 @@ public class WaystoneBlockEvents implements Listener
 
         // Check if it is a waystone
         // If it is a waystone, check if it's owned by the player initiating the command
-        // If it is, notify player that they destoryed the waystone
+        // If it is, notify player that they destroyed the waystone
         // Update waystone data
         // Update all online player's data
     }
