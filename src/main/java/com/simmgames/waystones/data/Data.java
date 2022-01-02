@@ -175,11 +175,27 @@ public class Data {
 
     public int WaystoneChargeTime(Player p)
     {
-        int time = Math.max(plugin.getConfig().getInt("charge-time"), -1);
-        int toReturn = Work.GetMinNumFromPermissions("waystone.charge", time, p);
-        if(time == -1 || p.hasPermission(Perm.ChargeBypass))
-            toReturn = 0;
-        return toReturn;
+        if(p.hasPermission(Perm.ChargeBypass))
+            return 0;
+        int exponent = Work.FilterToUser(AllWaystones, p.getUniqueId().toString()).size();
+        int base = plugin.getConfig().getInt("charge-time");
+        double figure = plugin.getConfig().getDouble("charge-figure");
+        double left = Math.max(plugin.getConfig().getDouble("exponent-left"),0);
+        boolean useDim = plugin.getConfig().getBoolean("use-diminishing-returns");
+        boolean flip = plugin.getConfig().getBoolean("flip-figure-and-exponent");
+
+        if(!useDim)
+        {
+            int lowest = Work.GetMinNumFromPermissions("waystone.charge", base, p);
+            return Math.max(lowest, 0);
+        }
+
+        double expoArea = exponent + left;
+
+        if(flip)
+            return (int)(base + Math.pow(expoArea, figure));
+        else
+            return (int)(base + Math.pow(figure, expoArea));
     }
 
     public boolean NoGrief()

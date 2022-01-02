@@ -131,17 +131,48 @@ public class WaystoneTabComplete implements TabCompleter
             }
             else if(args[0].equalsIgnoreCase("list") && sender.hasPermission(Perm.List))
             {
+                //     -1     0      1         2         3
+                // /waystone list [filter] [username] [filter]
                 if(args.length == 2)
                 {
                     toReturn.add("available");
                     toReturn.add("known");
                     toReturn.add("public");
                     toReturn.add("mine");
+                    toReturn.add("player");
                     if(sender.hasPermission(Perm.ListUnknown))
                         toReturn.add("unknown");
                     if(sender.hasPermission(Perm.ListAll))
                         toReturn.add("all");
                 }
+                if(args.length == 3)
+                {
+                    if(args[1].equalsIgnoreCase("player")) {
+                        for(Waystone wei: data.AllWaystones)
+                        {
+                            if(!wei.canUse())
+                                continue;
+                            String username = data.GrabPlayer(wei.owner).lastUsername;
+                            if(!toReturn.contains(username))
+                                toReturn.add(username);
+                        }
+
+                    }
+                }
+                if(args.length == 4)
+                {
+                    if(args[1].equalsIgnoreCase("player"))
+                    {
+                        toReturn.add("available");
+                        toReturn.add("known");
+                        toReturn.add("public");
+                        if(sender.hasPermission(Perm.ListUnknown))
+                            toReturn.add("unknown");
+                        if(sender.hasPermission(Perm.ListAll))
+                            toReturn.add("all");
+                    }
+                }
+
             } else if(args[0].equalsIgnoreCase("teleport") && sender.hasPermission(Perm.Teleport))
             {
                 if(!(sender instanceof Player))

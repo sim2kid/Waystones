@@ -6,9 +6,7 @@ import com.simmgames.waystones.data.WayPlayer;
 import com.simmgames.waystones.data.Waystone;
 
 import com.simmgames.waystones.structure.Vector3;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
@@ -242,5 +240,40 @@ public class Work {
         if(lowest == Integer.MAX_VALUE)
             lowest = defaultInt;
         return lowest;
+    }
+
+    public static String DecorateWaystoneName(Waystone wei, Player p, Data data, Server server)
+    {
+        WayPlayer WeiPlayer = data.GrabPlayer(p.getUniqueId().toString());
+        String otherWorld = "";
+        if(!wei.location.WorldUUID.equalsIgnoreCase(p.getWorld().getUID().toString()))
+            otherWorld = ChatColor.DARK_GRAY + "[" + wei.location.getLocation(server).getWorld().getName() + "]";
+        if(!wei.canUse())
+            otherWorld += ChatColor.DARK_RED + "[Unavailable]";
+        if (wei.access == Accessibility.Public){
+            return(otherWorld + ChatColor.BLUE + "[Public] " + ChatColor.AQUA + wei.name + "\n");
+        }
+        else if(wei.access == Accessibility.Private)
+        {
+            if(wei.owner.equalsIgnoreCase(WeiPlayer.UUID))
+            {
+                return(otherWorld + ChatColor.GOLD + "[Private] " + ChatColor.AQUA + wei.name + "\n");
+            }
+            else
+            {
+                return(otherWorld + ChatColor.GOLD + "[Private]" + ChatColor.DARK_PURPLE +
+                        "[" + data.GrabPlayer(wei.owner).lastUsername + "] " + ChatColor.AQUA + wei.name + "\n");
+            }
+        }
+        else
+        {
+            String unknown = ChatColor.GRAY  + "[Unknown] ";
+            if(WeiPlayer.KnownWaystones.contains(wei))
+                unknown = " ";
+            String player = ChatColor.GREEN + "[Mine]";
+            if(!wei.owner.equalsIgnoreCase(WeiPlayer.UUID))
+                player = ChatColor.DARK_PURPLE + "[" + data.GrabPlayer(wei.owner).lastUsername + "]";
+            return(otherWorld + player + unknown + ChatColor.AQUA + wei.name + "\n");
+        }
     }
 }

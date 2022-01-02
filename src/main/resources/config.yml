@@ -27,6 +27,13 @@ search-radius-tp: 8
 # If the waystones should be protected from environmental damage.
 no-grief: true
 
+
+# # # # # # # # # # # # # # # # # # # # # #
+#                                         #
+#            Waystone Limits              #
+#                                         #
+# # # # # # # # # # # # # # # # # # # # # #
+
 # Waystone Creation Limit Per Player
 # Can be bypassed with waystone.create.limit.ignore
 # Can also be set in perms with waystone.create.limit.# (Takes highest number)
@@ -38,8 +45,33 @@ creation-limit: 8
 # The time is measured in seconds
 # Can be bypassed with waystone.charge.ignore
 # Can also be set in perms with waystone.charge.# (Takes lowest number)
-# Set to -1 to disable
-charge-time: 300
+# --> Permission ignored when using diminishing returns.
+charge-time: -295
+
+# Charging Math
+
+# Whether to use math to increase charge time with each waystone owned.
+# When false, charge-time stays constant
+# When true, uses the following values to calculate charge-time
+use-diminishing-returns: true
+
+# This is the formula we will use to calculate the charge time:
+#                                         [Exponent] + [ExponentLeft]
+#  [Actual Charge Time] = [Base] + [Figure]
+#
+# [Base] = charge-time (listed above)
+# [Figure] = charge-figure (down below)
+# [Exponent] = Number of Waystones Created (Known in Game)
+# [ExponentLeft] = exponent-left
+charge-figure: 3.8
+# Positive numbers only (And zero)
+exponent-left: 4.7
+# Set this to true if figure field and exponent fields should be flipped in the formula
+flip-figure-and-exponent: true
+
+
+
+
 
 # Defaults
 
