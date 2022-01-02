@@ -70,13 +70,17 @@ public class Waystone {
     {
         String accessor = "";
         if(this.access == Accessibility.Public)
-            accessor = " - Public Waystone";
-        if(this.access == Accessibility.Public)
-            accessor = " - Private Waystone";
+            accessor = " - Public";
+        if(this.access == Accessibility.Private)
+            accessor = " - Private";
 
         String maker = "";
-        if(owner != Default.UUIDZero)
-            maker = " created by " + data.GrabPlayer(owner).lastUsername;
-        return  name + maker + accessor;
+        if(!owner.equalsIgnoreCase(Default.UUIDZero)) {
+            maker = "[" + data.GrabPlayer(owner).lastUsername + "] ";
+        } else if (!owner.equalsIgnoreCase(Default.UUIDOne))
+        {
+            maker = "[Admin] ";
+        }
+        return  maker + name + accessor;
     }
 }

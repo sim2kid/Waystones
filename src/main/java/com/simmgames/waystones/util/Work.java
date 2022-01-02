@@ -37,11 +37,11 @@ public class Work {
                 }
         return null;
     }
-    public static UUID CreateHologram(Location location, String text)
+    public static UUID CreateHologram(Location location, String text, boolean visable)
     {
         ArmorStand hologram = (ArmorStand) location.getWorld().spawnEntity(location.add(new Vector(0.5, -1, 0.5)), EntityType.ARMOR_STAND);
         hologram.setVisible(false);
-        hologram.setCustomNameVisible(true);
+        hologram.setCustomNameVisible(visable);
         hologram.setCustomName(text);
 
         hologram.setGravity(false);

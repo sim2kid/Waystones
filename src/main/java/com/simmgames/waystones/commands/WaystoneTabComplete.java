@@ -2,6 +2,7 @@ package com.simmgames.waystones.commands;
 
 import com.simmgames.waystones.data.Data;
 import com.simmgames.waystones.events.WaystoneBlockEvents;
+import com.simmgames.waystones.permissions.Perm;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -33,24 +34,37 @@ public class WaystoneTabComplete implements TabCompleter
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
         List<String> toReturn = new ArrayList<String>();
+        if(!sender.hasPermission(Perm.Waystone))
+            return toReturn;
+
         if(args.length == 1)
         {
             toReturn.add("help");
-            toReturn.add("create");
-            toReturn.add("nametag");
+            if(sender.hasPermission(Perm.Create))
+                toReturn.add("create");
+            if(sender.hasPermission(Perm.Nametag))
+                toReturn.add("nametag");
         }
         if(args.length > 1)
         {
-            if(args[0].equalsIgnoreCase("create"))
+            if(args[0].equalsIgnoreCase("create") && sender.hasPermission(Perm.Create))
             {
                 if(args.length == 3)
                 {
-                    toReturn.add("default");
-                    toReturn.add("private");
-                    toReturn.add("public");
+                    if(sender.hasPermission(Perm.CreateDiscoverable))
+                        toReturn.add("default");
+                    if(sender.hasPermission(Perm.CreatePrivate))
+                        toReturn.add("private");
+                    if(sender.hasPermission(Perm.CreatePublic))
+                        toReturn.add("public");
+                }
+                if(args.length == 4)
+                {
+                    if(sender.hasPermission(Perm.CreateAdmin))
+                        toReturn.add("admin");
                 }
             }
-            else if(args[0].equalsIgnoreCase("nametag"))
+            else if(args[0].equalsIgnoreCase("nametag") && sender.hasPermission(Perm.Nametag))
             {
                 if(args.length == 2)
                 {

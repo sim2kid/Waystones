@@ -5,6 +5,7 @@ import com.simmgames.waystones.commands.WaystoneTabComplete;
 import com.simmgames.waystones.data.Data;
 import com.simmgames.waystones.data.Waystone;
 import com.simmgames.waystones.events.WaystoneBlockEvents;
+import com.simmgames.waystones.permissions.Perm;
 import com.simmgames.waystones.structure.Vector3;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -26,6 +27,7 @@ public final class Waystones extends JavaPlugin {
         data.Load();
         out.log(Level.INFO, data.AllWaystones.size() + " waystones have been loaded!");
 
+        Perm.Setup();
 
         out.log(Level.INFO, "Adding Event Listeners");
         WaystoneBlockEvents events = new WaystoneBlockEvents(out, data, this.getServer());

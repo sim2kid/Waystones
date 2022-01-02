@@ -3,6 +3,7 @@ package com.simmgames.waystones.events;
 import com.simmgames.waystones.data.Data;
 import com.simmgames.waystones.data.WayPlayer;
 import com.simmgames.waystones.data.Waystone;
+import com.simmgames.waystones.permissions.Perm;
 import com.simmgames.waystones.structure.BlockLocation;
 import com.simmgames.waystones.structure.Vector3;
 import com.simmgames.waystones.util.Work;
@@ -43,7 +44,10 @@ public class WaystoneBlockEvents implements Listener
             return;
         Player p = event.getPlayer();
         // Ask to create Waystone
-        p.sendMessage("If you would like to make this a Waystone, run\n/waystone create <name>");
+        if(p.hasPermission(Perm.Create)) {
+            p.sendMessage(ChatColor.AQUA + "If you would like to make this a Waystone, run\n"
+                    + ChatColor.GOLD + "/waystone create <name>");
+        }
         // Wait for command on creation.
     }
 
@@ -57,9 +61,10 @@ public class WaystoneBlockEvents implements Listener
 
         // check if it is a waystone
         Waystone wei = GetWaystoneAt(event.getBlock().getLocation());
-        if(wei == null)
+        if(wei == null && p.hasPermission(Perm.Create))
         {
-            p.sendMessage("This Lodestone is currently not a waystone. If you would like to make it a Waystone, please run \n/waystone create <name>");
+            p.sendMessage(ChatColor.AQUA + "This Lodestone is currently not a waystone. If you would like to make it a Waystone, please run \n" +
+                    ChatColor.GOLD + "/waystone create <name>");
             return;
         }
 
@@ -68,10 +73,11 @@ public class WaystoneBlockEvents implements Listener
         // IF player owns waystone, let them know they are about to destroy the waystone
         if(wei.owner == p.getUniqueId().toString())
         {
-            p.sendMessage("You're about to break your Waystone.");
+            p.sendMessage(ChatColor.YELLOW + "You're about to break your Waystone.");
+        } else {
+            // ELSE let the player know who owns the waystone and what it's name is
+            TouchWaystone(p, wei);
         }
-        // ELSE let the player know who owns the waystone and what it's name is
-        TouchWaystone(p, wei);
         // Plus tell the player if they discovered the waystone
 
         // If not a waystone, ask player if they want to create a waystone
@@ -111,7 +117,7 @@ public class WaystoneBlockEvents implements Listener
         if(wei == null)
             return;
         // If it is a waystone, check if it's owned by the player initiating the command
-        if(!wei.owner.equalsIgnoreCase(p.getUniqueId().toString()))
+        if(!wei.owner.equalsIgnoreCase(p.getUniqueId().toString()) || p.hasPermission(Perm.DestroyOther))
         {
             p.sendMessage("You must own this Waystone to break it.");
             event.setCancelled(true);
@@ -197,7 +203,7 @@ public class WaystoneBlockEvents implements Listener
     {
         if(!Work.UpdateHologram(wei.location.getLocation(server), UUID.fromString(wei.hologramUUID), wei.decodeName(data)))
         {
-            wei.hologramUUID = Work.CreateHologram(wei.location.getLocation(server), wei.decodeName(data)).toString();
+            wei.hologramUUID = Work.CreateHologram(wei.location.getLocation(server), wei.decodeName(data), data.DefaultNametag()).toString();
         }
         WayPlayer p = data.GrabPlayer(player.getUniqueId().toString());
         if(!DiscoverWaystone(player, wei))
@@ -336,7 +342,7 @@ public class WaystoneBlockEvents implements Listener
         }
         if(!Work.UpdateHologram(closest.location.getLocation(server), UUID.fromString(closest.hologramUUID), closest.decodeName(data)))
         {
-            closest.hologramUUID = Work.CreateHologram(closest.location.getLocation(server), closest.decodeName(data)).toString();
+            closest.hologramUUID = Work.CreateHologram(closest.location.getLocation(server), closest.decodeName(data), data.DefaultNametag()).toString();
         }
 
         p.LastVisited = closest;
@@ -357,7 +363,8 @@ public class WaystoneBlockEvents implements Listener
 
     private void OnDiscoverEnter(Player player, Waystone waystone)
     {
-        Title(player,"Near Waystone", waystone.decodeName(data));
+        if(player.hasPermission(Perm.TitleEnter))
+            Title(player,"Near Waystone", waystone.decodeName(data));
     }
     private void OnDiscoverExit(Player player, Waystone waystone)
     {
@@ -381,7 +388,8 @@ public class WaystoneBlockEvents implements Listener
         player.resetTitle();
         player.getLocation().getWorld().playSound(player.getLocation(),
                 Sound.UI_TOAST_CHALLENGE_COMPLETE, SoundCategory.BLOCKS, 8.0f, 1.0f);
-        Title(player,"Waystone Discovered", waystone.decodeName(data));
+        if(player.hasPermission(Perm.TitleDiscover))
+            Title(player,"Waystone Discovered", waystone.decodeName(data));
         return true;
     }
     public void OnCreateWaystone(Player player, Waystone waystone)
@@ -389,9 +397,12 @@ public class WaystoneBlockEvents implements Listener
         player.resetTitle();
         WayPlayer p = data.GrabPlayer(player.getUniqueId().toString());
         p.KnownWaystones.add(waystone);
+        p.InWaystoneDiscover = true;
+        p.InWaystoneUse = true;
         player.getLocation().getWorld().playSound(player.getLocation(),
                 Sound.UI_TOAST_CHALLENGE_COMPLETE, SoundCategory.BLOCKS, 8.0f, 1.0f);
-        Title(player,"Waystone Created", waystone.decodeName(data));
+        if(player.hasPermission(Perm.TitleCreate))
+            Title(player,"Waystone Created", waystone.decodeName(data));
         data.Save();
     }
 
@@ -401,7 +412,8 @@ public class WaystoneBlockEvents implements Listener
 
     private void Title(Player player, String title, String subtitle)
     {
-        player.sendTitle(title, subtitle, 5, 50, 10);
+        if(player.hasPermission(Perm.Title))
+            player.sendTitle(title, subtitle,5, 50, 10);
     }
 
     private List<Block> getLodestones(List<Block> blockList)

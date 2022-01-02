@@ -3,6 +3,7 @@ package com.simmgames.waystones.data;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import com.simmgames.waystones.util.Default;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -67,6 +68,11 @@ public class Data {
 
     public WayPlayer GrabPlayer(String playerUUID)
     {
+        if(playerUUID.equalsIgnoreCase(Default.UUIDOne))
+            return new WayPlayer(Default.UUIDOne, "Admin");
+        if(playerUUID.equalsIgnoreCase(Default.UUIDZero))
+            return new WayPlayer(Default.UUIDZero, "Null");
+
         WayPlayer player = playerInList(playerUUID);
         if(player == null)
             player = LoadPlayer(playerUUID);
@@ -75,6 +81,11 @@ public class Data {
 
     private WayPlayer LoadPlayer(String playerUUID)
     {
+        if(playerUUID.equalsIgnoreCase(Default.UUIDOne))
+            return new WayPlayer(Default.UUIDOne, "Admin");
+        if(playerUUID.equalsIgnoreCase(Default.UUIDZero))
+            return new WayPlayer(Default.UUIDZero, "Null");
+
         // Load Waystones List
         String wayplayersLocation = dataPath + "/Players/";
         Gson gson = new Gson();
@@ -108,6 +119,11 @@ public class Data {
 
     public WayPlayer SavePlayer(String playerUUID)
     {
+        if(playerUUID.equalsIgnoreCase(Default.UUIDOne))
+            return new WayPlayer(Default.UUIDOne, "Admin");
+        if(playerUUID.equalsIgnoreCase(Default.UUIDZero))
+            return new WayPlayer(Default.UUIDZero, "Null");
+
         WayPlayer player = GrabPlayer(playerUUID);
 
         String wayplayersLocation = dataPath + "/Players/";
@@ -140,6 +156,15 @@ public class Data {
     public int LodestoneSearchRadius()
     {
         return Math.max(plugin.getConfig().getInt("search-radius"), 0);
+    }
+
+    public boolean DefaultNametag()
+    {
+        return plugin.getConfig().getBoolean("default-nametag");
+    }
+    public String DefaultAccess()
+    {
+        return plugin.getConfig().getString("default-access");
     }
 
     private WayPlayer playerInList(String uuid)

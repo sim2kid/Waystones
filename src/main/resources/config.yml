@@ -14,3 +14,14 @@ discover-distance: 10
 # The bigger this is, the slower the game will run.
 # Try to keep this under 10.
 search-radius: 5
+
+
+# Defaults
+
+# True if nametags are enabled by default.
+# You can use /waystone nametag <true|false> to toggle it.
+default-nametag: true
+
+# The default type of waystone to build.
+# Can be [ Public | Private | Discoverable ]
+default-access: 'Discoverable'
