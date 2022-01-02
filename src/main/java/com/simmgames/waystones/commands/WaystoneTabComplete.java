@@ -50,9 +50,11 @@ public class WaystoneTabComplete implements TabCompleter
                     return toReturn;
                 Player p = (Player)sender;
                 WayPlayer wp = data.GrabPlayer(p.getUniqueId().toString());
-                if((wp.InWaystoneUse && wp.LastVisited.canUse()) || sender.hasPermission(Perm.TeleportIgnoreWaystone)) {
-                    toReturn.add("teleport");
-                    toReturn.add("tp");
+                if((wp.InWaystoneUse && wp.LastVisited != null) || sender.hasPermission(Perm.TeleportIgnoreWaystone)) {
+                    if(wp.LastVisited.canUse() || sender.hasPermission(Perm.TeleportIgnoreWaystone)) {
+                        toReturn.add("teleport");
+                        toReturn.add("tp");
+                    }
                 }
             }
             toReturn.add("help");
@@ -146,8 +148,10 @@ public class WaystoneTabComplete implements TabCompleter
                     return toReturn;
                 Player p = (Player)sender;
                 WayPlayer wp = data.GrabPlayer(p.getUniqueId().toString());
-                if(!((wp.InWaystoneUse && wp.LastVisited.canUse()) || sender.hasPermission(Perm.TeleportIgnoreWaystone)))
-                    return toReturn;
+                if((wp.InWaystoneUse && wp.LastVisited != null) || sender.hasPermission(Perm.TeleportIgnoreWaystone)) {
+                    if (!(wp.LastVisited.canUse() || sender.hasPermission(Perm.TeleportIgnoreWaystone)))
+                        return toReturn;
+                } else { return toReturn; }
 
 
                 List<Waystone> context;

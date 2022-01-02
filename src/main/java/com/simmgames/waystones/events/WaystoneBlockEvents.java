@@ -15,7 +15,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityExplodeEvent;
-import org.bukkit.event.entity.EntityInteractEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.EquipmentSlot;
 
@@ -258,13 +257,25 @@ public class WaystoneBlockEvents implements Listener
         WayPlayer p = data.GrabPlayer(player.getUniqueId().toString());
         // Update a player's known waystone list (remove bad waystones)
 
+        if(p.LastNear != null) {
+            int index = data.AllWaystones.indexOf(p.LastNear);
+            if (index == -1)
+                p.LastNear = null;
+        }
+        if(p.LastVisited != null) {
+            int index = data.AllWaystones.indexOf(p.LastVisited);
+            if (index == -1)
+                p.LastVisited = null;
+        }
+
+
         // If waystones are missing, let player know that they have been destroyed.
         // If player's owned waystones are missing, let them know that they have been destroyed
         for (int i = p.KnownWaystones.size()-1; i >= 0 ; i--)
         {
             Waystone known = p.KnownWaystones.get(i);
 
-            if(known.access == Accessibility.Private && !known.owner.equalsIgnoreCase(p.UUID)) {
+            if(known.access != Accessibility.Discoverable && !known.owner.equalsIgnoreCase(p.UUID)) {
                 p.KnownWaystones.remove(i);
                 continue;
             }
@@ -308,7 +319,7 @@ public class WaystoneBlockEvents implements Listener
         data.SavePlayer(p.UUID);
     }
 
-    private Waystone GetClosestWaystone(Player player)
+    private void GetClosestWaystone(Player player)
     {
         Waystone closest = null;
         double closestDistance = -1;
@@ -343,7 +354,8 @@ public class WaystoneBlockEvents implements Listener
                 if(!closest.equals(p.LastNear))
                 {
                     // Destroy hologram
-                    Work.DestroyHologram(p.LastNear.getLocation(server), UUID.fromString(p.LastNear.hologramUUID));
+                    if(!Work.DestroyHologram(p.LastNear.getLocation(server), UUID.fromString(p.LastNear.hologramUUID)))
+                        Work.DestroyUnmarkedHolograms(p.LastNear.getLocation(server));
                     p.LastNear = null; // on exit into another closest
                 }
 
@@ -357,7 +369,7 @@ public class WaystoneBlockEvents implements Listener
                 {
                     closest = null;
                     DestroyWaystone(block.getLocation());
-                    return closest;
+                    return;
                 }
 
             if (closestDistance != -1 && closestDistance < data.WaystoneUseDistance()) {
@@ -382,7 +394,7 @@ public class WaystoneBlockEvents implements Listener
                     OnDiscoverExit(player, closest);
                 p.InWaystoneDiscover = false;
             }
-            if(closestDistance != -1 && closestDistance < data.WaystoneNearDistance())
+            if(closestDistance != -1 && closestDistance <= data.WaystoneNearDistance())
             {
                 p.InWaystoneNearby = true;
                 p.LastNear = closest;
@@ -392,7 +404,6 @@ public class WaystoneBlockEvents implements Listener
                     Work.DestroyHologram(p.LastNear.getLocation(server), UUID.fromString(p.LastNear.hologramUUID));
             }
         }
-        return closest;
     }
 
     public Waystone GetWaystoneAt(Location location)

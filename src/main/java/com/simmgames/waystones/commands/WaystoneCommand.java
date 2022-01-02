@@ -541,8 +541,11 @@ public class WaystoneCommand implements CommandExecutor {
         String filler = "==========";
         String workingString = filler + " Waystones " + page + "/" + max + " " + filler + "\n";
 
-        for(int i = (page-1)*perList; i < (int)Math.min(page*perList,Results.size()); i++)
-            workingString += Results.get(i);
+        if(Results.size() == 0)
+            workingString += ChatColor.LIGHT_PURPLE + "No Results\n";
+        else
+            for(int i = (page-1)*perList; i < (int)Math.min(page*perList,Results.size()); i++)
+                workingString += Results.get(i);
 
         workingString += ChatColor.RESET +  filler + " Waystones " + page + "/" + max + " "  + filler;
 
