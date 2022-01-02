@@ -65,7 +65,6 @@ public class Data {
 
         WayPlayer player = playerInList(playerUUID);
         if(player == null) {
-            MakePlayerBackup(playerUUID);
             player = LoadPlayer(playerUUID);
         }
         return player;
@@ -89,6 +88,8 @@ public class Data {
             WayPlayer player = gson.fromJson(json, WayplayerType);
             if(player == null)
             {
+                if(json.trim().length() > 2)
+                    MakePlayerBackup(playerUUID);
                 player = new WayPlayer(playerUUID, "Unknown");
             }
             if(playerInList(playerUUID) == null)
@@ -214,7 +215,8 @@ public class Data {
             }.getType();
             AllWaystones = gson.fromJson(json, WaystoneListType);
             if (AllWaystones == null) {
-                MakeWaystoneBackup();
+                if(json.trim().length() > 2)
+                    MakeWaystoneBackup();
                 AllWaystones = new ArrayList<Waystone>();
             }
             return true;

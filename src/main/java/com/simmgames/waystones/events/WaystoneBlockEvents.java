@@ -309,14 +309,16 @@ public class WaystoneBlockEvents implements Listener
             }
         }
 
-        if(!closest.equals(p.LastVisited))
-        {
-            p.LastVisited = closest;
-            p.InWaystoneDiscover = false;
-            p.InWaystoneUse = false;
-        }
-
         if(closest != null) {
+            if(!closest.equals(p.LastVisited))
+            {
+                p.LastVisited = closest;
+                p.InWaystoneDiscover = false;
+                p.InWaystoneUse = false;
+            }
+
+
+
             Block block = player.getWorld().getBlockAt(new Location(player.getWorld(), (int) closest.location.getX(),
                     (int) closest.location.getY(), (int) closest.location.getZ()));
             if(block != null)
@@ -348,12 +350,16 @@ public class WaystoneBlockEvents implements Listener
                     OnDiscoverExit(player, closest);
                 p.InWaystoneDiscover = false;
             }
-        }
-        if(!Work.UpdateHologram(closest.location.getLocation(server), UUID.fromString(closest.hologramUUID), closest.decodeName(data)))
-        {
-            closest.hologramUUID = Work.CreateHologram(closest.location.getLocation(server), closest.decodeName(data), data.DefaultNametag()).toString();
-        }
 
+
+
+            if(!Work.UpdateHologram(closest.location.getLocation(server),
+                    UUID.fromString(closest.hologramUUID), closest.decodeName(data)))
+            {
+                closest.hologramUUID = Work.CreateHologram(closest.location.getLocation(server),
+                        closest.decodeName(data), data.DefaultNametag()).toString();
+            }
+        }
         return closest;
     }
 
