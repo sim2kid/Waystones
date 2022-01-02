@@ -15,6 +15,9 @@ discover-distance: 10
 # Try to keep this under 10.
 search-radius: 5
 
+# If the waystones should be protected from environmental damage.
+no-grief: true
+
 
 # Defaults
 

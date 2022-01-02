@@ -98,7 +98,6 @@ public class WaystoneBlockEvents implements Listener
 
         Waystone wei = GetWaystoneAt(event.getClickedBlock().getLocation());
         if(wei == null) {
-            out.log(Level.INFO, "Waystone not found");
             return;
         }
         TouchWaystone(p, wei);
@@ -119,7 +118,7 @@ public class WaystoneBlockEvents implements Listener
         // If it is a waystone, check if it's owned by the player initiating the command
         if(!wei.owner.equalsIgnoreCase(p.getUniqueId().toString()) || p.hasPermission(Perm.DestroyOther))
         {
-            p.sendMessage("You must own this Waystone to break it.");
+            p.sendMessage(ChatColor.RED + "You must own this Waystone to break it.");
             event.setCancelled(true);
             return;
         }
@@ -208,8 +207,8 @@ public class WaystoneBlockEvents implements Listener
         WayPlayer p = data.GrabPlayer(player.getUniqueId().toString());
         if(!DiscoverWaystone(player, wei))
         {
-            Title(player,"", wei.decodeName(data));
-            player.sendMessage(wei.decodeName(data));
+            Title(player," ", ChatColor.AQUA + wei.decodeName(data));
+            player.sendMessage(ChatColor.AQUA + wei.decodeName(data));
         }
     }
 
@@ -222,6 +221,9 @@ public class WaystoneBlockEvents implements Listener
         Work.DestroyHologram(location, UUID.fromString(wei.hologramUUID));
         // delete waystone in the Waystone list
         data.AllWaystones.remove(wei);
+
+        location.getWorld().playSound(location, Sound.BLOCK_BEACON_DEACTIVATE, SoundCategory.BLOCKS, 1.0f, 0.6f);
+
         // Delete waystone in all "known waystones" for online players
         UpdateOnlinePlayers();
         data.Save();
@@ -254,12 +256,14 @@ public class WaystoneBlockEvents implements Listener
             {
                 if(known.owner.equalsIgnoreCase(p.UUID))
                 {
-                    SendPlayerMessage(player, "Your Waystone '" + known.name + "' at '"
-                            + known.location.toString() + "' has been destroyed.");
+                    SendPlayerMessage(player, ChatColor.RED + "Your Waystone '"
+                            + ChatColor.GOLD + known.name + ChatColor.RED + "' at '"
+                            + ChatColor.GOLD + known.location.toString() + ChatColor.RED + "' has been destroyed.");
                 } else {
-                    SendPlayerMessage(player, "Waystone '" + known.name + "' built by '"
-                            + data.GrabPlayer(known.owner).lastUsername + "' at '"
-                            + known.location.toString() + "' has been destroyed.");
+                    SendPlayerMessage(player, ChatColor.RED + "Waystone '"
+                            + ChatColor.GOLD + known.name + ChatColor.RED + "' built by '"
+                            + ChatColor.GOLD + data.GrabPlayer(known.owner).lastUsername + ChatColor.RED + "' at '"
+                            + ChatColor.GOLD + known.location.toString() + ChatColor.RED + "' has been destroyed.");
                 }
                 p.KnownWaystones.remove(i);
             }
@@ -305,7 +309,12 @@ public class WaystoneBlockEvents implements Listener
             }
         }
 
-
+        if(!closest.equals(p.LastVisited))
+        {
+            p.LastVisited = closest;
+            p.InWaystoneDiscover = false;
+            p.InWaystoneUse = false;
+        }
 
         if(closest != null) {
             Block block = player.getWorld().getBlockAt(new Location(player.getWorld(), (int) closest.location.getX(),
@@ -345,7 +354,6 @@ public class WaystoneBlockEvents implements Listener
             closest.hologramUUID = Work.CreateHologram(closest.location.getLocation(server), closest.decodeName(data), data.DefaultNametag()).toString();
         }
 
-        p.LastVisited = closest;
         return closest;
     }
 
@@ -364,7 +372,7 @@ public class WaystoneBlockEvents implements Listener
     private void OnDiscoverEnter(Player player, Waystone waystone)
     {
         if(player.hasPermission(Perm.TitleEnter))
-            Title(player,"Near Waystone", waystone.decodeName(data));
+            Title(player,ChatColor.BLUE + "Near Waystone", ChatColor.AQUA +  waystone.decodeName(data));
     }
     private void OnDiscoverExit(Player player, Waystone waystone)
     {
@@ -386,10 +394,10 @@ public class WaystoneBlockEvents implements Listener
         p.KnownWaystones.add(waystone);
         data.SavePlayer(p.UUID);
         player.resetTitle();
-        player.getLocation().getWorld().playSound(player.getLocation(),
-                Sound.UI_TOAST_CHALLENGE_COMPLETE, SoundCategory.BLOCKS, 8.0f, 1.0f);
+        player.playSound(player.getLocation(),
+                Sound.UI_TOAST_CHALLENGE_COMPLETE, SoundCategory.BLOCKS, 0.8f, 1.0f);
         if(player.hasPermission(Perm.TitleDiscover))
-            Title(player,"Waystone Discovered", waystone.decodeName(data));
+            Title(player,ChatColor.GREEN + "Waystone Discovered", ChatColor.AQUA + waystone.decodeName(data));
         return true;
     }
     public void OnCreateWaystone(Player player, Waystone waystone)
@@ -399,10 +407,11 @@ public class WaystoneBlockEvents implements Listener
         p.KnownWaystones.add(waystone);
         p.InWaystoneDiscover = true;
         p.InWaystoneUse = true;
-        player.getLocation().getWorld().playSound(player.getLocation(),
-                Sound.UI_TOAST_CHALLENGE_COMPLETE, SoundCategory.BLOCKS, 8.0f, 1.0f);
+        p.LastVisited = waystone;
+        player.getWorld().playSound(waystone.getLocation(server),
+                Sound.BLOCK_BEACON_ACTIVATE, SoundCategory.BLOCKS, 1.0f, 0.6f);
         if(player.hasPermission(Perm.TitleCreate))
-            Title(player,"Waystone Created", waystone.decodeName(data));
+            Title(player,ChatColor.GOLD + "Waystone Created", ChatColor.AQUA + waystone.decodeName(data));
         data.Save();
     }
 

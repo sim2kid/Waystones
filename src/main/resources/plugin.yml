@@ -4,11 +4,14 @@ main: com.simmgames.waystones.Waystones
 api-version: 1.18
 authors: [ sim2kid ]
 description: Adds Teleportation via Lodestones in Survival Minecraft
-website: https://simmgames.com
+website: https://github.com/sim2kid/waystones
+database: false
+softdepend: [Vault]
 commands:
   waystone:
     description: 'Teleport to another waystone'
     usage: '/waystone <destination>'
+    permission: 'waystone.command'
     aliases:
       - ws
       - way

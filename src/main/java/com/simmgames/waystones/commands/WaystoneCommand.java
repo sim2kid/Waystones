@@ -169,7 +169,7 @@ public class WaystoneCommand implements CommandExecutor {
             if(args[2] != null)
                 accessStr = args[2];
 
-        switch (args[2].trim().toLowerCase())
+        switch (accessStr.trim().toLowerCase())
         {
             case "public":
                 if(!sender.hasPermission(Perm.CreatePublic))

@@ -24,7 +24,7 @@ public class Waystone {
 
     public Location getLocation(Server server)
     {
-        return new Location(server.getWorld(location.WorldUUID), location.getX(), location.getY(), location.getZ());
+        return location.getLocation(server);
     }
 
     public Waystone()
