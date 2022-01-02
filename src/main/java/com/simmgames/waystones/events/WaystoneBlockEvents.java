@@ -442,6 +442,11 @@ public class WaystoneBlockEvents implements Listener
         data.Save();
     }
 
+    public void OnTeleport(Player player, Waystone waystone)
+    {
+
+    }
+
     private boolean isLodestone(BlockEvent event) {
         return event.getBlock().getBlockData().getMaterial() == Material.LODESTONE;
     }
