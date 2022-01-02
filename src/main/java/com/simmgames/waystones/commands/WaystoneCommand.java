@@ -253,10 +253,7 @@ public class WaystoneCommand implements CommandExecutor {
                 new BlockLocation(lode), waystoneName.trim(), access, chargeTime, data.DefaultNametag());
         if(newWaystone.hasNametag)
             newWaystone.hologramUUID = Work.CreateHologram(lode.getBlock().getLocation(), newWaystone.decodeName(data)).toString();
-        if(newWaystone.access == Accessibility.Discoverable ||
-                (newWaystone.access == Accessibility.Private &&
-                        newWaystone.owner.equalsIgnoreCase(p.getUniqueId().toString())))
-            data.AllWaystones.add(newWaystone);
+        data.AllWaystones.add(newWaystone);
         events.OnCreateWaystone(p, newWaystone);
     }
 
