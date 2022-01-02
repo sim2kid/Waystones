@@ -321,7 +321,20 @@ public class WaystoneCommand implements CommandExecutor {
             wei.hasNametag = false;
             p.sendMessage(ChatColor.YELLOW + "Turning off the NameTag for the nearest waystone.");
             Work.HologramVisibility(wei.location.getLocation(server), UUID.fromString(wei.hologramUUID), false);
-        } else
+        } else if(args[1].equalsIgnoreCase("toggle") || args[1].equalsIgnoreCase("flip")
+                || args[1].equalsIgnoreCase("switch")) {
+            // Toggle
+            wei.hasNametag = !wei.hasNametag;
+
+            if(!Work.HologramVisibility(wei.location.getLocation(server), UUID.fromString(wei.hologramUUID), wei.hasNametag) && wei.hasNametag)
+                wei.hologramUUID = Work.CreateHologram(wei.location.getLocation(server), wei.decodeName(data)).toString();
+            if(wei.hasNametag)
+                p.sendMessage(ChatColor.GREEN + "Turning on the NameTag for the nearest waystone.");
+            else
+                p.sendMessage(ChatColor.GREEN + "Turning off the NameTag for the nearest waystone.");
+            return;
+        }
+        else
         {
             // Unknown
             p.sendMessage(ChatColor.RED + "'" + args[1] + "' is not a valid state for the nametags. Please use\n"

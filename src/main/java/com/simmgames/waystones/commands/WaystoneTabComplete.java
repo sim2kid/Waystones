@@ -68,8 +68,14 @@ public class WaystoneTabComplete implements TabCompleter
                         return toReturn;
                 }
             }
-            if(sender.hasPermission(Perm.Nametag))
-                toReturn.add("nametag");
+            if(sender.hasPermission(Perm.Nametag)) {
+                if(!(sender instanceof Player))
+                    return toReturn;
+                Player p = (Player)sender;
+                WayPlayer wp = data.GrabPlayer(p.getUniqueId().toString());
+                if(wp.InWaystoneNearby)
+                    toReturn.add("nametag");
+            }
             if(sender.hasPermission(Perm.List))
                 toReturn.add("list");
         }
@@ -109,11 +115,17 @@ public class WaystoneTabComplete implements TabCompleter
             }
             else if(args[0].equalsIgnoreCase("nametag") && sender.hasPermission(Perm.Nametag))
             {
-                if(args.length == 2)
-                {
-                    toReturn.add("true");
-                    toReturn.add("false");
-                }
+                if(!(sender instanceof Player))
+                    return toReturn;
+                Player p = (Player)sender;
+                WayPlayer wp = data.GrabPlayer(p.getUniqueId().toString());
+                if(wp.InWaystoneNearby)
+                    if(args.length == 2)
+                    {
+                        toReturn.add("true");
+                        toReturn.add("false");
+                        toReturn.add("toggle");
+                    }
             }
             else if(args[0].equalsIgnoreCase("list") && sender.hasPermission(Perm.List))
             {
