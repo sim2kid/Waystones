@@ -21,6 +21,9 @@ public class Perm {
     public static Permission CreateBypass;
     public static Permission CreateLimit;
 
+    public static Permission ChargeBypass;
+    public static Permission Charge;
+
     public static Permission Nametag;
     public static Permission NametagOther;
 
@@ -69,6 +72,9 @@ public class Perm {
         CreateBypass = new Permission("waystone.create.limit.ignore", "Allows players to bypass waystone creation limit.");
         CreateLimit = new Permission("waystone.create.limit.0", "Limits a player to 0 waystones. Can increase 0 for higer limit.");
 
+        Charge = new Permission("waystone.charge.0", "Time player has to wait to use the waystone after creation. Replace 0 with any higher value (in seconds)");
+        ChargeBypass = new Permission("waystone.charge.ignore", "Ignores the charge time for waystones.");
+
         Nametag = new Permission("waystone.nametag", "Allows players to toggle nametags for their waystones.");
         Default.addParent(Nametag, true);
         NametagOther= new Permission("waystone.nametag.other", "Allows players to toggle nametags for other people's waystones.");
@@ -109,6 +115,9 @@ public class Perm {
 
 
         // Recalc & Register Perms
+
+        SetPerm(Charge, server);
+        SetPerm(ChargeBypass, server);
 
         SetPerm(CreateBypass, server);
         SetPerm(CreateDiscoverable, server);

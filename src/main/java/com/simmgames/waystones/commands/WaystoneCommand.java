@@ -246,9 +246,11 @@ public class WaystoneCommand implements CommandExecutor {
                 return;
         }
 
+        int chargeTime = data.WaystoneChargeTime(p);
+
         // Create Waystone
         Waystone newWaystone = new Waystone((admin ? Default.UUIDOne : p.getUniqueId().toString()),
-                new BlockLocation(lode), waystoneName.trim(), access);
+                new BlockLocation(lode), waystoneName.trim(), access, chargeTime);
         newWaystone.hologramUUID = Work.CreateHologram(lode.getBlock().getLocation(), newWaystone.decodeName(data),
                 data.DefaultNametag()).toString();
         if(newWaystone.access == Accessibility.Discoverable ||
@@ -369,6 +371,8 @@ public class WaystoneCommand implements CommandExecutor {
                     String otherWorld = "";
                     if(!wei.location.WorldUUID.equalsIgnoreCase(p.getWorld().getUID().toString()))
                         otherWorld = ChatColor.BLACK + "[" + wei.location.getLocation(server).getWorld().getName() + "]";
+                    if(!wei.canUse())
+                        otherWorld += ChatColor.DARK_RED + "[Unavailable]";
                     if (wei.access == Accessibility.Public) {
                         String mine = " ";
                         if(wei.owner.equalsIgnoreCase(WeiPlayer.UUID))
@@ -383,6 +387,8 @@ public class WaystoneCommand implements CommandExecutor {
                     String otherWorld = "";
                     if(!wei.location.WorldUUID.equalsIgnoreCase(p.getWorld().getUID().toString()))
                         otherWorld = ChatColor.BLACK + "[" + wei.location.getLocation(server).getWorld().getName() + "]";
+                    if(!wei.canUse())
+                        otherWorld += ChatColor.DARK_RED + "[Unavailable]";
                     String mine = ChatColor.DARK_PURPLE + "[" + data.GrabPlayer(wei.owner).lastUsername + "] ";
                     if(wei.owner.equalsIgnoreCase(WeiPlayer.UUID))
                         mine = ChatColor.GREEN + "[Mine] ";
@@ -395,6 +401,8 @@ public class WaystoneCommand implements CommandExecutor {
                         String otherWorld = "";
                         if(!wei.location.WorldUUID.equalsIgnoreCase(p.getWorld().getUID().toString()))
                             otherWorld = ChatColor.BLACK + "[" + wei.location.getLocation(server).getWorld().getName() + "]";
+                        if(!wei.canUse())
+                            otherWorld += ChatColor.DARK_RED + "[Unavailable]";
                         String mine = " ";
                         if(wei.owner.equalsIgnoreCase(WeiPlayer.UUID))
                             mine = ChatColor.GREEN + "[Mine] ";
@@ -408,6 +416,8 @@ public class WaystoneCommand implements CommandExecutor {
                         String otherWorld = "";
                         if(!wei.location.WorldUUID.equalsIgnoreCase(p.getWorld().getUID().toString()))
                             otherWorld = ChatColor.BLACK + "[" + wei.location.getLocation(server).getWorld().getName() + "]";
+                        if(!wei.canUse())
+                            otherWorld += ChatColor.DARK_RED + "[Unavailable]";
                         String access = "";
                         if(wei.access == Accessibility.Private)
                             access = ChatColor.DARK_PURPLE + "[Private]";
@@ -424,6 +434,8 @@ public class WaystoneCommand implements CommandExecutor {
                     String otherWorld = "";
                     if(!wei.location.WorldUUID.equalsIgnoreCase(p.getWorld().getUID().toString()))
                         otherWorld = ChatColor.BLACK + "[" + wei.location.getLocation(server).getWorld().getName() + "]";
+                    if(!wei.canUse())
+                        otherWorld += ChatColor.DARK_RED + "[Unavailable]";
                     String unknown = ChatColor.GRAY  + "[Unknown] ";
                     if(WeiPlayer.KnownWaystones.contains(wei) || wei.access != Accessibility.Discoverable)
                         continue;
@@ -444,6 +456,8 @@ public class WaystoneCommand implements CommandExecutor {
                     String otherWorld = "";
                     if(!wei.location.WorldUUID.equalsIgnoreCase(p.getWorld().getUID().toString()))
                         otherWorld = ChatColor.BLACK + "[" + wei.location.getLocation(server).getWorld().getName() + "]";
+                    if(!wei.canUse())
+                        otherWorld += ChatColor.DARK_RED + "[Unavailable]";
                     if (wei.access == Accessibility.Public){
                         Results.add(otherWorld + ChatColor.BLUE + "[Public] " + ChatColor.AQUA + wei.name + "\n");
                     }
@@ -515,6 +529,12 @@ public class WaystoneCommand implements CommandExecutor {
             p.sendMessage(ChatColor.RED + "You must be near a Waystone to teleport.");
             return;
         }
+        if(!WeiPlayer.LastVisited.canUse() && !sender.hasPermission(Perm.TeleportIgnoreWaystone))
+        {
+            p.sendMessage(ChatColor.RED + "Origin Waystone is still charging! " + WeiPlayer.LastVisited.timeLeftUntilFunctional()
+                    + " seconds left until usable.");
+            return;
+        }
 
         List<Waystone> context = Work.GetOwnAndPublicWaystones(p, data);
 
@@ -530,6 +550,12 @@ public class WaystoneCommand implements CommandExecutor {
             if(way == null)
             {
                 sender.sendMessage(ChatColor.RED + "Could not access Waystone '" + wayName + "'.");
+                return;
+            }
+            if(!way.canUse())
+            {
+                p.sendMessage(ChatColor.RED + "Destination Waystone is still charging. " + way.timeLeftUntilFunctional()
+                        + " seconds left until usable.");
                 return;
             }
 
@@ -564,6 +590,12 @@ public class WaystoneCommand implements CommandExecutor {
         if(!(WeiPlayer.InWaystoneUse || sender.hasPermission(Perm.TeleportIgnoreWaystone)))
         {
             p.sendMessage(ChatColor.RED + "You must be near a Waystone to teleport.");
+            return;
+        }
+        if(!WeiPlayer.LastVisited.canUse() && !sender.hasPermission(Perm.TeleportIgnoreWaystone))
+        {
+            p.sendMessage(ChatColor.RED + "Origin Waystone is still charging! " + WeiPlayer.LastVisited.timeLeftUntilFunctional()
+                    + " seconds left until usable.");
             return;
         }
 
@@ -619,6 +651,12 @@ public class WaystoneCommand implements CommandExecutor {
                 if(way == null)
                 {
                     sender.sendMessage(ChatColor.RED + "Could not access Waystone '" + waystoneName + "'.");
+                    return;
+                }
+                if(!way.canUse())
+                {
+                    p.sendMessage(ChatColor.RED + "Destination Waystone is still charging. " + way.timeLeftUntilFunctional()
+                            + " seconds left until usable.");
                     return;
                 }
                 Waystone origin = null;

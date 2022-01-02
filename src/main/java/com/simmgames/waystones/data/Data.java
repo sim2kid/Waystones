@@ -3,6 +3,7 @@ package com.simmgames.waystones.data;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import com.simmgames.waystones.permissions.Perm;
 import com.simmgames.waystones.util.Default;
 import com.simmgames.waystones.util.Work;
 import org.bukkit.Server;
@@ -164,6 +165,15 @@ public class Data {
         int toReturn = Work.GetMaxNumFromPermissions("waystone.create.limit", limit, p);
         if(limit == -1)
             toReturn = Integer.MAX_VALUE;
+        return toReturn;
+    }
+
+    public int WaystoneChargeTime(Player p)
+    {
+        int time = Math.max(plugin.getConfig().getInt("charge-time"), -1);
+        int toReturn = Work.GetMinNumFromPermissions("waystone.charge", time, p);
+        if(time == -1 || p.hasPermission(Perm.ChargeBypass))
+            toReturn = 0;
         return toReturn;
     }
 

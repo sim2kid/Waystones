@@ -50,7 +50,7 @@ public class WaystoneTabComplete implements TabCompleter
                     return toReturn;
                 Player p = (Player)sender;
                 WayPlayer wp = data.GrabPlayer(p.getUniqueId().toString());
-                if(wp.InWaystoneUse || sender.hasPermission(Perm.TeleportIgnoreWaystone)) {
+                if((wp.InWaystoneUse && wp.LastVisited.canUse()) || sender.hasPermission(Perm.TeleportIgnoreWaystone)) {
                     toReturn.add("teleport");
                     toReturn.add("tp");
                 }
@@ -133,7 +133,7 @@ public class WaystoneTabComplete implements TabCompleter
                     return toReturn;
                 Player p = (Player)sender;
                 WayPlayer wp = data.GrabPlayer(p.getUniqueId().toString());
-                if(!(wp.InWaystoneUse || sender.hasPermission(Perm.TeleportIgnoreWaystone)))
+                if(!((wp.InWaystoneUse && wp.LastVisited.canUse()) || sender.hasPermission(Perm.TeleportIgnoreWaystone)))
                     return toReturn;
 
 
@@ -150,6 +150,8 @@ public class WaystoneTabComplete implements TabCompleter
                     // usernames
                     for(Waystone wei: context)
                     {
+                        if(!wei.canUse())
+                            continue;
                         String username = data.GrabPlayer(wei.owner).lastUsername;
                         if(!toReturn.contains(username))
                             toReturn.add(username);
@@ -170,8 +172,10 @@ public class WaystoneTabComplete implements TabCompleter
                     {
                         playerUUID = Default.UUIDOne;
                     }
-                    for(Waystone wei: Work.FilterToUser(context, playerUUID))
-                        toReturn.add(wei.name);
+                    for(Waystone wei: Work.FilterToUser(context, playerUUID)) {
+                        if(wei.canUse())
+                            toReturn.add(wei.name);
+                    }
                 }
             } else if(args[0].equalsIgnoreCase("tp") && sender.hasPermission(Perm.Teleport))
             {
@@ -179,7 +183,7 @@ public class WaystoneTabComplete implements TabCompleter
                     return toReturn;
                 Player p = (Player)sender;
                 WayPlayer wp = data.GrabPlayer(p.getUniqueId().toString());
-                if(!(wp.InWaystoneUse || sender.hasPermission(Perm.TeleportIgnoreWaystone)))
+                if(!((wp.InWaystoneUse && wp.LastVisited.canUse()) || sender.hasPermission(Perm.TeleportIgnoreWaystone)))
                     return toReturn;
 
                 List<Waystone> context = Work.GetOwnAndPublicWaystones(p, data);
@@ -187,8 +191,10 @@ public class WaystoneTabComplete implements TabCompleter
                 if(args.length == 2)
                 {
                     // locations
-                    for(Waystone wei: context)
-                        toReturn.add(wei.name);
+                    for(Waystone wei: context) {
+                        if(wei.canUse())
+                            toReturn.add(wei.name);
+                    }
                 }
             }
         }

@@ -12,8 +12,11 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
+
+import static java.lang.System.currentTimeMillis;
 
 public class Waystone {
     public String owner;
@@ -21,6 +24,7 @@ public class Waystone {
     public Accessibility access;
     public String name;
     public String hologramUUID;
+    public long TimeWhenFunctional;
 
     public Location getLocation(Server server)
     {
@@ -34,13 +38,16 @@ public class Waystone {
         access = Accessibility.Discoverable;
         name = "Unknown";
         hologramUUID = Default.UUIDZero;
+        TimeWhenFunctional = 0;
     }
 
-    public Waystone(@NotNull String OwnerUUID, BlockLocation BlockLocation, @NotNull String WaystoneName, Accessibility WaystoneAccessibility)
+    public Waystone(@NotNull String OwnerUUID, BlockLocation BlockLocation, @NotNull String WaystoneName,
+                    Accessibility WaystoneAccessibility, int windupTime)
     {
         owner = OwnerUUID;
         location = BlockLocation;
         name = WaystoneName;
+        TimeWhenFunctional = currentTimeMillis() + (windupTime * 1000);
         if(name.trim() == "")
         {
             name = location.toString();
@@ -51,6 +58,15 @@ public class Waystone {
             access = Accessibility.Discoverable;
         }
 
+    }
+
+    public boolean canUse()
+    {
+        return TimeWhenFunctional <= currentTimeMillis();
+    }
+    public int timeLeftUntilFunctional()
+    {
+        return (int) Math.max((TimeWhenFunctional - currentTimeMillis())/1000, 0);
     }
 
     @Override

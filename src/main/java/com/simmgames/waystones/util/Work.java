@@ -181,7 +181,7 @@ public class Work {
     {
         if(permissible.isOp())
             return -1;
-        int highest = -1;
+        int highest = Integer.MIN_VALUE;
         for(PermissionAttachmentInfo pai : permissible.getEffectivePermissions())
         {
             if(pai.getPermission().startsWith(baseNode + "."))
@@ -189,14 +189,39 @@ public class Work {
                 String working = pai.getPermission().substring((baseNode + ".").length());
 
                 try {
-                    highest = Integer.parseInt(working.trim());
+                    int out = Integer.parseInt(working.trim());
+                    highest = Math.max(out, highest);
                 } catch (Exception e) {
                     continue;
                 }
             }
         }
-        if(highest == -1)
+        if(highest == Integer.MIN_VALUE)
             highest = defaultInt;
         return highest;
+    }
+
+    public static int GetMinNumFromPermissions(String baseNode, int defaultInt, Permissible permissible)
+    {
+        if(permissible.isOp())
+            return -1;
+        int lowest = Integer.MAX_VALUE;
+        for(PermissionAttachmentInfo pai : permissible.getEffectivePermissions())
+        {
+            if(pai.getPermission().startsWith(baseNode + "."))
+            {
+                String working = pai.getPermission().substring((baseNode + ".").length());
+
+                try {
+                    int out = Integer.parseInt(working.trim());
+                    lowest = Math.min(out, lowest);
+                } catch (Exception e) {
+                    continue;
+                }
+            }
+        }
+        if(lowest == Integer.MAX_VALUE)
+            lowest = defaultInt;
+        return lowest;
     }
 }

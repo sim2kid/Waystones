@@ -25,10 +25,17 @@ no-grief: true
 
 # Waystone Creation Limit Per Player
 # Can be bypassed with waystone.create.limit.ignore
-# Can also be set in perms with waystone.create.limit.#
+# Can also be set in perms with waystone.create.limit.# (Takes highest number)
 # Set to -1 to ignore
-creation-limit: 3
+creation-limit: 8
 
+# Waystone Charge-Up time On Build
+# When you place a Waystone, it takes this long before anyone can use it
+# The time is measured in seconds
+# Can be bypassed with waystone.charge.ignore
+# Can also be set in perms with waystone.charge.# (Takes lowest number)
+# Set to -1 to disable
+charge-time: 300
 
 # Defaults
 
