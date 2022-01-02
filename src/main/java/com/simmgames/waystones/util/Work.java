@@ -1,6 +1,8 @@
 package com.simmgames.waystones.util;
 
+import com.simmgames.waystones.Accessibility;
 import com.simmgames.waystones.data.Data;
+import com.simmgames.waystones.data.WayPlayer;
 import com.simmgames.waystones.data.Waystone;
 
 import com.simmgames.waystones.structure.Vector3;
@@ -81,5 +83,39 @@ public class Work {
             return;
         }
         armorStand.remove();
+    }
+
+    public static List<Waystone> GetKnownWaystones(Player player, Data data)
+    {
+        // public and known
+        WayPlayer p = data.GrabPlayer(player.getUniqueId().toString());
+        List<Waystone> ways = new ArrayList<Waystone>();
+
+        for (Waystone wei: data.AllWaystones)
+            if(wei.access == Accessibility.Public || wei.owner.equalsIgnoreCase(p.UUID))
+                ways.add(wei);
+
+        return ways;
+    }
+    public static List<Waystone> GetKnownAndUnknownWaystones(Player player, Data data)
+    {
+        // public and Discoverable
+        WayPlayer p = data.GrabPlayer(player.getUniqueId().toString());
+        List<Waystone> ways = new ArrayList<Waystone>();
+
+        for (Waystone wei: data.AllWaystones)
+            if(wei.access == Accessibility.Public || wei.owner.equalsIgnoreCase(p.UUID) ||
+                    wei.access == Accessibility.Discoverable)
+                ways.add(wei);
+
+        return ways;
+    }
+    public static List<Waystone> FilterToUser(List<Waystone> source, String playerUUID)
+    {
+        List<Waystone> ways = new ArrayList<Waystone>();
+        for (Waystone wei: source)
+            if(wei.owner.equalsIgnoreCase(playerUUID))
+                ways.add(wei);
+        return ways;
     }
 }

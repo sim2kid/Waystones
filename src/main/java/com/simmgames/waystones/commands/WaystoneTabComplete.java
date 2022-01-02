@@ -1,12 +1,19 @@
 package com.simmgames.waystones.commands;
 
 import com.simmgames.waystones.data.Data;
+import com.simmgames.waystones.data.Waystone;
 import com.simmgames.waystones.events.WaystoneBlockEvents;
 import com.simmgames.waystones.permissions.Perm;
+import com.simmgames.waystones.util.Default;
+import com.simmgames.waystones.util.Work;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -39,6 +46,8 @@ public class WaystoneTabComplete implements TabCompleter
 
         if(args.length == 1)
         {
+            if(sender.hasPermission(Perm.Teleport))
+                toReturn.add("teleport");
             toReturn.add("help");
             if(sender.hasPermission(Perm.Create))
                 toReturn.add("create");
@@ -85,6 +94,47 @@ public class WaystoneTabComplete implements TabCompleter
                         toReturn.add("unknown");
                     if(sender.hasPermission(Perm.ListAll))
                         toReturn.add("all");
+                }
+            } else if(args[0].equalsIgnoreCase("teleport") && sender.hasPermission(Perm.Teleport))
+            {
+                if(!(sender instanceof Player))
+                    return toReturn;
+                Player p = (Player)sender;
+
+                List<Waystone> context;
+                if(sender.hasPermission(Perm.TeleportUnknown))
+                    context = Work.GetKnownAndUnknownWaystones(p, data);
+                else if(sender.hasPermission(Perm.TeleportAll))
+                    context = Work.GetKnownWaystones(p, data);
+                else
+                    context = data.AllWaystones;
+
+                if(args.length == 2)
+                {
+                    // usernames
+                    for(Waystone wei: context)
+                    {
+                        String username = data.GrabPlayer(wei.owner).lastUsername;
+                        if(!toReturn.contains(username))
+                            toReturn.add(username);
+                    }
+                }
+                if(args.length == 3)
+                {
+                    String username = args[2];
+                    String playerUUID = "";
+                    OfflinePlayer op = Bukkit.getOfflinePlayer(username);
+                    if (op.hasPlayedBefore()) {
+                        playerUUID = op.getUniqueId().toString();
+                    } else {
+                        playerUUID = Default.UUIDZero;
+                    }
+                    if(username.equals("Admin"))
+                    {
+                        playerUUID = Default.UUIDOne;
+                    }
+                    for(Waystone wei: Work.FilterToUser(context, playerUUID))
+                        toReturn.add(wei.name);
                 }
             }
         }
