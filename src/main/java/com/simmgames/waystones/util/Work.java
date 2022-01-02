@@ -35,8 +35,9 @@ public class Work {
             if(dist < searchDistance * searchDistance)
             {
                 Location l = new Location(playerLocation.getWorld(), block.X, block.Y+2, block.Z);
-                if(l.getBlock().getType() == type)
+                if(l.getBlock().getType() == type) {
                     return l;
+                }
             }
         }
         return null;
@@ -157,6 +158,9 @@ public class Work {
         World world = origin.getWorld();
         List<Vector3> searchThis = searchFromOrigin(new Vector3(origin), searchDistance);
 
+        Location closest = null;
+        double shortest = Double.MAX_VALUE;
+
         for(Vector3 block: searchThis)
         {
             Location feet = new Location(world, block.X, block.Y, block.Z);
@@ -167,10 +171,14 @@ public class Work {
             boolean feetOkay = feet.getBlock().getType().isAir();
             boolean headOkay = head.getBlock().getType().isAir();
 
-            if(floorOkay && feetOkay && headOkay)
-                return feet.add(0.5, 0, 0.5);
+            if(floorOkay && feetOkay && headOkay) {
+                Location result = feet.add(0.5, 0, 0.5);
+                double distance = (new Vector3(origin)).getDistance(new Vector3(result));
+                if(distance < shortest)
+                    closest = result;
+            }
         }
-        return null;
+        return closest;
     }
 
     public static List<Vector3> searchFromOrigin(Vector3 origin, int radius)
