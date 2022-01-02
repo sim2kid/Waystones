@@ -137,7 +137,7 @@ public class WaystoneBlockEvents implements Listener
         {
             if(data.NoGrief())
                 if(GetWaystoneAt(lode.getLocation()) != null) {
-                    lodes.remove(lode);
+                    event.blockList().remove(lode);
                     continue;
                 }
             OnExploded(lode);
@@ -152,7 +152,7 @@ public class WaystoneBlockEvents implements Listener
         {
             if(data.NoGrief())
                 if(GetWaystoneAt(lode.getLocation()) != null) {
-                    lodes.remove(lode);
+                    event.blockList().remove(lode);
                     continue;
                 }
             OnExploded(lode);
