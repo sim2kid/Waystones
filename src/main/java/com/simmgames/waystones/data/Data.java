@@ -52,17 +52,7 @@ public class Data {
     {
         if(!LoadWaystones())
         {
-            File old = new File(dataPath + "/Waystones.json");
-            File backup = new File(dataPath + "/Waystones.old.0.json");
-            int i = 0;
-            while(backup.exists())
-            {
-                i++;
-                backup = new File(dataPath + "/Waystones.old." + i + ".json");
-            }
-            old.renameTo(backup);
-            out.log(Level.INFO, "Renaming old config to " + backup.getName() + " in case you just has a typo.");
-            SaveWaystones();
+            MakeWaystoneBackup();
         }
     }
 
@@ -74,8 +64,10 @@ public class Data {
             return new WayPlayer(Default.UUIDZero, "Null");
 
         WayPlayer player = playerInList(playerUUID);
-        if(player == null)
+        if(player == null) {
+            MakePlayerBackup(playerUUID);
             player = LoadPlayer(playerUUID);
+        }
         return player;
     }
 
@@ -113,6 +105,7 @@ public class Data {
             {
                 players.add((player));
             }
+            MakePlayerBackup(playerUUID);
             return player;
         }
     }
@@ -178,7 +171,36 @@ public class Data {
         return null;
     }
 
+    private void MakePlayerBackup(String playerUUID)
+    {
+        out.log(Level.WARNING, "Something wrong was detected with " + playerUUID + "'s player json (Maybe it's new?). Making a backup just in case.");
+        File old = new File(dataPath + "/Player/" + playerUUID + ".json");
+        File backup = new File(dataPath  + "/PlayerBackup/" + playerUUID + ".0.json");
+        int i = 0;
+        while(backup.exists())
+        {
+            i++;
+            backup = new File(dataPath  + "/PlayerBackup/" + playerUUID + "." + i + ".json");
+        }
+        old.renameTo(backup);
+        out.log(Level.INFO, "Moving " + old.getName() + " to " + backup.getName() + " in case you just has a typo.");
+        SavePlayer(playerUUID);
+    }
 
+    private void MakeWaystoneBackup() {
+        out.log(Level.WARNING, "Something wrong was detected with the current waystone json (Maybe it's new?). Making a backup just in case.");
+        File old = new File(dataPath + "/Waystones.json");
+        File backup = new File(dataPath + "/Waystones.old.0.json");
+        int i = 0;
+        while(backup.exists())
+        {
+            i++;
+            backup = new File(dataPath + "/Waystones.old." + i + ".json");
+        }
+        old.renameTo(backup);
+        out.log(Level.INFO, "Renaming old config to " + backup.getName() + " in case you just has a typo.");
+        SaveWaystones();
+    }
 
     private boolean LoadWaystones()
     {
@@ -191,8 +213,10 @@ public class Data {
             Type WaystoneListType = new TypeToken<ArrayList<Waystone>>() {
             }.getType();
             AllWaystones = gson.fromJson(json, WaystoneListType);
-            if (AllWaystones == null)
+            if (AllWaystones == null) {
+                MakeWaystoneBackup();
                 AllWaystones = new ArrayList<Waystone>();
+            }
             return true;
         }
         catch (Exception e)
