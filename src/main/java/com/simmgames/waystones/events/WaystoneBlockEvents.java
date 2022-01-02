@@ -442,8 +442,35 @@ public class WaystoneBlockEvents implements Listener
         data.Save();
     }
 
-    public void OnTeleport(Player player, Waystone waystone)
+    public void OnTeleport(Player player, Waystone destination, Waystone origin)
     {
+        Location destinationLoc = Work.FindSafeTP(destination.getLocation(server), data.TPSearchRadius());
+
+        if(destinationLoc == null)
+        {
+            player.sendMessage(ChatColor.RED + "Could not find safe location to tp to at Waystone '" + origin.name
+                    + "'. Maybe it got buried?");
+            return;
+        }
+
+        // Before Teleport Effects
+        if(origin != null)
+            origin.getLocation(server).getWorld().playSound(origin.getLocation(server),Sound.BLOCK_BEACON_AMBIENT,
+                    SoundCategory.BLOCKS, 1f, 0.6f);
+        player.sendMessage(ChatColor.LIGHT_PURPLE + "" + ChatColor.ITALIC + "Teleporting to " + destination.decodeName(data) + ".");
+        player.getWorld().playSound(player.getLocation(),Sound.ENTITY_ENDERMAN_TELEPORT, SoundCategory.PLAYERS, 1f, 1f);
+        player.getWorld().spawnParticle(Particle.PORTAL,
+                player.getLocation().add(0, 1,0), 500, 0.25, 0.5, 0.25);
+
+        // TELEPORT!
+        player.teleport(destinationLoc);
+
+        // After Teleport Effects
+        destination.getLocation(server).getWorld().playSound(destination.getLocation(server),Sound.BLOCK_BEACON_AMBIENT,
+                SoundCategory.BLOCKS, 1f, 0.6f);
+        destinationLoc.getWorld().playSound(destinationLoc,Sound.ENTITY_ENDERMAN_TELEPORT, SoundCategory.PLAYERS, 1f, 1f);
+        destinationLoc.getWorld().spawnParticle(Particle.PORTAL,
+                destinationLoc.add(0, 1,0), 500, 0.25, 0.5, 0.25);
 
     }
 

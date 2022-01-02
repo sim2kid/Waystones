@@ -149,7 +149,12 @@ public class Data {
 
     public int LodestoneSearchRadius()
     {
-        return Math.max(plugin.getConfig().getInt("search-radius"), 0);
+        return Math.min(Math.max(plugin.getConfig().getInt("search-radius-lode"), 0), 15);
+    }
+
+    public int TPSearchRadius()
+    {
+        return Math.max(plugin.getConfig().getInt("search-radius-tp"), 1);
     }
 
     public boolean NoGrief()

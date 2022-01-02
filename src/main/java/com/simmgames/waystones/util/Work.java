@@ -8,6 +8,7 @@ import com.simmgames.waystones.data.Waystone;
 import com.simmgames.waystones.structure.Vector3;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.EntityType;
@@ -21,22 +22,19 @@ import java.util.UUID;
 public class Work {
     public static Location FindBlockType(int searchDistance, Location playerLocation, Material type)
     {
-        int cx = playerLocation.getBlockX();
-        int cy = playerLocation.getBlockY();
-        int cz = playerLocation.getBlockZ();
+        Vector3 origin = new Vector3(playerLocation);
+        List<Vector3> searchThis = searchFromOrigin(origin, searchDistance);
 
-        for(int x = cx - searchDistance; x <= cx + searchDistance; x++)
-            for(int y = cy - searchDistance; y <= cy + searchDistance; y++)
-                for(int z = cz - searchDistance; z <= cz + searchDistance; z++)
-                {
-                    double dist = (new Vector3(x,y,z)).getDistance(new Vector3(cx,cy,cz));
-                    if(dist < searchDistance * searchDistance)
-                    {
-                        Location l = new Location(playerLocation.getWorld(), x, y+2, z);
-                        if(l.getBlock().getType() == type)
-                            return l;
-                    }
-                }
+        for(Vector3 block: searchThis)
+        {
+            double dist = (origin).getDistance(block);
+            if(dist < searchDistance * searchDistance)
+            {
+                Location l = new Location(playerLocation.getWorld(), block.X, block.Y+2, block.Z);
+                if(l.getBlock().getType() == type)
+                    return l;
+            }
+        }
         return null;
     }
     public static UUID CreateHologram(Location location, String text, boolean visable)
@@ -131,5 +129,45 @@ public class Work {
             if(wei.owner.equalsIgnoreCase(playerUUID))
                 ways.add(wei);
         return ways;
+    }
+
+    public static Location FindSafeTP(Location origin, int searchDistance)
+    {
+        World world = origin.getWorld();
+        List<Vector3> searchThis = searchFromOrigin(new Vector3(origin), searchDistance);
+
+        for(Vector3 block: searchThis)
+        {
+            Location feet = new Location(world, block.X, block.Y, block.Z);
+            Location head = feet.add(0, 1, 0);
+            Location floor = feet.add(0, -1, 0);
+
+            if(floor.getBlock().getType().isSolid() &&
+            feet.getBlock().getType().isAir() &&
+            head.getBlock().getType().isAir())
+                return feet;
+        }
+        return null;
+    }
+
+    public static List<Vector3> searchFromOrigin(Vector3 origin, int radius)
+    {
+        List<Vector3> list = new ArrayList<Vector3>();
+        int y = (int)origin.Y;
+        for(int yc = 0; yc < radius*2; yc++) {
+
+            int x = (int)origin.X;
+            for(int xc = 0; xc < radius*2; xc++) {
+                int z = (int)origin.Z;
+                for (int zc = 0; zc < radius*2; zc++) {
+                    list.add(new Vector3(x,y,z));
+                    z += (zc%2 == 0) ? -zc : zc;
+                }
+                x += (xc%2 == 0) ? -xc : xc;
+            }
+
+            y += (yc%2 == 0) ? -yc : yc;
+        }
+        return list;
     }
 }

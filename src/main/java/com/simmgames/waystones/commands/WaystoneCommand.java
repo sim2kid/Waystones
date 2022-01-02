@@ -513,7 +513,7 @@ public class WaystoneCommand implements CommandExecutor {
                 sender.sendMessage(ChatColor.RED + "Could not access Waystone '" + wayName + "'.");
                 return;
             }
-            events.OnTeleport(p, way);
+            events.OnTeleport(p, way, null);
         } else {
             sender.sendMessage(ChatColor.RED + "You must provide a Waystone to teleport to.\n" + ChatColor.GOLD +
                     "/waystone tp <public/own waystone name>");
@@ -591,7 +591,7 @@ public class WaystoneCommand implements CommandExecutor {
                     sender.sendMessage(ChatColor.RED + "Could not access Waystone '" + waystoneName + "'.");
                     return;
                 }
-                events.OnTeleport(p, way);
+                events.OnTeleport(p, way, null);
             } else {
                 sender.sendMessage(ChatColor.RED + "You must provide a Waystone to teleport to.\n" + ChatColor.GOLD +
                         "/waystone teleport <owner's name> <waystone name>");

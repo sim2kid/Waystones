@@ -13,7 +13,12 @@ discover-distance: 10
 # The distance to search from the player for lodestones
 # The bigger this is, the slower the game will run.
 # Try to keep this under 10.
-search-radius: 5
+search-radius-lode: 5
+
+# The distance to search from a waystone for a safe tp
+# Unlike the lode radius, this only runs on teleports
+# You can make this as big as you'd like.
+search-radius-tp: 8
 
 # If the waystones should be protected from environmental damage.
 no-grief: true
