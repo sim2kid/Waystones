@@ -11,6 +11,7 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permissible;
@@ -20,6 +21,7 @@ import org.bukkit.util.Vector;
 
 import java.security.Permissions;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -41,11 +43,11 @@ public class Work {
         }
         return null;
     }
-    public static UUID CreateHologram(Location location, String text, boolean visable)
+    public static UUID CreateHologram(Location location, String text)
     {
         ArmorStand hologram = (ArmorStand) location.getWorld().spawnEntity(location.add(new Vector(0.5, -1, 0.5)), EntityType.ARMOR_STAND);
         hologram.setVisible(false);
-        hologram.setCustomNameVisible(visable);
+        hologram.setCustomNameVisible(true);
         hologram.setCustomName(text);
 
         hologram.setGravity(false);
@@ -77,15 +79,32 @@ public class Work {
         return true;
     }
 
-    public static void DestroyHologram(Location location, UUID uuid)
+    public static boolean DestroyHologram(Location location, UUID uuid)
     {
         ArmorStand armorStand = (ArmorStand)location.getWorld().getEntity(uuid);
         if(armorStand == null)
         {
-            return;
+            return false;
         }
         armorStand.remove();
+        return true;
     }
+    public static boolean DestroyUnmarkedHolograms(Location location)
+    {
+        boolean canReturnTrue = false;
+        Collection<Entity> collection = location.getWorld().getNearbyEntities(
+                location.add(new Vector(0.5, -1, 0.5)), 0.1, 0.1, 0.51);
+        for(Entity e: collection) {
+            ArmorStand armorStand = (ArmorStand)e;
+            if (armorStand == null) {
+                return false;
+            }
+            armorStand.remove();
+            canReturnTrue = true;
+        }
+        return canReturnTrue;
+    }
+
     public static List<Waystone> GetOwnAndPublicWaystones(Player player, Data data)
     {
         // public and mine

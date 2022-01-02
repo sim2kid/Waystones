@@ -10,6 +10,10 @@ use-distance: 6
 # If set to 0 or less, players have to click on the waystone to discover it
 discover-distance: 10
 
+# At what distance should effects be played for the nearest waystone?
+# You'll want to keep this number above 10ish but below 32ish
+near-distance: 20
+
 # The distance to search from the player for lodestones
 # The bigger this is, the slower the game will run.
 # Try to keep this under 10.

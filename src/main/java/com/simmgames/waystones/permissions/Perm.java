@@ -76,7 +76,7 @@ public class Perm {
         ChargeBypass = new Permission("waystone.charge.ignore", "Ignores the charge time for waystones.");
 
         Nametag = new Permission("waystone.nametag", "Allows players to toggle nametags for their waystones.");
-        Default.addParent(Nametag, true);
+        Nametag.addParent(Default, true);
         NametagOther= new Permission("waystone.nametag.other", "Allows players to toggle nametags for other people's waystones.");
         NametagOther.addParent(Mod,true);
         Nametag.addParent(NametagOther,true);

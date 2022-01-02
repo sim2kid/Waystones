@@ -213,7 +213,9 @@ public class WaystoneBlockEvents implements Listener
     {
         if(!Work.UpdateHologram(wei.location.getLocation(server), UUID.fromString(wei.hologramUUID), wei.decodeName(data)))
         {
-            wei.hologramUUID = Work.CreateHologram(wei.location.getLocation(server), wei.decodeName(data), data.DefaultNametag()).toString();
+            Work.DestroyUnmarkedHolograms(wei.location.getLocation(server));
+            if(wei.hasNametag)
+                wei.hologramUUID = Work.CreateHologram(wei.location.getLocation(server), wei.decodeName(data)).toString();
         }
         WayPlayer p = data.GrabPlayer(player.getUniqueId().toString());
         if(!DiscoverWaystone(player, wei))
@@ -229,7 +231,10 @@ public class WaystoneBlockEvents implements Listener
         Waystone wei = GetWaystoneAt(location);
         if(wei == null)
             return;
-        Work.DestroyHologram(location, UUID.fromString(wei.hologramUUID));
+        if(!Work.DestroyHologram(location, UUID.fromString(wei.hologramUUID)))
+            if(!Work.DestroyUnmarkedHolograms(location))
+                out.log(Level.WARNING, "Armor Stand at " + new BlockLocation(location) + " could not be found and " +
+                        "could not be destroyed. There may still be a nametag floating there.");
         // delete waystone in the Waystone list
         data.AllWaystones.remove(wei);
 
@@ -334,6 +339,15 @@ public class WaystoneBlockEvents implements Listener
                 p.InWaystoneUse = false;
             }
 
+            if(p.LastNear != null)
+                if(!closest.equals(p.LastNear))
+                {
+                    // Destroy hologram
+                    Work.DestroyHologram(p.LastNear.getLocation(server), UUID.fromString(p.LastNear.hologramUUID));
+                    p.LastNear = null; // on exit into another closest
+                }
+
+
 
 
             Block block = player.getWorld().getBlockAt(new Location(player.getWorld(), (int) closest.location.getX(),
@@ -368,14 +382,14 @@ public class WaystoneBlockEvents implements Listener
                     OnDiscoverExit(player, closest);
                 p.InWaystoneDiscover = false;
             }
-
-
-
-            if(!Work.UpdateHologram(closest.location.getLocation(server),
-                    UUID.fromString(closest.hologramUUID), closest.decodeName(data)))
+            if(closestDistance != -1 && closestDistance < data.WaystoneNearDistance())
             {
-                closest.hologramUUID = Work.CreateHologram(closest.location.getLocation(server),
-                        closest.decodeName(data), data.DefaultNametag()).toString();
+                p.InWaystoneNearby = true;
+                p.LastNear = closest;
+            } else {
+                p.InWaystoneNearby = false;
+                if(p.LastNear != null) //on exit into nothing
+                    Work.DestroyHologram(p.LastNear.getLocation(server), UUID.fromString(p.LastNear.hologramUUID));
             }
         }
         return closest;

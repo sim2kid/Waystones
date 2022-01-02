@@ -25,6 +25,7 @@ public class Waystone {
     public String name;
     public String hologramUUID;
     public long TimeWhenFunctional;
+    public boolean hasNametag;
 
     public Location getLocation(Server server)
     {
@@ -39,15 +40,17 @@ public class Waystone {
         name = "Unknown";
         hologramUUID = Default.UUIDZero;
         TimeWhenFunctional = 0;
+        hasNametag = false;
     }
 
     public Waystone(@NotNull String OwnerUUID, BlockLocation BlockLocation, @NotNull String WaystoneName,
-                    Accessibility WaystoneAccessibility, int windupTime)
+                    Accessibility WaystoneAccessibility, int windupTime, boolean hasNametag)
     {
         owner = OwnerUUID;
         location = BlockLocation;
         name = WaystoneName;
         TimeWhenFunctional = currentTimeMillis() + (windupTime * 1000);
+        this.hasNametag = hasNametag;
         if(name.trim() == "")
         {
             name = location.toString();
@@ -89,6 +92,8 @@ public class Waystone {
             accessor = " - Public";
         if(this.access == Accessibility.Private)
             accessor = " - Private";
+        if(!canUse())
+            accessor = " T-" + timeLeftUntilFunctional() + "s";
 
         String maker = "";
         if(!owner.equalsIgnoreCase(Default.UUIDZero)) {

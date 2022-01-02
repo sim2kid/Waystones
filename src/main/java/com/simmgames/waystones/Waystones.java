@@ -4,10 +4,12 @@ import com.simmgames.waystones.commands.WaystoneCommand;
 import com.simmgames.waystones.commands.WaystoneTabComplete;
 import com.simmgames.waystones.data.Data;
 import com.simmgames.waystones.data.Waystone;
+import com.simmgames.waystones.events.UpdateWaystoneNametags;
 import com.simmgames.waystones.events.WaystoneBlockEvents;
 import com.simmgames.waystones.permissions.Perm;
 import com.simmgames.waystones.structure.Vector3;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -38,6 +40,8 @@ public final class Waystones extends JavaPlugin {
         getCommand("Waystone").setTabCompleter(new WaystoneTabComplete(out, data, events, this));
 
         out.log(Level.INFO, "Waystones is now setup!");
+
+        BukkitTask task = new UpdateWaystoneNametags(this, data).runTaskTimer(this, 10, 10);
     }
 
     @Override

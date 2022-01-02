@@ -119,6 +119,7 @@ public class WaystoneTabComplete implements TabCompleter
             {
                 if(args.length == 2)
                 {
+                    toReturn.add("available");
                     toReturn.add("known");
                     toReturn.add("public");
                     toReturn.add("mine");

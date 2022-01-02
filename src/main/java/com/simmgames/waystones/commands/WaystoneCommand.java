@@ -250,9 +250,9 @@ public class WaystoneCommand implements CommandExecutor {
 
         // Create Waystone
         Waystone newWaystone = new Waystone((admin ? Default.UUIDOne : p.getUniqueId().toString()),
-                new BlockLocation(lode), waystoneName.trim(), access, chargeTime);
-        newWaystone.hologramUUID = Work.CreateHologram(lode.getBlock().getLocation(), newWaystone.decodeName(data),
-                data.DefaultNametag()).toString();
+                new BlockLocation(lode), waystoneName.trim(), access, chargeTime, data.DefaultNametag());
+        if(newWaystone.hasNametag)
+            newWaystone.hologramUUID = Work.CreateHologram(lode.getBlock().getLocation(), newWaystone.decodeName(data)).toString();
         if(newWaystone.access == Accessibility.Discoverable ||
                 (newWaystone.access == Accessibility.Private &&
                         newWaystone.owner.equalsIgnoreCase(p.getUniqueId().toString())))
@@ -275,23 +275,14 @@ public class WaystoneCommand implements CommandExecutor {
             return;
         }
         Player p = (Player) sender;
+        WayPlayer wp = data.GrabPlayer(p.getUniqueId().toString());
 
-        // Check for create perms
-
-        // Check if there is a lodestone nearby
-        Location lode = Work.FindBlockType(data.LodestoneSearchRadius(), p.getLocation(), Material.LODESTONE);
-        if(lode == null)
+        // check if waystone is nearby
+        Waystone wei = wp.LastNear;
+        if(wei == null)
         {
             p.sendMessage(ChatColor.RED + "No Waystone nearby. Make sure you are within " + data.LodestoneSearchRadius()
                     + " blocks of one.");
-            return;
-        }
-
-        // check if waystone already exists there
-        Waystone wei = events.GetWaystoneAt(lode);
-        if(wei == null)
-        {
-            p.sendMessage(ChatColor.RED + "Lodestone is not currently a Waystone. Cannot toggle it's nametag.");
             return;
         }
 
@@ -305,20 +296,29 @@ public class WaystoneCommand implements CommandExecutor {
 
         if(args.length < 2)
         {
-            // Cannot Toggle
-            p.sendMessage(ChatColor.RED + "State cannot be blank for nametag. Please use\n" + ChatColor.GOLD
-                    + "/waystone nametag <true|false>");
+            // Toggle
+            wei.hasNametag = !wei.hasNametag;
+
+            if(!Work.HologramVisibility(wei.location.getLocation(server), UUID.fromString(wei.hologramUUID), wei.hasNametag) && wei.hasNametag)
+                wei.hologramUUID = Work.CreateHologram(wei.location.getLocation(server), wei.decodeName(data)).toString();
+            if(wei.hasNametag)
+                p.sendMessage(ChatColor.GREEN + "Turning on the NameTag for the nearest waystone.");
+            else
+                p.sendMessage(ChatColor.GREEN + "Turning off the NameTag for the nearest waystone.");
             return;
         } else if(args[1].equalsIgnoreCase("true") || args[1].equalsIgnoreCase("t") ||
                 args[1].equalsIgnoreCase("on"))
         {
             // turn on
+            wei.hasNametag = true;
             p.sendMessage(ChatColor.GREEN + "Turning on the NameTag for the nearest waystone.");
-            Work.HologramVisibility(wei.location.getLocation(server), UUID.fromString(wei.hologramUUID), true);
+            if(!Work.HologramVisibility(wei.location.getLocation(server), UUID.fromString(wei.hologramUUID), true))
+                wei.hologramUUID = Work.CreateHologram(wei.location.getLocation(server), wei.decodeName(data)).toString();
         } else if(args[1].equalsIgnoreCase("false") || args[1].equalsIgnoreCase("f") ||
                 args[1].equalsIgnoreCase("off"))
         {
             // turn off
+            wei.hasNametag = false;
             p.sendMessage(ChatColor.YELLOW + "Turning off the NameTag for the nearest waystone.");
             Work.HologramVisibility(wei.location.getLocation(server), UUID.fromString(wei.hologramUUID), false);
         } else
@@ -366,11 +366,38 @@ public class WaystoneCommand implements CommandExecutor {
 
         switch (whatToShow.trim().toLowerCase()) {
             case "default":
+            case "available":
+                for(Waystone wei: data.AllWaystones) {
+                    if(!wei.location.WorldUUID.equalsIgnoreCase(p.getWorld().getUID().toString()))
+                        continue;
+                    if(!wei.canUse())
+                        continue;
+                    if (wei.access == Accessibility.Public) {
+                        String mine = " ";
+                        if(wei.owner.equalsIgnoreCase(WeiPlayer.UUID))
+                            mine = ChatColor.GREEN + "[Mine] ";
+                        Results.add(ChatColor.BLUE + "[Public]" + mine + ChatColor.AQUA + wei.name + "\n");
+                    }
+                    if (wei.access == Accessibility.Private && wei.owner.equalsIgnoreCase(WeiPlayer.UUID))
+                        Results.add(ChatColor.DARK_PURPLE + "[Private]" + ChatColor.GREEN + "[Mine] "
+                                + ChatColor.AQUA + wei.name + "\n");
+                }
+                for(Waystone wei: WeiPlayer.KnownWaystones) {
+                    if(!wei.location.WorldUUID.equalsIgnoreCase(p.getWorld().getUID().toString()))
+                        continue;
+                    if(!wei.canUse())
+                        continue;
+                    String mine = ChatColor.DARK_PURPLE + "[" + data.GrabPlayer(wei.owner).lastUsername + "] ";
+                    if(wei.owner.equalsIgnoreCase(WeiPlayer.UUID))
+                        mine = ChatColor.GREEN + "[Mine] ";
+                    Results.add(mine + ChatColor.AQUA + wei.name + "\n");
+                }
+                break;
             case "known":
                 for(Waystone wei: data.AllWaystones) {
                     String otherWorld = "";
                     if(!wei.location.WorldUUID.equalsIgnoreCase(p.getWorld().getUID().toString()))
-                        otherWorld = ChatColor.BLACK + "[" + wei.location.getLocation(server).getWorld().getName() + "]";
+                        otherWorld = ChatColor.DARK_GRAY + "[" + wei.location.getLocation(server).getWorld().getName() + "]";
                     if(!wei.canUse())
                         otherWorld += ChatColor.DARK_RED + "[Unavailable]";
                     if (wei.access == Accessibility.Public) {
@@ -386,7 +413,7 @@ public class WaystoneCommand implements CommandExecutor {
                 for(Waystone wei: WeiPlayer.KnownWaystones) {
                     String otherWorld = "";
                     if(!wei.location.WorldUUID.equalsIgnoreCase(p.getWorld().getUID().toString()))
-                        otherWorld = ChatColor.BLACK + "[" + wei.location.getLocation(server).getWorld().getName() + "]";
+                        otherWorld = ChatColor.DARK_GRAY + "[" + wei.location.getLocation(server).getWorld().getName() + "]";
                     if(!wei.canUse())
                         otherWorld += ChatColor.DARK_RED + "[Unavailable]";
                     String mine = ChatColor.DARK_PURPLE + "[" + data.GrabPlayer(wei.owner).lastUsername + "] ";
@@ -400,7 +427,7 @@ public class WaystoneCommand implements CommandExecutor {
                     if (wei.access == Accessibility.Public) {
                         String otherWorld = "";
                         if(!wei.location.WorldUUID.equalsIgnoreCase(p.getWorld().getUID().toString()))
-                            otherWorld = ChatColor.BLACK + "[" + wei.location.getLocation(server).getWorld().getName() + "]";
+                            otherWorld = ChatColor.DARK_GRAY + "[" + wei.location.getLocation(server).getWorld().getName() + "]";
                         if(!wei.canUse())
                             otherWorld += ChatColor.DARK_RED + "[Unavailable]";
                         String mine = " ";
@@ -415,7 +442,7 @@ public class WaystoneCommand implements CommandExecutor {
                     {
                         String otherWorld = "";
                         if(!wei.location.WorldUUID.equalsIgnoreCase(p.getWorld().getUID().toString()))
-                            otherWorld = ChatColor.BLACK + "[" + wei.location.getLocation(server).getWorld().getName() + "]";
+                            otherWorld = ChatColor.DARK_GRAY + "[" + wei.location.getLocation(server).getWorld().getName() + "]";
                         if(!wei.canUse())
                             otherWorld += ChatColor.DARK_RED + "[Unavailable]";
                         String access = "";
@@ -433,7 +460,7 @@ public class WaystoneCommand implements CommandExecutor {
                 for(Waystone wei: data.AllWaystones) {
                     String otherWorld = "";
                     if(!wei.location.WorldUUID.equalsIgnoreCase(p.getWorld().getUID().toString()))
-                        otherWorld = ChatColor.BLACK + "[" + wei.location.getLocation(server).getWorld().getName() + "]";
+                        otherWorld = ChatColor.DARK_GRAY + "[" + wei.location.getLocation(server).getWorld().getName() + "]";
                     if(!wei.canUse())
                         otherWorld += ChatColor.DARK_RED + "[Unavailable]";
                     String unknown = ChatColor.GRAY  + "[Unknown] ";
@@ -455,7 +482,7 @@ public class WaystoneCommand implements CommandExecutor {
                 for(Waystone wei: data.AllWaystones) {
                     String otherWorld = "";
                     if(!wei.location.WorldUUID.equalsIgnoreCase(p.getWorld().getUID().toString()))
-                        otherWorld = ChatColor.BLACK + "[" + wei.location.getLocation(server).getWorld().getName() + "]";
+                        otherWorld = ChatColor.DARK_GRAY + "[" + wei.location.getLocation(server).getWorld().getName() + "]";
                     if(!wei.canUse())
                         otherWorld += ChatColor.DARK_RED + "[Unavailable]";
                     if (wei.access == Accessibility.Public){

@@ -19,6 +19,8 @@ public class WayPlayer
     public transient Waystone LastVisited;
     public transient boolean InWaystoneUse;
     public transient boolean InWaystoneDiscover;
+    public transient Waystone LastNear;
+    public transient boolean InWaystoneNearby;
 
     public WayPlayer()
     {

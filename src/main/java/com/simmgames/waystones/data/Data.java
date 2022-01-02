@@ -149,6 +149,11 @@ public class Data {
         return Math.max(plugin.getConfig().getInt("discover-distance"), -1);
     }
 
+    public double WaystoneNearDistance()
+    {
+        return Math.max(plugin.getConfig().getInt("near-distance"), 0);
+    }
+
     public int LodestoneSearchRadius()
     {
         return Math.min(Math.max(plugin.getConfig().getInt("search-radius-lode"), 0), 15);
