@@ -1,13 +1,12 @@
 package com.simmgames.waystones.commands;
 
 import com.simmgames.waystones.data.Data;
+import com.simmgames.waystones.data.WayPlayer;
 import com.simmgames.waystones.data.Waystone;
 import com.simmgames.waystones.events.WaystoneBlockEvents;
 import com.simmgames.waystones.permissions.Perm;
 import com.simmgames.waystones.util.Default;
 import com.simmgames.waystones.util.Work;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
@@ -20,7 +19,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class WaystoneTabComplete implements TabCompleter
@@ -47,8 +45,14 @@ public class WaystoneTabComplete implements TabCompleter
         if(args.length == 1)
         {
             if(sender.hasPermission(Perm.Teleport)) {
-                toReturn.add("teleport");
-                toReturn.add("tp");
+                if(!(sender instanceof Player))
+                    return toReturn;
+                Player p = (Player)sender;
+                WayPlayer wp = data.GrabPlayer(p.getUniqueId().toString());
+                if(wp.InWaystoneUse || sender.hasPermission(Perm.TeleportIgnoreWaystone)) {
+                    toReturn.add("teleport");
+                    toReturn.add("tp");
+                }
             }
             toReturn.add("help");
             if(sender.hasPermission(Perm.Create))
@@ -102,6 +106,10 @@ public class WaystoneTabComplete implements TabCompleter
                 if(!(sender instanceof Player))
                     return toReturn;
                 Player p = (Player)sender;
+                WayPlayer wp = data.GrabPlayer(p.getUniqueId().toString());
+                if(!(wp.InWaystoneUse || sender.hasPermission(Perm.TeleportIgnoreWaystone)))
+                    return toReturn;
+
 
                 List<Waystone> context;
                 if(sender.hasPermission(Perm.TeleportUnknown))
@@ -144,6 +152,9 @@ public class WaystoneTabComplete implements TabCompleter
                 if(!(sender instanceof Player))
                     return toReturn;
                 Player p = (Player)sender;
+                WayPlayer wp = data.GrabPlayer(p.getUniqueId().toString());
+                if(!(wp.InWaystoneUse || sender.hasPermission(Perm.TeleportIgnoreWaystone)))
+                    return toReturn;
 
                 List<Waystone> context = Work.GetOwnAndPublicWaystones(p, data);
 

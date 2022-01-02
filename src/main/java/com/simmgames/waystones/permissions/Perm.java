@@ -32,6 +32,8 @@ public class Perm {
     public static Permission TeleportUnknown;
     public static Permission TeleportAll;
 
+    public static Permission TeleportIgnoreWaystone;
+
     public static Permission Title;
     public static Permission TitleCreate;
     public static Permission TitleEnter;
@@ -86,6 +88,9 @@ public class Perm {
         TeleportAll = new Permission("waystone.teleport.all", "Allows a player to teleport to all waystones.");
         TeleportUnknown.addParent(TeleportAll, true);
 
+        TeleportIgnoreWaystone = new Permission("waystone.teleport.ignorewaystone", "Allows a player to teleport without a nearby waystone.");
+        Teleport.addParent(TeleportIgnoreWaystone, true);
+
         Title = new Permission("waystone.title", "Allow a player to see titles from waystones");
         Title.addParent(Default, true);
         TitleCreate = new Permission("waystone.title.create", "Allow a player to see titles from waystones on Create");
@@ -115,6 +120,8 @@ public class Perm {
         SetPerm(ListAll, server);
         SetPerm(ListUnknown, server);
         SetPerm(List, server);
+
+        SetPerm(TeleportIgnoreWaystone, server);
 
         SetPerm(TeleportAll, server);
         SetPerm(TeleportUnknown, server);

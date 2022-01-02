@@ -139,13 +139,15 @@ public class Work {
         for(Vector3 block: searchThis)
         {
             Location feet = new Location(world, block.X, block.Y, block.Z);
-            Location head = feet.add(0, 1, 0);
-            Location floor = feet.add(0, -1, 0);
+            Location head = new Location(world, block.X, block.Y + 1, block.Z);
+            Location floor = new Location(world, block.X, block.Y - 1, block.Z);
 
-            if(floor.getBlock().getType().isSolid() &&
-            feet.getBlock().getType().isAir() &&
-            head.getBlock().getType().isAir())
-                return feet;
+            boolean floorOkay = floor.getBlock().getType().isSolid();
+            boolean feetOkay = feet.getBlock().getType().isAir();
+            boolean headOkay = head.getBlock().getType().isAir();
+
+            if(floorOkay && feetOkay && headOkay)
+                return feet.add(0.5, 0, 0.5);
         }
         return null;
     }

@@ -448,7 +448,7 @@ public class WaystoneBlockEvents implements Listener
 
         if(destinationLoc == null)
         {
-            player.sendMessage(ChatColor.RED + "Could not find safe location to tp to at Waystone '" + origin.name
+            player.sendMessage(ChatColor.RED + "Could not find safe location to tp to at Waystone '" + destination.name
                     + "'. Maybe it got buried?");
             return;
         }
@@ -456,18 +456,18 @@ public class WaystoneBlockEvents implements Listener
         // Before Teleport Effects
         if(origin != null)
             origin.getLocation(server).getWorld().playSound(origin.getLocation(server),Sound.BLOCK_BEACON_AMBIENT,
-                    SoundCategory.BLOCKS, 1f, 0.6f);
+                    SoundCategory.BLOCKS, 5f, 0.6f);
         player.sendMessage(ChatColor.LIGHT_PURPLE + "" + ChatColor.ITALIC + "Teleporting to " + destination.decodeName(data) + ".");
         player.getWorld().playSound(player.getLocation(),Sound.ENTITY_ENDERMAN_TELEPORT, SoundCategory.PLAYERS, 1f, 1f);
         player.getWorld().spawnParticle(Particle.PORTAL,
                 player.getLocation().add(0, 1,0), 500, 0.25, 0.5, 0.25);
 
         // TELEPORT!
-        player.teleport(destinationLoc);
+        player.teleport(destinationLoc.setDirection(player.getLocation().getDirection()));
 
         // After Teleport Effects
         destination.getLocation(server).getWorld().playSound(destination.getLocation(server),Sound.BLOCK_BEACON_AMBIENT,
-                SoundCategory.BLOCKS, 1f, 0.6f);
+                SoundCategory.BLOCKS, 5f, 0.6f);
         destinationLoc.getWorld().playSound(destinationLoc,Sound.ENTITY_ENDERMAN_TELEPORT, SoundCategory.PLAYERS, 1f, 1f);
         destinationLoc.getWorld().spawnParticle(Particle.PORTAL,
                 destinationLoc.add(0, 1,0), 500, 0.25, 0.5, 0.25);
