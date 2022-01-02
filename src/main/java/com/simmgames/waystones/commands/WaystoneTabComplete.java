@@ -46,8 +46,10 @@ public class WaystoneTabComplete implements TabCompleter
 
         if(args.length == 1)
         {
-            if(sender.hasPermission(Perm.Teleport))
+            if(sender.hasPermission(Perm.Teleport)) {
                 toReturn.add("teleport");
+                toReturn.add("tp");
+            }
             toReturn.add("help");
             if(sender.hasPermission(Perm.Create))
                 toReturn.add("create");
@@ -121,19 +123,34 @@ public class WaystoneTabComplete implements TabCompleter
                 }
                 if(args.length == 3)
                 {
-                    String username = args[2];
-                    String playerUUID = "";
-                    OfflinePlayer op = Bukkit.getOfflinePlayer(username);
-                    if (op.hasPlayedBefore()) {
-                        playerUUID = op.getUniqueId().toString();
-                    } else {
-                        playerUUID = Default.UUIDZero;
-                    }
+                    String username = args[1];
+                    if(username.trim().length() == 0)
+                        return toReturn;
+                    String playerUUID = Default.UUIDZero;
+                    OfflinePlayer op = server.getOfflinePlayerIfCached(username);
+                    if(op != null)
+                        if (op.hasPlayedBefore())
+                            playerUUID = op.getUniqueId().toString();
+
                     if(username.equals("Admin"))
                     {
                         playerUUID = Default.UUIDOne;
                     }
                     for(Waystone wei: Work.FilterToUser(context, playerUUID))
+                        toReturn.add(wei.name);
+                }
+            } else if(args[0].equalsIgnoreCase("tp") && sender.hasPermission(Perm.Teleport))
+            {
+                if(!(sender instanceof Player))
+                    return toReturn;
+                Player p = (Player)sender;
+
+                List<Waystone> context = Work.GetOwnAndPublicWaystones(p, data);
+
+                if(args.length == 2)
+                {
+                    // locations
+                    for(Waystone wei: context)
                         toReturn.add(wei.name);
                 }
             }

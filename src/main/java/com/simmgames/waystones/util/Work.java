@@ -84,7 +84,19 @@ public class Work {
         }
         armorStand.remove();
     }
+    public static List<Waystone> GetOwnAndPublicWaystones(Player player, Data data)
+    {
+        // public and mine
+        WayPlayer p = data.GrabPlayer(player.getUniqueId().toString());
+        List<Waystone> ways = new ArrayList<Waystone>();
 
+        for (Waystone wei: data.AllWaystones)
+            if(wei.access == Accessibility.Public || wei.owner.equalsIgnoreCase(p.UUID))
+                if(wei.location.WorldUUID.equalsIgnoreCase(player.getWorld().getUID().toString()))
+                    ways.add(wei);
+
+        return ways;
+    }
     public static List<Waystone> GetKnownWaystones(Player player, Data data)
     {
         // public and known
@@ -92,8 +104,9 @@ public class Work {
         List<Waystone> ways = new ArrayList<Waystone>();
 
         for (Waystone wei: data.AllWaystones)
-            if(wei.access == Accessibility.Public || wei.owner.equalsIgnoreCase(p.UUID))
-                ways.add(wei);
+            if(wei.access == Accessibility.Public || p.KnownWaystones.contains(wei))
+                if(wei.location.WorldUUID.equalsIgnoreCase(player.getWorld().getUID().toString()))
+                    ways.add(wei);
 
         return ways;
     }
@@ -106,7 +119,8 @@ public class Work {
         for (Waystone wei: data.AllWaystones)
             if(wei.access == Accessibility.Public || wei.owner.equalsIgnoreCase(p.UUID) ||
                     wei.access == Accessibility.Discoverable)
-                ways.add(wei);
+                if(wei.location.WorldUUID.equalsIgnoreCase(player.getWorld().getUID().toString()))
+                    ways.add(wei);
 
         return ways;
     }
