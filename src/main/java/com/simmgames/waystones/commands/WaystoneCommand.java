@@ -124,10 +124,10 @@ public class WaystoneCommand implements CommandExecutor {
         }
         Player p = (Player) sender;
         int waystoneCount = Work.FilterToUser(data.AllWaystones, p.getUniqueId().toString()).size();
-        if(!(waystoneCount < data.WaystoneCreationLimit() || p.hasPermission(Perm.CreateBypass) || p.hasPermission(Perm.CreateAdmin)))
+        if(!(waystoneCount < data.WaystoneCreationLimit(p) || p.hasPermission(Perm.CreateBypass) || p.hasPermission(Perm.CreateAdmin)))
         {
             sender.sendMessage(ChatColor.RED + "You have reached your max number of Waystones that you can create. ["
-                    + waystoneCount + "/" + data.WaystoneCreationLimit() + "].");
+                    + waystoneCount + "/" + data.WaystoneCreationLimit(p) + "].");
             return;
         }
 
@@ -189,10 +189,10 @@ public class WaystoneCommand implements CommandExecutor {
                     sender.sendMessage(ChatColor.RED + "You don't have permission to make Admin waystones.");
                     return;
                 }
-        if(!(waystoneCount < data.WaystoneCreationLimit() || p.hasPermission(Perm.CreateBypass)) && !admin )
+        if(!(waystoneCount < data.WaystoneCreationLimit(p) || p.hasPermission(Perm.CreateBypass)) && !admin )
         {
             sender.sendMessage(ChatColor.RED + "You have reached your max number of Waystones that you can create. ["
-                    + waystoneCount + "/" + data.WaystoneCreationLimit() + "].");
+                    + waystoneCount + "/" + data.WaystoneCreationLimit(p) + "].");
             return;
         }
 

@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.simmgames.waystones.util.Default;
+import com.simmgames.waystones.util.Work;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -157,12 +158,13 @@ public class Data {
         return Math.max(plugin.getConfig().getInt("search-radius-tp"), 1);
     }
 
-    public int WaystoneCreationLimit()
+    public int WaystoneCreationLimit(Player p)
     {
         int limit = Math.max(plugin.getConfig().getInt("creation-limit"), -1);
+        int toReturn = Work.GetMaxNumFromPermissions("waystone.create.limit", limit, p);
         if(limit == -1)
-            limit = Integer.MAX_VALUE;
-        return limit;
+            toReturn = Integer.MAX_VALUE;
+        return toReturn;
     }
 
     public boolean NoGrief()

@@ -19,6 +19,7 @@ public class Perm {
     public static Permission CreatePrivate;
     public static Permission CreateAdmin;
     public static Permission CreateBypass;
+    public static Permission CreateLimit;
 
     public static Permission Nametag;
     public static Permission NametagOther;
@@ -65,7 +66,8 @@ public class Perm {
         CreateAdmin = new Permission("waystone.create.admin", "Allows players to create new admin owned waystone.");
         Create.addParent(CreateAdmin, true);
         CreateAdmin.addParent(Admin, true);
-        CreateBypass = new Permission("waystone.create.ignorelimit", "Allows players to bypass waystone creation limit.");
+        CreateBypass = new Permission("waystone.create.limit.ignore", "Allows players to bypass waystone creation limit.");
+        CreateLimit = new Permission("waystone.create.limit.0", "Limits a player to 0 waystones. Can increase 0 for higer limit.");
 
         Nametag = new Permission("waystone.nametag", "Allows players to toggle nametags for their waystones.");
         Default.addParent(Nametag, true);

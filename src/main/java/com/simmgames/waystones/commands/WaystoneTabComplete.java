@@ -62,7 +62,7 @@ public class WaystoneTabComplete implements TabCompleter
                 Player p = (Player)sender;
                 toReturn.add("create");
                 int waystoneCount = Work.FilterToUser(data.AllWaystones, p.getUniqueId().toString()).size();
-                if(waystoneCount >= data.WaystoneCreationLimit() && !p.hasPermission(Perm.CreateBypass))
+                if(waystoneCount >= data.WaystoneCreationLimit(p) && !p.hasPermission(Perm.CreateBypass))
                 {
                     if(!p.hasPermission(Perm.CreateAdmin))
                         return toReturn;
@@ -84,7 +84,7 @@ public class WaystoneTabComplete implements TabCompleter
                 int waystoneCount = Work.FilterToUser(data.AllWaystones, p.getUniqueId().toString()).size();
 
                 boolean adminOnly = false;
-                if(waystoneCount >= data.WaystoneCreationLimit() && !p.hasPermission(Perm.CreateBypass))
+                if(waystoneCount >= data.WaystoneCreationLimit(p) && !p.hasPermission(Perm.CreateBypass))
                 {
                     if(!p.hasPermission(Perm.CreateAdmin))
                         return toReturn;

@@ -13,8 +13,12 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.permissions.Permissible;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.util.Vector;
 
+import java.security.Permissions;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -171,5 +175,28 @@ public class Work {
             y += (yc%2 == 0) ? -yc : yc;
         }
         return list;
+    }
+
+    public static int GetMaxNumFromPermissions(String baseNode, int defaultInt, Permissible permissible)
+    {
+        if(permissible.isOp())
+            return -1;
+        int highest = -1;
+        for(PermissionAttachmentInfo pai : permissible.getEffectivePermissions())
+        {
+            if(pai.getPermission().startsWith(baseNode + "."))
+            {
+                String working = pai.getPermission().substring((baseNode + ".").length());
+
+                try {
+                    highest = Integer.parseInt(working.trim());
+                } catch (Exception e) {
+                    continue;
+                }
+            }
+        }
+        if(highest == -1)
+            highest = defaultInt;
+        return highest;
     }
 }

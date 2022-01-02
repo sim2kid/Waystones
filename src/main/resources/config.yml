@@ -24,7 +24,8 @@ search-radius-tp: 8
 no-grief: true
 
 # Waystone Creation Limit Per Player
-# Can be bypassed with waystone.create.ignorelimit
+# Can be bypassed with waystone.create.limit.ignore
+# Can also be set in perms with waystone.create.limit.#
 # Set to -1 to ignore
 creation-limit: 3
 
