@@ -135,6 +135,11 @@ public class WaystoneBlockEvents implements Listener
         List<Block> lodes = getLodestones(event.blockList());
         for (Block lode: lodes)
         {
+            if(data.NoGrief())
+                if(GetWaystoneAt(lode.getLocation()) != null) {
+                    lodes.remove(lode);
+                    continue;
+                }
             OnExploded(lode);
         }
     }
@@ -145,6 +150,11 @@ public class WaystoneBlockEvents implements Listener
         List<Block> lodes = getLodestones(event.blockList());
         for (Block lode: lodes)
         {
+            if(data.NoGrief())
+                if(GetWaystoneAt(lode.getLocation()) != null) {
+                    lodes.remove(lode);
+                    continue;
+                }
             OnExploded(lode);
         }
     }

@@ -152,6 +152,11 @@ public class Data {
         return Math.max(plugin.getConfig().getInt("search-radius"), 0);
     }
 
+    public boolean NoGrief()
+    {
+        return plugin.getConfig().getBoolean("no-grief");
+    }
+
     public boolean DefaultNametag()
     {
         return plugin.getConfig().getBoolean("default-nametag");
