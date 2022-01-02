@@ -44,6 +44,8 @@ public class WaystoneTabComplete implements TabCompleter
                 toReturn.add("create");
             if(sender.hasPermission(Perm.Nametag))
                 toReturn.add("nametag");
+            if(sender.hasPermission(Perm.List))
+                toReturn.add("list");
         }
         if(args.length > 1)
         {
@@ -70,6 +72,19 @@ public class WaystoneTabComplete implements TabCompleter
                 {
                     toReturn.add("true");
                     toReturn.add("false");
+                }
+            }
+            else if(args[0].equalsIgnoreCase("list") && sender.hasPermission(Perm.List))
+            {
+                if(args.length == 2)
+                {
+                    toReturn.add("known");
+                    toReturn.add("public");
+                    toReturn.add("mine");
+                    if(sender.hasPermission(Perm.ListUnknown))
+                        toReturn.add("unknown");
+                    if(sender.hasPermission(Perm.ListAll))
+                        toReturn.add("all");
                 }
             }
         }

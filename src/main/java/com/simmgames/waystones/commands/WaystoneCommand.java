@@ -58,6 +58,10 @@ public class WaystoneCommand implements CommandExecutor {
             {
                 nametag(sender, args);
                 return true;
+            } else if(args[0].equalsIgnoreCase("list"))
+            {
+                list(sender, args);
+                return true;
             }
 
             if(sender instanceof Player)
@@ -74,11 +78,19 @@ public class WaystoneCommand implements CommandExecutor {
 
     void help(CommandSender sender, String[] args)
     {
-        String message = "This is the help message :P. Args:";
-        for (String s:
-             args) {
-            message += ", " + s;
+        String message = ChatColor.AQUA + "This is the main command to use this plugin.\n";
+        if(sender.hasPermission(Perm.Create))
+            message += ChatColor.GOLD + "/waystone create <name> [accessibility]" + ChatColor.AQUA +  " Make a new Waystone.";
+        if(sender.hasPermission(Perm.List))
+            message += ChatColor.GOLD + "/waystone list" + ChatColor.AQUA +  " See all known Waystones.";
+        if(sender.hasPermission(Perm.Nametag))
+            message += ChatColor.GOLD + "/waystone nametag <toggle>" + ChatColor.AQUA +  " Turns on/off a Waystone's nametag.";
+        if(sender.hasPermission(Perm.Teleport)) {
+            message += ChatColor.GOLD + "/waystone <public/private waystone name>" + ChatColor.AQUA + " Teleport to your waystone or to a public waystone.";
+            message += ChatColor.GOLD + "/waystone <creator username> <waystone name>" + ChatColor.AQUA +  " Teleports to waystone with specified owner and name.";
+            message += ChatColor.GOLD + "/waystone teleport <creator username> <waystone name>" + ChatColor.AQUA +  " In case a username overlaps with a command, you can use this to tp to it.";
         }
+
 
         if(sender instanceof Player)
         {
@@ -281,6 +293,99 @@ public class WaystoneCommand implements CommandExecutor {
             // Unknown
             p.sendMessage(ChatColor.RED + "'" + args[1] + "' is not a valid state for the nametags. Please use\n" + ChatColor.GOLD + "/waystone nametag <true|false>");
             return;
+        }
+    }
+    void list(CommandSender sender, String[] args)
+    {
+        if(!sender.hasPermission(Perm.List))
+        {
+            sender.sendMessage(Local.NoPermsCommand());
+            return;
+        }
+
+        if(!(sender instanceof Player))
+        {
+            out.log(Level.INFO, ChatColor.RED + "You must be a player to create a Waystone.");
+            return;
+        }
+        Player p = (Player) sender;
+        WayPlayer WeiPlayer = data.GrabPlayer(p.getUniqueId().toString());
+
+        String whatToShow = "known";
+        if(args.length >= 2)
+        {
+            whatToShow = args[1];
+        }
+
+        String workingString = ChatColor.DARK_GREEN + "Waystones: \n";
+
+
+        switch (whatToShow.trim().toLowerCase()) {
+            case "default":
+            case "known":
+                for(Waystone wei: data.AllWaystones) {
+                    if (wei.access == Accessibility.Public)
+                        workingString += ChatColor.BLUE + "[Public] " + ChatColor.AQUA + wei.name + "\n";
+                    if (wei.access == Accessibility.Private && wei.owner.equalsIgnoreCase(WeiPlayer.UUID))
+                        workingString += ChatColor.GOLD + "[Private] " + ChatColor.AQUA + wei.name + "\n";
+                }
+                for(Waystone wei: WeiPlayer.KnownWaystones)
+                    workingString += ChatColor.DARK_PURPLE + "[" + data.GrabPlayer(wei.owner).lastUsername + "] " + ChatColor.AQUA + wei.name + "\n";
+                return;
+            case "public":
+                for(Waystone wei: data.AllWaystones)
+                    if (wei.access == Accessibility.Public)
+                        workingString += ChatColor.BLUE + "[Public] " + ChatColor.AQUA + wei.name + "\n";
+                return;
+            case "mine":
+                for(Waystone wei: data.AllWaystones)
+                    if (wei.owner.equalsIgnoreCase(WeiPlayer.UUID))
+                        workingString += ChatColor.GREEN + "[Mine] " + ChatColor.AQUA + wei.name + "\n";
+                return;
+            case "unknown":
+                if(!sender.hasPermission(Perm.ListUnknown))
+                {
+                    sender.sendMessage(Local.NoPermsCommand());
+                    return;
+                }
+                for(Waystone wei: data.AllWaystones) {
+                    String unknown = ChatColor.GRAY  + "[Unknown] ";
+                    if(WeiPlayer.KnownWaystones.contains(wei))
+                        continue;
+                    String player = ChatColor.GREEN + "[Mine]";
+                    if(!wei.owner.equalsIgnoreCase(WeiPlayer.UUID))
+                        player = ChatColor.DARK_PURPLE + "[" + data.GrabPlayer(wei.owner).lastUsername + "]";
+
+                    workingString += player + unknown + ChatColor.AQUA + wei.name + "\n";
+                }
+                return;
+            case "all":
+                if(!sender.hasPermission(Perm.ListAll))
+                {
+                    sender.sendMessage(Local.NoPermsCommand());
+                    return;
+                }
+                for(Waystone wei: data.AllWaystones) {
+                    if (wei.access == Accessibility.Public){
+                        workingString += ChatColor.BLUE + "[Public] " + ChatColor.AQUA + wei.name + "\n";
+                        continue;
+                    } else if (wei.access == Accessibility.Private && wei.owner.equalsIgnoreCase(WeiPlayer.UUID)) {
+                        workingString += ChatColor.GOLD + "[Private] " + ChatColor.AQUA + wei.name + "\n";
+                        continue;
+                    }
+                    String unknown = ChatColor.GRAY  + "[Unknown] ";
+                    if(WeiPlayer.KnownWaystones.contains(wei))
+                        unknown = " ";
+                    String player = ChatColor.GREEN + "[Mine]";
+                    if(!wei.owner.equalsIgnoreCase(WeiPlayer.UUID))
+                        player = ChatColor.DARK_PURPLE + "[" + data.GrabPlayer(wei.owner).lastUsername + "]";
+
+                    workingString += player + unknown + ChatColor.AQUA + wei.name + "\n";
+                }
+                return;
+            default:
+                sender.sendMessage(ChatColor.RED + "'" + whatToShow + "' is an unknown thing to list.");
+                return;
         }
     }
 }

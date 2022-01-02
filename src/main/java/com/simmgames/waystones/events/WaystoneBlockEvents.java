@@ -406,6 +406,9 @@ public class WaystoneBlockEvents implements Listener
     }
     public boolean DiscoverWaystone(Player player, Waystone waystone)
     {
+        if(waystone.access != Accessibility.Discoverable)
+            return false;
+
         WayPlayer p = data.GrabPlayer(player.getUniqueId().toString());
         if(p.KnownWaystones.contains(waystone))
             return false;
