@@ -20,8 +20,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.OverridingMethodsMustInvokeSuper;
-import java.util.Locale;
-import java.util.UUID;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -122,7 +121,8 @@ public class WaystoneCommand implements CommandExecutor {
         Location lode = Work.FindBlockType(data.LodestoneSearchRadius(), p.getLocation(), Material.LODESTONE);
         if(lode == null)
         {
-            p.sendMessage( ChatColor.RED + "No Lodestone nearby to turn into a Waystone. Make sure you are within " + data.LodestoneSearchRadius() + " blocks.");
+            p.sendMessage( ChatColor.RED + "No Lodestone nearby to turn into a Waystone. Make sure you are within " +
+                    data.LodestoneSearchRadius() + " blocks.");
             return;
         }
 
@@ -157,7 +157,8 @@ public class WaystoneCommand implements CommandExecutor {
             {
                 if(waystoneName.trim().equalsIgnoreCase(wei.name.trim()))
                 {
-                    p.sendMessage(ChatColor.RED + "'" + waystoneName + "' already exists as one of your waystones or is already a public waystone.");
+                    p.sendMessage(ChatColor.RED + "'" + waystoneName +
+                            "' already exists as one of your waystones or is already a public waystone.");
                     return;
                 }
             }
@@ -202,6 +203,7 @@ public class WaystoneCommand implements CommandExecutor {
                 if(admin)
                 {
                     sender.sendMessage(ChatColor.RED + "You can't create a Private Admin Waystone.");
+                    return;
                 }
                 // Check perms
                 access = Accessibility.Private;
@@ -226,8 +228,12 @@ public class WaystoneCommand implements CommandExecutor {
         // Create Waystone
         Waystone newWaystone = new Waystone((admin ? Default.UUIDOne : p.getUniqueId().toString()),
                 new BlockLocation(lode), waystoneName.trim(), access);
-        newWaystone.hologramUUID = Work.CreateHologram(lode.getBlock().getLocation(), newWaystone.decodeName(data), data.DefaultNametag()).toString();
-        data.AllWaystones.add(newWaystone);
+        newWaystone.hologramUUID = Work.CreateHologram(lode.getBlock().getLocation(), newWaystone.decodeName(data),
+                data.DefaultNametag()).toString();
+        if(newWaystone.access == Accessibility.Discoverable ||
+                (newWaystone.access == Accessibility.Private &&
+                        newWaystone.owner.equalsIgnoreCase(p.getUniqueId().toString())))
+            data.AllWaystones.add(newWaystone);
         events.OnCreateWaystone(p, newWaystone);
     }
 
@@ -253,7 +259,8 @@ public class WaystoneCommand implements CommandExecutor {
         Location lode = Work.FindBlockType(data.LodestoneSearchRadius(), p.getLocation(), Material.LODESTONE);
         if(lode == null)
         {
-            p.sendMessage(ChatColor.RED + "No Waystone nearby. Make sure you are within " + data.LodestoneSearchRadius() + " blocks of one.");
+            p.sendMessage(ChatColor.RED + "No Waystone nearby. Make sure you are within " + data.LodestoneSearchRadius()
+                    + " blocks of one.");
             return;
         }
 
@@ -276,14 +283,17 @@ public class WaystoneCommand implements CommandExecutor {
         if(args.length < 2)
         {
             // Cannot Toggle
-            p.sendMessage(ChatColor.RED + "State cannot be blank for nametag. Please use\n" + ChatColor.GOLD + "/waystone nametag <true|false>");
+            p.sendMessage(ChatColor.RED + "State cannot be blank for nametag. Please use\n" + ChatColor.GOLD
+                    + "/waystone nametag <true|false>");
             return;
-        } else if(args[1].equalsIgnoreCase("true") || args[1].equalsIgnoreCase("t") || args[1].equalsIgnoreCase("on"))
+        } else if(args[1].equalsIgnoreCase("true") || args[1].equalsIgnoreCase("t") ||
+                args[1].equalsIgnoreCase("on"))
         {
             // turn on
             p.sendMessage(ChatColor.GREEN + "Turning on the NameTag for the nearest waystone.");
             Work.HologramVisibility(wei.location.getLocation(server), UUID.fromString(wei.hologramUUID), true);
-        } else if(args[1].equalsIgnoreCase("false") || args[1].equalsIgnoreCase("f") || args[1].equalsIgnoreCase("off"))
+        } else if(args[1].equalsIgnoreCase("false") || args[1].equalsIgnoreCase("f") ||
+                args[1].equalsIgnoreCase("off"))
         {
             // turn off
             p.sendMessage(ChatColor.YELLOW + "Turning off the NameTag for the nearest waystone.");
@@ -291,7 +301,8 @@ public class WaystoneCommand implements CommandExecutor {
         } else
         {
             // Unknown
-            p.sendMessage(ChatColor.RED + "'" + args[1] + "' is not a valid state for the nametags. Please use\n" + ChatColor.GOLD + "/waystone nametag <true|false>");
+            p.sendMessage(ChatColor.RED + "'" + args[1] + "' is not a valid state for the nametags. Please use\n"
+                    + ChatColor.GOLD + "/waystone nametag <true|false>");
             return;
         }
     }
@@ -317,31 +328,59 @@ public class WaystoneCommand implements CommandExecutor {
             whatToShow = args[1];
         }
 
-        String workingString = ChatColor.DARK_GREEN + "Waystones: \n";
+        List<String> Results = new ArrayList<String>();
+
+        int page = 1;
+        if(args.length >= 3)
+        {
+             try {
+                 page = Integer.parseInt(args[2]);
+             } catch (Exception e) {
+                 page = 1;
+            }
+        }
 
 
         switch (whatToShow.trim().toLowerCase()) {
             case "default":
             case "known":
                 for(Waystone wei: data.AllWaystones) {
-                    if (wei.access == Accessibility.Public)
-                        workingString += ChatColor.BLUE + "[Public] " + ChatColor.AQUA + wei.name + "\n";
+                    if (wei.access == Accessibility.Public) {
+                        String mine = " ";
+                        if(wei.owner.equalsIgnoreCase(WeiPlayer.UUID))
+                            mine = ChatColor.GREEN + "[Mine] ";
+                        Results.add(ChatColor.BLUE + "[Public]" + mine + ChatColor.AQUA + wei.name + "\n");
+                    }
                     if (wei.access == Accessibility.Private && wei.owner.equalsIgnoreCase(WeiPlayer.UUID))
-                        workingString += ChatColor.GOLD + "[Private] " + ChatColor.AQUA + wei.name + "\n";
+                        Results.add(ChatColor.DARK_PURPLE + "[Private]" + ChatColor.GREEN + "[Mine] "
+                                + ChatColor.AQUA + wei.name + "\n");
                 }
-                for(Waystone wei: WeiPlayer.KnownWaystones)
-                    workingString += ChatColor.DARK_PURPLE + "[" + data.GrabPlayer(wei.owner).lastUsername + "] " + ChatColor.AQUA + wei.name + "\n";
-                return;
+                for(Waystone wei: WeiPlayer.KnownWaystones) {
+                    String mine = ChatColor.DARK_PURPLE + "[" + data.GrabPlayer(wei.owner).lastUsername + "] ";
+                    if(wei.owner.equalsIgnoreCase(WeiPlayer.UUID))
+                        mine = ChatColor.GREEN + "[Mine] ";
+                    Results.add(mine + ChatColor.AQUA + wei.name + "\n");
+                }
+                break;
             case "public":
                 for(Waystone wei: data.AllWaystones)
-                    if (wei.access == Accessibility.Public)
-                        workingString += ChatColor.BLUE + "[Public] " + ChatColor.AQUA + wei.name + "\n";
-                return;
+                    if (wei.access == Accessibility.Public) {
+                        String mine = " ";
+                        if(wei.owner.equalsIgnoreCase(WeiPlayer.UUID))
+                            mine = ChatColor.GREEN + "[Mine] ";
+                        Results.add(ChatColor.BLUE + "[Public]" + mine + ChatColor.AQUA + wei.name + "\n");
+                    }
+                break;
             case "mine":
                 for(Waystone wei: data.AllWaystones)
                     if (wei.owner.equalsIgnoreCase(WeiPlayer.UUID))
-                        workingString += ChatColor.GREEN + "[Mine] " + ChatColor.AQUA + wei.name + "\n";
-                return;
+                    {
+                        String access = "";
+                        if(wei.access == Accessibility.Private)
+                            access = ChatColor.DARK_PURPLE + "[Private]";
+                        Results.add(access + ChatColor.GREEN + "[Mine] " + ChatColor.AQUA + wei.name + "\n");
+                    }
+                break;
             case "unknown":
                 if(!sender.hasPermission(Perm.ListUnknown))
                 {
@@ -350,15 +389,15 @@ public class WaystoneCommand implements CommandExecutor {
                 }
                 for(Waystone wei: data.AllWaystones) {
                     String unknown = ChatColor.GRAY  + "[Unknown] ";
-                    if(WeiPlayer.KnownWaystones.contains(wei))
+                    if(WeiPlayer.KnownWaystones.contains(wei) || wei.access != Accessibility.Discoverable)
                         continue;
                     String player = ChatColor.GREEN + "[Mine]";
                     if(!wei.owner.equalsIgnoreCase(WeiPlayer.UUID))
                         player = ChatColor.DARK_PURPLE + "[" + data.GrabPlayer(wei.owner).lastUsername + "]";
 
-                    workingString += player + unknown + ChatColor.AQUA + wei.name + "\n";
+                    Results.add(player + unknown + ChatColor.AQUA + wei.name + "\n");
                 }
-                return;
+                break;
             case "all":
                 if(!sender.hasPermission(Perm.ListAll))
                 {
@@ -367,25 +406,53 @@ public class WaystoneCommand implements CommandExecutor {
                 }
                 for(Waystone wei: data.AllWaystones) {
                     if (wei.access == Accessibility.Public){
-                        workingString += ChatColor.BLUE + "[Public] " + ChatColor.AQUA + wei.name + "\n";
-                        continue;
-                    } else if (wei.access == Accessibility.Private && wei.owner.equalsIgnoreCase(WeiPlayer.UUID)) {
-                        workingString += ChatColor.GOLD + "[Private] " + ChatColor.AQUA + wei.name + "\n";
-                        continue;
+                        Results.add(ChatColor.BLUE + "[Public] " + ChatColor.AQUA + wei.name + "\n");
                     }
-                    String unknown = ChatColor.GRAY  + "[Unknown] ";
-                    if(WeiPlayer.KnownWaystones.contains(wei))
-                        unknown = " ";
-                    String player = ChatColor.GREEN + "[Mine]";
-                    if(!wei.owner.equalsIgnoreCase(WeiPlayer.UUID))
-                        player = ChatColor.DARK_PURPLE + "[" + data.GrabPlayer(wei.owner).lastUsername + "]";
-
-                    workingString += player + unknown + ChatColor.AQUA + wei.name + "\n";
+                    else if(wei.access == Accessibility.Private)
+                    {
+                        if(wei.owner.equalsIgnoreCase(WeiPlayer.UUID))
+                        {
+                            Results.add(ChatColor.GOLD + "[Private] " + ChatColor.AQUA + wei.name + "\n");
+                        }
+                        else
+                        {
+                            Results.add(ChatColor.GOLD + "[Private]" + ChatColor.DARK_PURPLE +
+                                    "[" + data.GrabPlayer(wei.owner).lastUsername + "] " + ChatColor.AQUA + wei.name + "\n");
+                        }
+                    }
+                    else
+                    {
+                        String unknown = ChatColor.GRAY  + "[Unknown] ";
+                        if(WeiPlayer.KnownWaystones.contains(wei))
+                            unknown = " ";
+                        String player = ChatColor.GREEN + "[Mine]";
+                        if(!wei.owner.equalsIgnoreCase(WeiPlayer.UUID))
+                            player = ChatColor.DARK_PURPLE + "[" + data.GrabPlayer(wei.owner).lastUsername + "]";
+                        Results.add(player + unknown + ChatColor.AQUA + wei.name + "\n");
+                    }
                 }
-                return;
+                break;
             default:
                 sender.sendMessage(ChatColor.RED + "'" + whatToShow + "' is an unknown thing to list.");
                 return;
         }
+
+        int perList = data.DefaultListSize();
+
+        int max = (int) Math.ceil((double) Results.size() / (double) perList);
+
+        page = (int) Math.min(max, Math.max(page, 1));
+
+        Collections.sort(Results);
+
+        String filler = "==========";
+        String workingString = filler + " Waystones " + page + "/" + max + filler + "\n";
+
+        for(int i = (page-1)*perList; i < (int)Math.min(page*perList,Results.size()); i++)
+            workingString += Results.get(i);
+
+        workingString += filler + " Waystones " + page + "/" + max + filler;
+
+        sender.sendMessage(workingString);
     }
 }

@@ -28,3 +28,6 @@ default-nametag: true
 # The default type of waystone to build.
 # Can be [ Public | Private | Discoverable ]
 default-access: 'Discoverable'
+
+# The number of waypoints to list using /list
+default-list-size: 7

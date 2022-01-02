@@ -258,6 +258,12 @@ public class WaystoneBlockEvents implements Listener
         for (int i = p.KnownWaystones.size()-1; i >= 0 ; i--)
         {
             Waystone known = p.KnownWaystones.get(i);
+
+            if(known.access == Accessibility.Private && !known.owner.equalsIgnoreCase(p.UUID)) {
+                p.KnownWaystones.remove(i);
+                continue;
+            }
+
             int index = data.AllWaystones.indexOf(known);
             if(index != -1)
             {

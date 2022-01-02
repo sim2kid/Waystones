@@ -165,6 +165,10 @@ public class Data {
     {
         return plugin.getConfig().getString("default-access");
     }
+    public int DefaultListSize()
+    {
+        return plugin.getConfig().getInt("default-list-size");
+    }
 
     private WayPlayer playerInList(String uuid)
     {
