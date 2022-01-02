@@ -1,5 +1,6 @@
 package com.simmgames.waystones.events;
 
+import com.simmgames.waystones.Accessibility;
 import com.simmgames.waystones.data.Data;
 import com.simmgames.waystones.data.WayPlayer;
 import com.simmgames.waystones.data.Waystone;
@@ -116,7 +117,7 @@ public class WaystoneBlockEvents implements Listener
         if(wei == null)
             return;
         // If it is a waystone, check if it's owned by the player initiating the command
-        if(!wei.owner.equalsIgnoreCase(p.getUniqueId().toString()) || p.hasPermission(Perm.DestroyOther))
+        if(!wei.owner.equalsIgnoreCase(p.getUniqueId().toString()) && !p.hasPermission(Perm.DestroyOther))
         {
             p.sendMessage(ChatColor.RED + "You must own this Waystone to break it.");
             event.setCancelled(true);
@@ -354,7 +355,8 @@ public class WaystoneBlockEvents implements Listener
                 }
                 p.InWaystoneDiscover = true;
                 // Waystone is now discovered
-                DiscoverWaystone(player, closest);
+                if(closest.access == Accessibility.Discoverable)
+                    DiscoverWaystone(player, closest);
             } else {
                 if (p.InWaystoneDiscover != false)
                     OnDiscoverExit(player, closest);
