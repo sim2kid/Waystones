@@ -92,8 +92,9 @@ public class Waystone {
             accessor = " - Public";
         if(this.access == Accessibility.Private)
             accessor = " - Private";
-        if(!canUse())
-            accessor = " T-" + timeLeftUntilFunctional() + "s";
+        if(!canUse()) {
+            accessor = " T-" + reduceTime(timeLeftUntilFunctional());
+        }
 
         String maker = "";
         if(!owner.equalsIgnoreCase(Default.UUIDZero)) {
@@ -103,5 +104,22 @@ public class Waystone {
             maker = "[Admin] ";
         }
         return  maker + name + accessor;
+    }
+
+    private String reduceTime(int seconds)
+    {
+        int days = (int)Math.floor((double) seconds / (60 * 60 * 24));
+        seconds = seconds % (60 * 60 * 24);
+        int hours = (int)Math.floor((double) seconds / (60 * 60));
+        seconds = seconds % (60 * 60);
+        int minutes = (int)Math.floor((double) seconds / (60));
+        seconds = seconds % (60);
+
+        String str = "";
+        str += days > 0 ? String.format("%02d", days) + ":" : "";
+        str += hours > 0 ? String.format("%02d", hours) + ":" : "";
+        str += String.format("%02d", minutes) + ":";
+        str += String.format("%02d", seconds) + "s";
+        return str;
     }
 }

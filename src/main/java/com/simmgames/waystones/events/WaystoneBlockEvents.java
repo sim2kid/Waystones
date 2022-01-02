@@ -10,6 +10,7 @@ import com.simmgames.waystones.structure.Vector3;
 import com.simmgames.waystones.util.Work;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -222,6 +223,8 @@ public class WaystoneBlockEvents implements Listener
             Title(player," ", ChatColor.AQUA + wei.decodeName(data));
             player.sendMessage(ChatColor.AQUA + wei.decodeName(data));
         }
+        wei.getLocation(server).getWorld().playSound(wei.getLocation(server),Sound.BLOCK_BEACON_POWER_SELECT,
+                SoundCategory.BLOCKS, 0.3f, 0.4f);
     }
 
     private void DestroyWaystone(Location location)
