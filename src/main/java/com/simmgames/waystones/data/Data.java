@@ -157,6 +157,14 @@ public class Data {
         return Math.max(plugin.getConfig().getInt("search-radius-tp"), 1);
     }
 
+    public int WaystoneCreationLimit()
+    {
+        int limit = Math.max(plugin.getConfig().getInt("creation-limit"), -1);
+        if(limit == -1)
+            limit = Integer.MAX_VALUE;
+        return limit;
+    }
+
     public boolean NoGrief()
     {
         return plugin.getConfig().getBoolean("no-grief");

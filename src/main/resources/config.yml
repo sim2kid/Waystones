@@ -23,6 +23,11 @@ search-radius-tp: 8
 # If the waystones should be protected from environmental damage.
 no-grief: true
 
+# Waystone Creation Limit Per Player
+# Can be bypassed with waystone.create.ignorelimit
+# Set to -1 to ignore
+creation-limit: 3
+
 
 # Defaults
 

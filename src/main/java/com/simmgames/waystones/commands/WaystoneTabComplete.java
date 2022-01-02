@@ -7,6 +7,7 @@ import com.simmgames.waystones.events.WaystoneBlockEvents;
 import com.simmgames.waystones.permissions.Perm;
 import com.simmgames.waystones.util.Default;
 import com.simmgames.waystones.util.Work;
+import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
@@ -55,8 +56,18 @@ public class WaystoneTabComplete implements TabCompleter
                 }
             }
             toReturn.add("help");
-            if(sender.hasPermission(Perm.Create))
+            if(sender.hasPermission(Perm.Create)) {
+                if(!(sender instanceof Player))
+                    return toReturn;
+                Player p = (Player)sender;
                 toReturn.add("create");
+                int waystoneCount = Work.FilterToUser(data.AllWaystones, p.getUniqueId().toString()).size();
+                if(waystoneCount >= data.WaystoneCreationLimit() && !p.hasPermission(Perm.CreateBypass))
+                {
+                    if(!p.hasPermission(Perm.CreateAdmin))
+                        return toReturn;
+                }
+            }
             if(sender.hasPermission(Perm.Nametag))
                 toReturn.add("nametag");
             if(sender.hasPermission(Perm.List))
@@ -66,11 +77,26 @@ public class WaystoneTabComplete implements TabCompleter
         {
             if(args[0].equalsIgnoreCase("create") && sender.hasPermission(Perm.Create))
             {
+                if(!(sender instanceof Player))
+                    return toReturn;
+                Player p = (Player)sender;
+
+                int waystoneCount = Work.FilterToUser(data.AllWaystones, p.getUniqueId().toString()).size();
+
+                boolean adminOnly = false;
+                if(waystoneCount >= data.WaystoneCreationLimit() && !p.hasPermission(Perm.CreateBypass))
+                {
+                    if(!p.hasPermission(Perm.CreateAdmin))
+                        return toReturn;
+                    else
+                        adminOnly = true;
+                }
+
                 if(args.length == 3)
                 {
                     if(sender.hasPermission(Perm.CreateDiscoverable))
                         toReturn.add("default");
-                    if(sender.hasPermission(Perm.CreatePrivate))
+                    if(sender.hasPermission(Perm.CreatePrivate) && !adminOnly)
                         toReturn.add("private");
                     if(sender.hasPermission(Perm.CreatePublic))
                         toReturn.add("public");

@@ -110,6 +110,7 @@ public class WaystoneCommand implements CommandExecutor {
 
     void create(CommandSender sender, String[] args)
     {
+        // Check for create perms
         if(!sender.hasPermission(Perm.Create))
         {
             sender.sendMessage(Local.NoPermsCommand());
@@ -122,8 +123,14 @@ public class WaystoneCommand implements CommandExecutor {
             return;
         }
         Player p = (Player) sender;
+        int waystoneCount = Work.FilterToUser(data.AllWaystones, p.getUniqueId().toString()).size();
+        if(!(waystoneCount < data.WaystoneCreationLimit() || p.hasPermission(Perm.CreateBypass) || p.hasPermission(Perm.CreateAdmin)))
+        {
+            sender.sendMessage(ChatColor.RED + "You have reached your max number of Waystones that you can create. ["
+                    + waystoneCount + "/" + data.WaystoneCreationLimit() + "].");
+            return;
+        }
 
-        // Check for create perms
 
         // Check if there is a lodestone nearby
         Location lode = Work.FindBlockType(data.LodestoneSearchRadius(), p.getLocation(), Material.LODESTONE);
@@ -182,6 +189,12 @@ public class WaystoneCommand implements CommandExecutor {
                     sender.sendMessage(ChatColor.RED + "You don't have permission to make Admin waystones.");
                     return;
                 }
+        if(!(waystoneCount < data.WaystoneCreationLimit() || p.hasPermission(Perm.CreateBypass)) && !admin )
+        {
+            sender.sendMessage(ChatColor.RED + "You have reached your max number of Waystones that you can create. ["
+                    + waystoneCount + "/" + data.WaystoneCreationLimit() + "].");
+            return;
+        }
 
         Accessibility access = null;
 
@@ -472,12 +485,12 @@ public class WaystoneCommand implements CommandExecutor {
         Collections.sort(Results);
 
         String filler = "==========";
-        String workingString = filler + " Waystones " + page + "/" + max + filler + "\n";
+        String workingString = filler + " Waystones " + page + "/" + max + " " + filler + "\n";
 
         for(int i = (page-1)*perList; i < (int)Math.min(page*perList,Results.size()); i++)
             workingString += Results.get(i);
 
-        workingString += filler + " Waystones " + page + "/" + max + filler;
+        workingString += ChatColor.RESET +  filler + " Waystones " + page + "/" + max + " "  + filler;
 
         sender.sendMessage(workingString);
     }
@@ -500,6 +513,7 @@ public class WaystoneCommand implements CommandExecutor {
         if(!(WeiPlayer.InWaystoneUse || sender.hasPermission(Perm.TeleportIgnoreWaystone)))
         {
             p.sendMessage(ChatColor.RED + "You must be near a Waystone to teleport.");
+            return;
         }
 
         List<Waystone> context = Work.GetOwnAndPublicWaystones(p, data);
@@ -550,6 +564,7 @@ public class WaystoneCommand implements CommandExecutor {
         if(!(WeiPlayer.InWaystoneUse || sender.hasPermission(Perm.TeleportIgnoreWaystone)))
         {
             p.sendMessage(ChatColor.RED + "You must be near a Waystone to teleport.");
+            return;
         }
 
         List<Waystone> context;
