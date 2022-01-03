@@ -108,8 +108,13 @@ default-list-size: 7
 # # # # # # # # # # # # # # # # # # # # # #
 
 # Teleportation Karma
-# If enabled, the more offten a player teleports, the more likely a negative event will occur.
+# If enabled, the more often a player teleports, the more likely a negative event will occur.
 teleportation-karma: true
+# Number of teleportation per hour a person can handel
+karma-limit: 6
+# Karma strength
+# The strength karma will multiply by to determine other effects
+karma-strength: 10.0
 
 
 # Waystone short circuit
@@ -117,7 +122,7 @@ teleportation-karma: true
 waystone-short-circuit: true
 # Between 0 and 1, the likelihood of this event happening on teleportation.
 # This will increase with karma if enabled
-waystone-short-circuit-chance: 0.1
+waystone-short-circuit-chance: 0.2
 # This will disable the teleportation event on admin stones.
 short-circuit-ignore-adminstones: true
 
@@ -137,10 +142,51 @@ spawn-endermites: true
 # This will increase with karma if enabled
 spawn-endermites-chance: 0.05
 
-
+# = = = = = = = = = = = = = = = = = = = = #
+#           v NOT IMPLEMENTED v           #
+# = = = = = = = = = = = = = = = = = = = = #
 
 # Teleportation Sickness
 # When enabled, a player may get a variety of negative potion effects after teleporting
 # This is best used with karma as the chances will scale when a player has more karma
 teleport-sickness: true
-teleport-sickness-chance: 0.01
+teleport-sickness-chance: 0.0.1
+
+
+
+# # # # # # # # # # # # # # # # # # # # # #
+#                                         #
+#                Redstone                 #
+#                                         #
+# # # # # # # # # # # # # # # # # # # # # #
+
+# Redstone signal of 15 on teleport
+# This is equivalent to a redstone block.
+redstone-teleport: true
+
+# Redstone signal can deactivate
+# When the block receives a redstone signal, teleports will be disabled.
+redstone-disable: true
+
+# Comparator output on charging
+# Signal strength drops as time decreases.
+# 15 signal = 2:00 minutes. 0 signal = 0:00 minutes.
+redstone-comparator: true
+
+
+
+
+# # # # # # # # # # # # # # # # # # # # # #
+#                                         #
+#             Player Actions              #
+#                                         #
+# # # # # # # # # # # # # # # # # # # # # #
+
+# Allow the player to lower the charge time using ender pearls
+use-enderpearls: true
+# Time lowered by in seconds on use
+enderpearl-value: 120
+
+# = = = = = = = = = = = = = = = = = = = = #
+#           ^ NOT IMPLEMENTED ^           #
+# = = = = = = = = = = = = = = = = = = = = #

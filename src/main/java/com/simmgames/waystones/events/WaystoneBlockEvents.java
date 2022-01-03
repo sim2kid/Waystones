@@ -1,6 +1,7 @@
 package com.simmgames.waystones.events;
 
 import com.simmgames.waystones.Accessibility;
+import com.simmgames.waystones.data.Config;
 import com.simmgames.waystones.data.Data;
 import com.simmgames.waystones.data.WayPlayer;
 import com.simmgames.waystones.data.Waystone;
@@ -30,11 +31,13 @@ public class WaystoneBlockEvents implements Listener
     Logger out;
     Data data;
     Server server;
+    TeleportEffects effects;
 
-    public WaystoneBlockEvents(Logger logger, Data pluginData, Server server)
+    public WaystoneBlockEvents(Logger logger, Data pluginData, Server server, TeleportEffects effects)
     {
         out = logger;
         data = pluginData;
+        this.effects = effects;
         this.server = server;
     }
 
@@ -136,7 +139,7 @@ public class WaystoneBlockEvents implements Listener
         List<Block> lodes = getLodestones(event.blockList());
         for (Block lode: lodes)
         {
-            if(data.NoGrief())
+            if(Config.NoGrief())
                 if(GetWaystoneAt(lode.getLocation()) != null) {
                     event.blockList().remove(lode);
                     continue;
@@ -151,7 +154,7 @@ public class WaystoneBlockEvents implements Listener
         List<Block> lodes = getLodestones(event.blockList());
         for (Block lode: lodes)
         {
-            if(data.NoGrief())
+            if(Config.NoGrief())
                 if(GetWaystoneAt(lode.getLocation()) != null) {
                     event.blockList().remove(lode);
                     continue;
@@ -378,7 +381,7 @@ public class WaystoneBlockEvents implements Listener
                     return;
                 }
 
-            if (closestDistance != -1 && closestDistance < data.WaystoneUseDistance()) {
+            if (closestDistance != -1 && closestDistance < Config.WaystoneUseDistance()) {
                 if (p.InWaystoneUse != true)
                     OnUseEnter(player, closest);
                 p.InWaystoneUse = true;
@@ -387,7 +390,7 @@ public class WaystoneBlockEvents implements Listener
                     OnUseExit(player, closest);
                 p.InWaystoneUse = false;
             }
-            if (closestDistance != -1 && closestDistance < data.WaystoneDiscoverDistance()) {
+            if (closestDistance != -1 && closestDistance < Config.WaystoneDiscoverDistance()) {
                 if (p.InWaystoneDiscover != true) {
                     OnDiscoverEnter(player, closest);
                 }
@@ -400,7 +403,7 @@ public class WaystoneBlockEvents implements Listener
                     OnDiscoverExit(player, closest);
                 p.InWaystoneDiscover = false;
             }
-            if(closestDistance != -1 && closestDistance <= data.WaystoneNearDistance())
+            if(closestDistance != -1 && closestDistance <= Config.WaystoneNearDistance())
             {
                 p.InWaystoneNearby = true;
                 p.LastNear = closest;
@@ -477,7 +480,7 @@ public class WaystoneBlockEvents implements Listener
 
     public void OnTeleport(Player player, Waystone destination, Waystone origin)
     {
-        Location destinationLoc = Work.FindSafeTP(destination.getLocation(server), data.TPSearchRadius());
+        Location destinationLoc = Work.FindSafeTP(destination.getLocation(server), Config.TPSearchRadius());
 
         if(destinationLoc == null)
         {
@@ -505,6 +508,7 @@ public class WaystoneBlockEvents implements Listener
         destinationLoc.getWorld().spawnParticle(Particle.PORTAL,
                 destinationLoc.add(0, 1,0), 500, 0.25, 0.5, 0.25);
 
+        effects.RunTeleportEvents(destination, player);
     }
 
     private boolean isLodestone(BlockEvent event) {

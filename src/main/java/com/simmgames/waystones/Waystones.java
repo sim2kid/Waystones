@@ -3,8 +3,10 @@ package com.simmgames.waystones;
 import com.simmgames.waystones.commands.DebugCommand;
 import com.simmgames.waystones.commands.WaystoneCommand;
 import com.simmgames.waystones.commands.WaystoneTabComplete;
+import com.simmgames.waystones.data.Config;
 import com.simmgames.waystones.data.Data;
 import com.simmgames.waystones.data.Waystone;
+import com.simmgames.waystones.events.TeleportEffects;
 import com.simmgames.waystones.events.UpdateWaystoneNametags;
 import com.simmgames.waystones.events.WaystoneBlockEvents;
 import com.simmgames.waystones.permissions.Perm;
@@ -19,6 +21,7 @@ public final class Waystones extends JavaPlugin {
 
     private Logger out;
     private Data data;
+    private TeleportEffects effects;
 
     @Override
     public void onEnable() {
@@ -28,19 +31,22 @@ public final class Waystones extends JavaPlugin {
         out.log(Level.INFO, "Loading all waystones.");
         data = new Data(out, this);
         data.Load();
+        effects = new TeleportEffects(this, data);
+
         out.log(Level.INFO, data.AllWaystones.size() + " waystones have been loaded!");
 
         Perm.Setup(this.getServer());
+        Config.Setup(this, data);
 
         out.log(Level.INFO, "Adding Event Listeners");
-        WaystoneBlockEvents events = new WaystoneBlockEvents(out, data, this.getServer());
+        WaystoneBlockEvents events = new WaystoneBlockEvents(out, data, this.getServer(), effects);
         getServer().getPluginManager().registerEvents(events, this);
 
         out.log(Level.INFO, "Registering Commands");
         getCommand("Waystone").setExecutor(new WaystoneCommand(out, data, events, this));
         getCommand("Waystone").setTabCompleter(new WaystoneTabComplete(out, data, events, this));
 
-        getCommand("Webug").setExecutor(new DebugCommand(out, data, events, this));
+        getCommand("Webug").setExecutor(new DebugCommand(out, data, events, effects,this));
 
         out.log(Level.INFO, "Waystones is now setup!");
 

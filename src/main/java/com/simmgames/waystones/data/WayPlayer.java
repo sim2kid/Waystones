@@ -16,6 +16,7 @@ public class WayPlayer
     public String UUID;
     public String lastUsername;
     public List<Waystone> KnownWaystones;
+    public List<Long> OldTeleports;
     public transient Waystone LastVisited;
     public transient boolean InWaystoneUse;
     public transient boolean InWaystoneDiscover;
@@ -36,5 +37,6 @@ public class WayPlayer
         UUID = playerUUID;
         lastUsername = playerName;
         KnownWaystones = new ArrayList<Waystone>();
+        OldTeleports = new ArrayList<>();
     }
 }

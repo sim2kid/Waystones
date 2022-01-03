@@ -1,5 +1,6 @@
 package com.simmgames.waystones.commands;
 
+import com.simmgames.waystones.data.Config;
 import com.simmgames.waystones.data.Data;
 import com.simmgames.waystones.data.WayPlayer;
 import com.simmgames.waystones.data.Waystone;
@@ -50,8 +51,13 @@ public class WaystoneTabComplete implements TabCompleter
                     return toReturn;
                 Player p = (Player)sender;
                 WayPlayer wp = data.GrabPlayer(p.getUniqueId().toString());
-                if((wp.InWaystoneUse && wp.LastVisited != null) || sender.hasPermission(Perm.TeleportIgnoreWaystone)) {
-                    if(wp.LastVisited.canUse() || sender.hasPermission(Perm.TeleportIgnoreWaystone)) {
+                if(sender.hasPermission(Perm.TeleportIgnoreWaystone)) {
+                    toReturn.add("teleport");
+                    toReturn.add("tp");
+                }
+                else if(wp.LastVisited != null)
+                {
+                    if (wp.LastVisited.canUse() && wp.InWaystoneUse) {
                         toReturn.add("teleport");
                         toReturn.add("tp");
                     }
@@ -64,7 +70,7 @@ public class WaystoneTabComplete implements TabCompleter
                 Player p = (Player)sender;
                 toReturn.add("create");
                 int waystoneCount = Work.FilterToUser(data.AllWaystones, p.getUniqueId().toString()).size();
-                if(waystoneCount >= data.WaystoneCreationLimit(p) && !p.hasPermission(Perm.CreateBypass))
+                if(waystoneCount >= Config.WaystoneCreationLimit(p) && !p.hasPermission(Perm.CreateBypass))
                 {
                     if(!p.hasPermission(Perm.CreateAdmin))
                         return toReturn;
@@ -92,7 +98,7 @@ public class WaystoneTabComplete implements TabCompleter
                 int waystoneCount = Work.FilterToUser(data.AllWaystones, p.getUniqueId().toString()).size();
 
                 boolean adminOnly = false;
-                if(waystoneCount >= data.WaystoneCreationLimit(p) && !p.hasPermission(Perm.CreateBypass))
+                if(waystoneCount >= Config.WaystoneCreationLimit(p) && !p.hasPermission(Perm.CreateBypass))
                 {
                     if(!p.hasPermission(Perm.CreateAdmin))
                         return toReturn;
@@ -179,11 +185,16 @@ public class WaystoneTabComplete implements TabCompleter
                     return toReturn;
                 Player p = (Player)sender;
                 WayPlayer wp = data.GrabPlayer(p.getUniqueId().toString());
-                if((wp.InWaystoneUse && wp.LastVisited != null) || sender.hasPermission(Perm.TeleportIgnoreWaystone)) {
-                    if (!(wp.LastVisited.canUse() || sender.hasPermission(Perm.TeleportIgnoreWaystone)))
-                        return toReturn;
-                } else { return toReturn; }
 
+                if(!sender.hasPermission(Perm.TeleportIgnoreWaystone)) {
+                    if (wp.LastVisited != null) {
+                        if (!(wp.LastVisited.canUse() && wp.InWaystoneUse)) {
+                            return toReturn;
+                        }
+                    } else {
+                        return toReturn;
+                    }
+                }
 
                 List<Waystone> context;
                 if(sender.hasPermission(Perm.TeleportUnknown))
@@ -231,8 +242,17 @@ public class WaystoneTabComplete implements TabCompleter
                     return toReturn;
                 Player p = (Player)sender;
                 WayPlayer wp = data.GrabPlayer(p.getUniqueId().toString());
-                if(!((wp.InWaystoneUse && wp.LastVisited.canUse()) || sender.hasPermission(Perm.TeleportIgnoreWaystone)))
-                    return toReturn;
+
+                if(!sender.hasPermission(Perm.TeleportIgnoreWaystone)) {
+                    if (wp.LastVisited != null) {
+                        if (!(wp.LastVisited.canUse() && wp.InWaystoneUse)) {
+                            return toReturn;
+                        }
+                    } else {
+                        return toReturn;
+                    }
+                }
+
 
                 List<Waystone> context = Work.GetOwnAndPublicWaystones(p, data);
 

@@ -1,10 +1,7 @@
 package com.simmgames.waystones.commands;
 
 import com.simmgames.waystones.Accessibility;
-import com.simmgames.waystones.data.Data;
-import com.simmgames.waystones.data.Local;
-import com.simmgames.waystones.data.WayPlayer;
-import com.simmgames.waystones.data.Waystone;
+import com.simmgames.waystones.data.*;
 import com.simmgames.waystones.events.WaystoneBlockEvents;
 import com.simmgames.waystones.permissions.Perm;
 import com.simmgames.waystones.structure.BlockLocation;
@@ -124,20 +121,20 @@ public class WaystoneCommand implements CommandExecutor {
         }
         Player p = (Player) sender;
         int waystoneCount = Work.FilterToUser(data.AllWaystones, p.getUniqueId().toString()).size();
-        if(!(waystoneCount < data.WaystoneCreationLimit(p) || p.hasPermission(Perm.CreateBypass) || p.hasPermission(Perm.CreateAdmin)))
+        if(!(waystoneCount < Config.WaystoneCreationLimit(p) || p.hasPermission(Perm.CreateBypass) || p.hasPermission(Perm.CreateAdmin)))
         {
             sender.sendMessage(ChatColor.RED + "You have reached your max number of Waystones that you can create. ["
-                    + waystoneCount + "/" + data.WaystoneCreationLimit(p) + "].");
+                    + waystoneCount + "/" + Config.WaystoneCreationLimit(p) + "].");
             return;
         }
 
 
         // Check if there is a lodestone nearby
-        Location lode = Work.FindBlockType(data.LodestoneSearchRadius(), p.getLocation(), Material.LODESTONE);
+        Location lode = Work.FindBlockType(Config.LodestoneSearchRadius(), p.getLocation(), Material.LODESTONE);
         if(lode == null)
         {
             p.sendMessage( ChatColor.RED + "No Lodestone nearby to turn into a Waystone. Make sure you are within " +
-                    data.LodestoneSearchRadius() + " blocks.");
+                    Config.LodestoneSearchRadius() + " blocks.");
             return;
         }
 
@@ -189,16 +186,16 @@ public class WaystoneCommand implements CommandExecutor {
                     sender.sendMessage(ChatColor.RED + "You don't have permission to make Admin waystones.");
                     return;
                 }
-        if(!(waystoneCount < data.WaystoneCreationLimit(p) || p.hasPermission(Perm.CreateBypass)) && !admin )
+        if(!(waystoneCount < Config.WaystoneCreationLimit(p) || p.hasPermission(Perm.CreateBypass)) && !admin )
         {
             sender.sendMessage(ChatColor.RED + "You have reached your max number of Waystones that you can create. ["
-                    + waystoneCount + "/" + data.WaystoneCreationLimit(p) + "].");
+                    + waystoneCount + "/" + Config.WaystoneCreationLimit(p) + "].");
             return;
         }
 
         Accessibility access = null;
 
-        String accessStr = data.DefaultAccess();
+        String accessStr = Config.DefaultAccess();
         if(args.length >= 3)
             if(args[2] != null)
                 accessStr = args[2];
@@ -246,13 +243,13 @@ public class WaystoneCommand implements CommandExecutor {
                 return;
         }
 
-        int chargeTime = data.WaystoneChargeTime(p);
+        int chargeTime = Config.WaystoneChargeTime(p);
         if(admin)
             chargeTime = 0;
 
         // Create Waystone
         Waystone newWaystone = new Waystone((admin ? Default.UUIDOne : p.getUniqueId().toString()),
-                new BlockLocation(lode), waystoneName.trim(), access, chargeTime, data.DefaultNametag());
+                new BlockLocation(lode), waystoneName.trim(), access, chargeTime, Config.DefaultNametag());
         if(newWaystone.hasNametag)
             newWaystone.hologramUUID = Work.CreateHologram(lode.getBlock().getLocation(), newWaystone.decodeName(data)).toString();
         data.AllWaystones.add(newWaystone);
@@ -280,7 +277,7 @@ public class WaystoneCommand implements CommandExecutor {
         Waystone wei = wp.LastNear;
         if(wei == null)
         {
-            p.sendMessage(ChatColor.RED + "No Waystone nearby. Make sure you are within " + data.LodestoneSearchRadius()
+            p.sendMessage(ChatColor.RED + "No Waystone nearby. Make sure you are within " + Config.LodestoneSearchRadius()
                     + " blocks of one.");
             return;
         }
@@ -438,7 +435,7 @@ public class WaystoneCommand implements CommandExecutor {
                 return;
         }
 
-        int perList = data.DefaultListSize();
+        int perList = Config.DefaultListSize();
 
         int max = (int) Math.ceil((double) Results.size() / (double) perList);
 

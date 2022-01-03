@@ -2,6 +2,7 @@ package com.simmgames.waystones.commands;
 
 import com.simmgames.waystones.data.Data;
 import com.simmgames.waystones.data.WayPlayer;
+import com.simmgames.waystones.events.TeleportEffects;
 import com.simmgames.waystones.events.WaystoneBlockEvents;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
@@ -18,13 +19,15 @@ public class DebugCommand implements CommandExecutor {
     Data data;
     WaystoneBlockEvents events;
     Server server;
+    TeleportEffects effects;
 
-    public DebugCommand(Logger pluginLogger, Data data, WaystoneBlockEvents events, JavaPlugin plugin)
+    public DebugCommand(Logger pluginLogger, Data data, WaystoneBlockEvents events, TeleportEffects effects, JavaPlugin plugin)
     {
         out = pluginLogger;
         this.data = data;
         this.events = events;
         server = plugin.getServer();
+        this.effects = effects;
     }
 
     @Override
@@ -33,7 +36,8 @@ public class DebugCommand implements CommandExecutor {
         if(!(sender instanceof Player))
             return true;
         Player p = (Player) sender;
-
+        WayPlayer wp = data.GrabPlayer(p.getUniqueId().toString());
+        //effects.WaystoneShortCircuit(wp.LastNear, p);
         return true;
     }
 }

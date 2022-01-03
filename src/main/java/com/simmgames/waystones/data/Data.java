@@ -43,9 +43,13 @@ public class Data {
         List<String> online = new ArrayList<String>();
         for(Player p: server.getOnlinePlayers())
             online.add(p.getUniqueId().toString());
-        for(WayPlayer p: players)
-            if(!online.contains(p.UUID))
-                RetirePlayer(p);
+        if(players != null) {
+            for (WayPlayer p : players)
+                if (!online.contains(p.UUID))
+                    RetirePlayer(p);
+        } else {
+            out.log(Level.SEVERE, "Players list is null. Nothing is being saved for players.");
+        }
         // Save remaining players
         for(String p: online)
             SavePlayer(p);
@@ -146,83 +150,6 @@ public class Data {
     public void RetirePlayer(WayPlayer player)
     {
         players.remove(player);
-    }
-
-    public double WaystoneUseDistance()
-    {
-        return Math.max(plugin.getConfig().getInt("use-distance"), 1);
-    }
-
-    public double WaystoneDiscoverDistance()
-    {
-        return Math.max(plugin.getConfig().getInt("discover-distance"), -1);
-    }
-
-    public double WaystoneNearDistance()
-    {
-        return Math.max(plugin.getConfig().getInt("near-distance"), 0);
-    }
-
-    public int LodestoneSearchRadius()
-    {
-        return Math.min(Math.max(plugin.getConfig().getInt("search-radius-lode"), 0), 15);
-    }
-
-    public int TPSearchRadius()
-    {
-        return Math.max(plugin.getConfig().getInt("search-radius-tp"), 1);
-    }
-
-    public int WaystoneCreationLimit(Player p)
-    {
-        int limit = Math.max(plugin.getConfig().getInt("creation-limit"), -1);
-        int toReturn = Work.GetMaxNumFromPermissions("waystone.create.limit", limit, p);
-        if(limit == -1)
-            toReturn = Integer.MAX_VALUE;
-        return toReturn;
-    }
-
-    public int WaystoneChargeTime(Player p)
-    {
-        if(p.hasPermission(Perm.ChargeBypass))
-            return 0;
-        int exponent = Work.FilterToUser(AllWaystones, p.getUniqueId().toString()).size();
-        int base = plugin.getConfig().getInt("charge-time");
-        double figure = plugin.getConfig().getDouble("charge-figure");
-        double left = Math.max(plugin.getConfig().getDouble("exponent-left"),0);
-        boolean useDim = plugin.getConfig().getBoolean("use-diminishing-returns");
-        boolean flip = plugin.getConfig().getBoolean("flip-figure-and-exponent");
-
-        if(!useDim)
-        {
-            int lowest = Work.GetMinNumFromPermissions("waystone.charge", base, p);
-            return Math.max(lowest, 0);
-        }
-
-        double expoArea = exponent + left;
-
-        if(flip)
-            return (int)(base + Math.pow(expoArea, figure));
-        else
-            return (int)(base + Math.pow(figure, expoArea));
-    }
-
-    public boolean NoGrief()
-    {
-        return plugin.getConfig().getBoolean("no-grief");
-    }
-
-    public boolean DefaultNametag()
-    {
-        return plugin.getConfig().getBoolean("default-nametag");
-    }
-    public String DefaultAccess()
-    {
-        return plugin.getConfig().getString("default-access");
-    }
-    public int DefaultListSize()
-    {
-        return plugin.getConfig().getInt("default-list-size");
     }
 
     private WayPlayer playerInList(String uuid)
