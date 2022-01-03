@@ -35,8 +35,12 @@ public class UpdateWaystoneNametags extends BukkitRunnable {
     public void run() {
         runTimes++;
         runTimes %= 20;
+        if(data.players == null)
+            return;
         for(WayPlayer p: data.players)
         {
+            if(p == null)
+                return;
             Waystone wei = p.LastNear;
             if(wei != null) {
                 if(wei.hasNametag) {

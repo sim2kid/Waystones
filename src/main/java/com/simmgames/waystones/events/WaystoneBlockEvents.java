@@ -206,6 +206,7 @@ public class WaystoneBlockEvents implements Listener
 
     private void OnExploded(Block b)
     {
+
         DestroyWaystone(b.getLocation());
     }
 
@@ -237,6 +238,8 @@ public class WaystoneBlockEvents implements Listener
             if(!Work.DestroyUnmarkedHolograms(location))
                 out.log(Level.WARNING, "Armor Stand at " + new BlockLocation(location) + " could not be found and " +
                         "could not be destroyed. There may still be a nametag floating there.");
+        out.log(Level.INFO, ChatColor.AQUA + "Waystone '" + wei.decodeName(data) + "' located at " + wei.location +
+                " has been destroyed.");
         // delete waystone in the Waystone list
         data.AllWaystones.remove(wei);
 
@@ -468,6 +471,8 @@ public class WaystoneBlockEvents implements Listener
         if(player.hasPermission(Perm.TitleCreate))
             Title(player,ChatColor.GOLD + "Waystone Created", ChatColor.AQUA + waystone.decodeName(data));
         data.Save();
+        out.log(Level.INFO, ChatColor.AQUA + "Waystone '" + waystone.decodeName(data) + "' has been created at "
+                + waystone.location + ".");
     }
 
     public void OnTeleport(Player player, Waystone destination, Waystone origin)

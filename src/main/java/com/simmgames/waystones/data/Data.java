@@ -6,6 +6,7 @@ import com.google.gson.reflect.TypeToken;
 import com.simmgames.waystones.permissions.Perm;
 import com.simmgames.waystones.util.Default;
 import com.simmgames.waystones.util.Work;
+import org.bukkit.ChatColor;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -82,7 +83,15 @@ public class Data {
         // Load Waystones List
         String wayplayersLocation = dataPath + "/Players/";
         Gson gson = new Gson();
-        String json = ReadFile(wayplayersLocation + playerUUID + ".json");
+        String pLoc = wayplayersLocation + playerUUID + ".json";
+        if(!FileExists(pLoc))
+        {
+            WayPlayer wp = new WayPlayer(playerUUID, "Unknown");
+            out.log(Level.INFO, ChatColor.AQUA + "New WayPlayer has been created for '" + playerUUID +"'");
+            players.add(wp);
+            SavePlayer(playerUUID);
+        }
+        String json = ReadFile(pLoc);
 
         try {
             Type WayplayerType = new TypeToken<WayPlayer>() {
@@ -291,6 +300,12 @@ public class Data {
         String waystoneData = gson.toJson(AllWaystones);
         WriteFile(waystonesLocation, waystoneData);
         return true;
+    }
+
+    private boolean FileExists(String location)
+    {
+        File myObj = new File(location);
+        return myObj.exists();
     }
 
     private String ReadFile(String location)
