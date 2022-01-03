@@ -548,8 +548,11 @@ public class WaystoneCommand implements CommandExecutor {
         }
         if(!WeiPlayer.LastVisited.canUse() && !sender.hasPermission(Perm.TeleportIgnoreWaystone))
         {
-            p.sendMessage(ChatColor.RED + "Origin Waystone is still charging! " + WeiPlayer.LastVisited.timeLeftUntilFunctional()
-                    + " seconds left until usable.");
+            if(WeiPlayer.LastVisited.timeLeftUntilFunctional() > 0)
+                p.sendMessage(ChatColor.RED + "Origin Waystone is still charging! T-" + WeiPlayer.LastVisited.FormattedTimeLeft()
+                    + " left until usable.");
+            else
+                p.sendMessage(ChatColor.RED + "Origin Waystone Unavailable");
             return;
         }
 
@@ -571,8 +574,11 @@ public class WaystoneCommand implements CommandExecutor {
             }
             if(!way.canUse())
             {
-                p.sendMessage(ChatColor.RED + "Destination Waystone is still charging. " + way.timeLeftUntilFunctional()
-                        + " seconds left until usable.");
+                if(WeiPlayer.LastVisited.timeLeftUntilFunctional() > 0)
+                    p.sendMessage(ChatColor.RED + "Destination Waystone is still charging. T-" + way.FormattedTimeLeft()
+                            + " left until usable.");
+                else
+                    p.sendMessage(ChatColor.RED + "Destination Waystone Unavailable");
                 return;
             }
 
@@ -611,8 +617,11 @@ public class WaystoneCommand implements CommandExecutor {
         }
         if(!WeiPlayer.LastVisited.canUse() && !sender.hasPermission(Perm.TeleportIgnoreWaystone))
         {
-            p.sendMessage(ChatColor.RED + "Origin Waystone is still charging! " + WeiPlayer.LastVisited.timeLeftUntilFunctional()
-                    + " seconds left until usable.");
+            if(WeiPlayer.LastVisited.timeLeftUntilFunctional() > 0)
+                p.sendMessage(ChatColor.RED + "Origin Waystone is still charging. T-" + WeiPlayer.LastVisited.FormattedTimeLeft()
+                        + " left until usable.");
+            else
+                p.sendMessage(ChatColor.RED + "Origin Waystone Unavailable");
             return;
         }
 
@@ -672,8 +681,11 @@ public class WaystoneCommand implements CommandExecutor {
                 }
                 if(!way.canUse())
                 {
-                    p.sendMessage(ChatColor.RED + "Destination Waystone is still charging. " + way.timeLeftUntilFunctional()
-                            + " seconds left until usable.");
+                    if(way.timeLeftUntilFunctional() > 0)
+                        p.sendMessage(ChatColor.RED + "Destination Waystone is still charging. T-" + way.FormattedTimeLeft()
+                            + " left until usable.");
+                    else
+                        p.sendMessage(ChatColor.RED + "Waystone is currently Unavailable");
                     return;
                 }
                 Waystone origin = null;

@@ -9,6 +9,7 @@ import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.checkerframework.checker.units.qual.Time;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
@@ -26,6 +27,7 @@ public class Waystone {
     public String hologramUUID;
     public long TimeWhenFunctional;
     public boolean hasNametag;
+    public transient boolean reactivatedEventRan = true;
 
     public Location getLocation(Server server)
     {
@@ -34,6 +36,7 @@ public class Waystone {
 
     public Waystone()
     {
+        reactivatedEventRan = true;
         owner = Default.UUIDZero;
         location = new BlockLocation();
         access = Accessibility.Discoverable;
@@ -49,7 +52,8 @@ public class Waystone {
         owner = OwnerUUID;
         location = BlockLocation;
         name = WaystoneName;
-        TimeWhenFunctional = currentTimeMillis() + (windupTime * 1000);
+        setCharge(windupTime);
+        reactivatedEventRan = true;
         this.hasNametag = hasNametag;
         if(name.trim() == "")
         {
@@ -63,13 +67,40 @@ public class Waystone {
 
     }
 
+    public void setCharge(int secondsTillReady)
+    {
+        TimeWhenFunctional = currentTimeMillis() + (secondsTillReady * 1000);
+        reactivatedEventRan = false;
+    }
+
+    public boolean RunReactivateEvent()
+    {
+
+        if(reactivatedEventRan)
+            return false;
+        if(currentTimeMillis() - TimeWhenFunctional > 1000 * 15)
+        {
+            reactivatedEventRan = true;
+            return false;
+        }
+
+        return reactivatedEventRan = true;
+    }
+
     public boolean canUse()
     {
         return TimeWhenFunctional <= currentTimeMillis();
     }
     public int timeLeftUntilFunctional()
     {
-        return (int) Math.max((TimeWhenFunctional - currentTimeMillis())/1000, 0);
+        long time = Math.max((TimeWhenFunctional - currentTimeMillis())/1000, 0);
+        if(time > 0 && reactivatedEventRan)
+            reactivatedEventRan = false;
+        return (int) time;
+    }
+    public String FormattedTimeLeft()
+    {
+        return reduceTime(timeLeftUntilFunctional());
     }
 
     @Override
@@ -93,7 +124,10 @@ public class Waystone {
         if(this.access == Accessibility.Private)
             accessor = " - Private";
         if(!canUse()) {
-            accessor = " T-" + reduceTime(timeLeftUntilFunctional());
+            if(timeLeftUntilFunctional() > 0)
+                accessor = " T-" + reduceTime(timeLeftUntilFunctional());
+            else
+                accessor = " - Unavailable";
         }
 
         String maker = "";

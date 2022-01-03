@@ -92,7 +92,7 @@ public class Work {
     {
         boolean canReturnTrue = false;
         Collection<Entity> collection = location.getWorld().getNearbyEntities(
-                location.add(new Vector(0.5, -1, 0.5)), 0.1, 0.1, 0.51);
+                location.add(new Vector(0.5, -1, 0.5)), 0.5, 0.5, 0.5);
         for(Entity e: collection) {
             ArmorStand armorStand = (ArmorStand)e;
             if (armorStand == null) {

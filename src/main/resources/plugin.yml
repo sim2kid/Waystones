@@ -10,10 +10,13 @@ softdepend: [Vault]
 commands:
   waystone:
     description: 'Teleport to another waystone'
-    usage: '/waystone <destination>'
+    usage: '/waystone'
     permission: 'waystone.command'
     aliases:
       - ws
       - way
       - lodestone
       - waypoint
+  webug:
+    description: 'debug'
+    usage: '/webug'

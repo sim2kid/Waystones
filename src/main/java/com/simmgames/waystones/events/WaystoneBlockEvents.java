@@ -483,8 +483,8 @@ public class WaystoneBlockEvents implements Listener
 
         // Before Teleport Effects
         if(origin != null)
-            origin.getLocation(server).getWorld().playSound(origin.getLocation(server),Sound.BLOCK_BEACON_AMBIENT,
-                    SoundCategory.BLOCKS, 5f, 0.6f);
+            origin.getLocation(server).getWorld().playSound(origin.getLocation(server),Sound.ENTITY_ELDER_GUARDIAN_HURT,
+                    SoundCategory.BLOCKS, 5f, 0.0f);
         player.sendMessage(ChatColor.LIGHT_PURPLE + "" + ChatColor.ITALIC + "Teleporting to " + destination.decodeName(data) + ".");
         player.getWorld().playSound(player.getLocation(),Sound.ENTITY_ENDERMAN_TELEPORT, SoundCategory.PLAYERS, 1f, 1f);
         player.getWorld().spawnParticle(Particle.PORTAL,
@@ -494,8 +494,8 @@ public class WaystoneBlockEvents implements Listener
         player.teleport(destinationLoc.setDirection(player.getLocation().getDirection()));
 
         // After Teleport Effects
-        destination.getLocation(server).getWorld().playSound(destination.getLocation(server),Sound.BLOCK_BEACON_AMBIENT,
-                SoundCategory.BLOCKS, 5f, 0.6f);
+        destination.getLocation(server).getWorld().playSound(destination.getLocation(server),Sound.ENTITY_ELDER_GUARDIAN_HURT,
+                SoundCategory.BLOCKS, 5f, 0.0f);
         destinationLoc.getWorld().playSound(destinationLoc,Sound.ENTITY_ENDERMAN_TELEPORT, SoundCategory.PLAYERS, 1f, 1f);
         destinationLoc.getWorld().spawnParticle(Particle.PORTAL,
                 destinationLoc.add(0, 1,0), 500, 0.25, 0.5, 0.25);

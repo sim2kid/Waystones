@@ -1,6 +1,12 @@
 # Created by sim2kid
 # Code is on GitHub at https://github.com/sim2kid/waystones
 
+# # # # # # # # # # # # # # # # # # # # # #
+#                                         #
+#            Simm's Waystones             #
+#                                         #
+# # # # # # # # # # # # # # # # # # # # # #
+
 # In blocks, the max distance you can be to use a waystone.
 # When outside this distance, you can't use any waystone commands
 # This value must be at least 1
@@ -26,6 +32,8 @@ search-radius-tp: 8
 
 # If the waystones should be protected from environmental damage.
 no-grief: true
+
+
 
 
 # # # # # # # # # # # # # # # # # # # # # #
@@ -72,8 +80,11 @@ flip-figure-and-exponent: true
 
 
 
-
-# Defaults
+# # # # # # # # # # # # # # # # # # # # # #
+#                                         #
+#            Default Values               #
+#                                         #
+# # # # # # # # # # # # # # # # # # # # # #
 
 # True if nametags are enabled by default.
 # You can use /waystone nametag <true|false> to toggle it.
@@ -85,3 +96,51 @@ default-access: 'Discoverable'
 
 # The number of waypoints to list using /list
 default-list-size: 7
+
+
+
+
+
+# # # # # # # # # # # # # # # # # # # # # #
+#                                         #
+#             Random Events               #
+#                                         #
+# # # # # # # # # # # # # # # # # # # # # #
+
+# Teleportation Karma
+# If enabled, the more offten a player teleports, the more likely a negative event will occur.
+teleportation-karma: true
+
+
+# Waystone short circuit
+# When enabled, a waystone has a chance of short-circuiting and needing to recharge
+waystone-short-circuit: true
+# Between 0 and 1, the likelihood of this event happening on teleportation.
+# This will increase with karma if enabled
+waystone-short-circuit-chance: 0.1
+# This will disable the teleportation event on admin stones.
+short-circuit-ignore-adminstones: true
+
+# Short Circuit Duration (In Seconds)
+# The amount of time it'll take a waystone to recover from a short circuit
+# If karma is enabled, the length of a short-circuit will be influenced by a player's TP Karma.
+waystone-short-circuit-duration: 30
+# This will influence the duration of the event upto the stated amount in both positive and negative directions.
+waystone-short-circuit-spread: 15
+
+
+
+# Endermites
+# When enables, a player has a chance of spawning an endermite on teleportation
+spawn-endermites: true
+# Between 0 and 1, the likelihood of this event happening on teleportation.
+# This will increase with karma if enabled
+spawn-endermites-chance: 0.05
+
+
+
+# Teleportation Sickness
+# When enabled, a player may get a variety of negative potion effects after teleporting
+# This is best used with karma as the chances will scale when a player has more karma
+teleport-sickness: true
+teleport-sickness-chance: 0.01
