@@ -29,6 +29,9 @@ public class Work {
         Vector3 origin = new Vector3(playerLocation);
         List<Vector3> searchThis = searchFromOrigin(origin, searchDistance);
 
+        Location closest = null;
+        double shortest = Double.MAX_VALUE;
+
         for(Vector3 block: searchThis)
         {
             double dist = (origin).getDistance(block);
@@ -36,11 +39,16 @@ public class Work {
             {
                 Location l = new Location(playerLocation.getWorld(), block.X, block.Y+2, block.Z);
                 if(l.getBlock().getType() == type) {
-                    return l;
+                    double distance = (new Vector3(playerLocation)).getDistance(new Vector3(l));
+                    if(shortest > distance)
+                    {
+                        shortest = distance;
+                        closest = l;
+                    }
                 }
             }
         }
-        return null;
+        return closest;
     }
     public static UUID CreateHologram(Location location, String text)
     {
@@ -174,8 +182,10 @@ public class Work {
             if(floorOkay && feetOkay && headOkay) {
                 Location result = feet.add(0.5, 0, 0.5);
                 double distance = (new Vector3(origin)).getDistance(new Vector3(result));
-                if(distance < shortest)
+                if(distance < shortest) {
                     closest = result;
+                    shortest = distance;
+                }
             }
         }
         return closest;
