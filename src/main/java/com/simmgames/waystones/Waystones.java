@@ -21,6 +21,7 @@ import org.bukkit.scheduler.BukkitTask;
 import org.checkerframework.checker.units.qual.N;
 import sun.awt.ConstrainableGraphics;
 
+import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -37,6 +38,17 @@ public final class Waystones extends JavaPlugin {
         // Plugin startup logic
         out = this.getLogger();
         out.log(Level.INFO, "Waystones is now starting up...");
+
+        saveResource("LICENSE.md", true);
+        File f = new File(getDataFolder(), File.separator + "config.yml");
+        if(!f.exists()) {
+            saveResource("config.yml", false);
+            out.log(Level.INFO, "Creating default configuration");
+        }else{
+            out.log(Level.INFO, "Configuration found, processing load");
+        }
+
+
         out.log(Level.INFO, "Loading all waystones.");
         data = new Data(out, this);
         data.Load();
