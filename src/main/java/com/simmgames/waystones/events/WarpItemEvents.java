@@ -56,9 +56,12 @@ public class WarpItemEvents implements Listener {
 
         if(event.getHand() == EquipmentSlot.OFF_HAND)
         {
+            ItemStack mainHand = p.getInventory().getItemInMainHand();
             // ignore if warp item is in main Hand
-            if(WarpItem.isWarpItem(p.getInventory().getItemInMainHand()))
-                return;
+            if(mainHand != null)
+                if(mainHand.getType() != Material.AIR)
+                    if(WarpItem.isWarpItem(mainHand))
+                        return;
         }
 
         if(WarpItem.isWarpItem(item))
