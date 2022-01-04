@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class WarpScroll {
+    public static NamespacedKey scrollKey;
     static Plugin plugin;
     static String scrollValue;
 
@@ -25,11 +26,12 @@ public class WarpScroll {
     {
         WarpScroll.plugin = plugin;
         WarpScroll.scrollValue = "warp_scroll";
+        scrollKey = new NamespacedKey(plugin, scrollValue);
+        WarpItem.itemTypes.add(scrollKey);
     }
     public static void AddRecipe()
     {
-        NamespacedKey nsk = new NamespacedKey(plugin, scrollValue);
-        ShapedRecipe recipe = new ShapedRecipe(nsk, GetItem());
+        ShapedRecipe recipe = new ShapedRecipe(scrollKey, GetItem());
 
         recipe.shape("*n*","epe", "*n*");
 

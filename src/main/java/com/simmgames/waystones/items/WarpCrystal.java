@@ -21,6 +21,7 @@ import java.util.Random;
 import java.util.UUID;
 
 public class WarpCrystal {
+    public static NamespacedKey crystalKey;
     static Plugin plugin;
     static NamespacedKey uses;
     static String crystalValue;
@@ -30,11 +31,12 @@ public class WarpCrystal {
         WarpCrystal.plugin = plugin;
         WarpCrystal.uses = new NamespacedKey(plugin, "uses");
         WarpCrystal.crystalValue = "warp_crystal";
+        crystalKey = new NamespacedKey(plugin, crystalValue);
+        WarpItem.itemTypes.add(crystalKey);
     }
     public static void AddRecipe()
     {
-        NamespacedKey nsk = new NamespacedKey(plugin, crystalValue);
-        ShapedRecipe recipe = new ShapedRecipe(nsk, GetItem());
+        ShapedRecipe recipe = new ShapedRecipe(crystalKey, GetItem());
 
         recipe.shape("eie","bsb", "eie");
 

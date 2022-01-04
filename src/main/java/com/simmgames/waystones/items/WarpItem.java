@@ -24,6 +24,7 @@ public class WarpItem {
     public static NamespacedKey customItem;
     public static NamespacedKey waystone;
     public static NamespacedKey noStack;
+    public static List<NamespacedKey> itemTypes = new ArrayList<>();
 
     public String type;
     public String waystoneUUID;

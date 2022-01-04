@@ -5,6 +5,7 @@ import com.simmgames.waystones.data.Config;
 import com.simmgames.waystones.data.Data;
 import com.simmgames.waystones.data.WayPlayer;
 import com.simmgames.waystones.data.Waystone;
+import com.simmgames.waystones.items.WarpItem;
 import com.simmgames.waystones.permissions.Perm;
 import com.simmgames.waystones.structure.BlockLocation;
 import com.simmgames.waystones.structure.Vector3;
@@ -446,6 +447,11 @@ public class WaystoneBlockEvents implements Listener
     }
     public boolean DiscoverWaystone(Player player, Waystone waystone)
     {
+        if(Config.CustomItems())
+        {
+            player.discoverRecipes(WarpItem.itemTypes);
+        }
+
         if(waystone.access != Accessibility.Discoverable)
             return false;
 
