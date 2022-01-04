@@ -508,7 +508,10 @@ public class WaystoneBlockEvents implements Listener
         destinationLoc.getWorld().spawnParticle(Particle.PORTAL,
                 destinationLoc.add(0, 1,0), 500, 0.25, 0.5, 0.25);
 
-        effects.RunTeleportEvents(destination, player);
+        int karma = 1;
+        if(origin == null)
+            karma++;
+        effects.RunTeleportEvents(destination, player, karma);
     }
 
     private boolean isLodestone(BlockEvent event) {

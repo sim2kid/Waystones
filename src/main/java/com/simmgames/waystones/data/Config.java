@@ -114,4 +114,25 @@ public class Config {
     public static double EndermiteChance()
     { return plugin.getConfig().getDouble("spawn-endermites-chance"); }
 
+    public static boolean CustomItems()
+    {
+        return UseWarpScroll() || UseWarpCrystal();
+    }
+    public static boolean UseWarpScroll()
+    {
+        return plugin.getConfig().getBoolean("use-warpscroll");
+    }
+    public static boolean UseWarpCrystal()
+    {
+        return plugin.getConfig().getBoolean("use-warpcrystal");
+    }
+    public static boolean UseWarpItemOnFail()
+    {
+        return plugin.getConfig().getBoolean("use-warp-on-fail");
+    }
+    public static int WarpCrystalMax() {
+        return plugin.getConfig().getInt("warpcrystal-max-uses");
+    }
+    public static double WarpCrystalPercent()
+    { return plugin.getConfig().getDouble("warpcrystal-max-percent"); }
 }

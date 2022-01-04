@@ -12,6 +12,7 @@ import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.permissions.Permissible;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionAttachmentInfo;
@@ -22,6 +23,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
+
+import static org.bukkit.Material.*;
 
 public class Work {
     public static Location FindBlockType(int searchDistance, Location playerLocation, Material type)
@@ -292,6 +295,26 @@ public class Work {
             if(!wei.owner.equalsIgnoreCase(WeiPlayer.UUID))
                 player = ChatColor.DARK_PURPLE + "[" + data.GrabPlayer(wei.owner).lastUsername + "]";
             return(otherWorld + player + unknown + ChatColor.AQUA + wei.name + "\n");
+        }
+    }
+
+    public static boolean IsIntractable(Material blockType)
+    {
+        boolean intractable = blockType.isInteractable();
+        if (!intractable)
+            return false;
+        if(Tag.STAIRS.isTagged(blockType) || Tag.FENCES.isTagged(blockType))
+            return false;
+        switch (blockType)
+        {
+            case REDSTONE_ORE:
+            case REDSTONE_WIRE:
+            case PUMPKIN:
+            case PISTON_HEAD:
+            case MOVING_PISTON:
+                return false;
+            default:
+                return true;
         }
     }
 }

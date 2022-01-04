@@ -143,6 +143,24 @@ public class Waystone {
         return  maker + name + accessor;
     }
 
+    public String decodeNameNoUseState(Data data)
+    {
+        String accessor = "";
+        if(this.access == Accessibility.Public)
+            accessor = " - Public";
+        if(this.access == Accessibility.Private)
+            accessor = " - Private";
+
+        String maker = "";
+        if(!owner.equalsIgnoreCase(Default.UUIDZero)) {
+            maker = "[" + data.GrabPlayer(owner).lastUsername + "] ";
+        } else if (!owner.equalsIgnoreCase(Default.UUIDOne))
+        {
+            maker = "[Admin] ";
+        }
+        return  maker + name + accessor;
+    }
+
     private String reduceTime(int seconds)
     {
         int days = (int)Math.floor((double) seconds / (60 * 60 * 24));

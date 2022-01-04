@@ -190,3 +190,28 @@ enderpearl-value: 120
 # = = = = = = = = = = = = = = = = = = = = #
 #           ^ NOT IMPLEMENTED ^           #
 # = = = = = = = = = = = = = = = = = = = = #
+
+
+# # # # # # # # # # # # # # # # # # # # # #
+#                                         #
+#              Custom Items               #
+#                                         #
+# # # # # # # # # # # # # # # # # # # # # #
+
+# Use Warp Scrolls.
+# Warp Scrolls are one use items that warp to the linked waystone
+use-warpscroll: true
+
+# Use Warp Crystals.
+# Warp Crystals are multi-use items that warp to a linked waystone
+# They will have a small chance of breaking upon use (Which can be affected below)
+use-warpcrystal: true
+
+# Soft max on warp crystal uses.
+# A crystal is way more likely to break when approaching this many uses
+warpcrystal-max-uses: 6
+# The max random chance a crystal gets when at 'max-use'
+warpcrystal-max-percent: 0.30
+
+# If an item should be consumed even if a teleportation fails.
+use-warp-on-fail: false

@@ -8,11 +8,18 @@ import com.simmgames.waystones.data.Data;
 import com.simmgames.waystones.data.Waystone;
 import com.simmgames.waystones.events.TeleportEffects;
 import com.simmgames.waystones.events.UpdateWaystoneNametags;
+import com.simmgames.waystones.events.WarpItemEvents;
 import com.simmgames.waystones.events.WaystoneBlockEvents;
+import com.simmgames.waystones.items.WarpCrystal;
+import com.simmgames.waystones.items.WarpItem;
+import com.simmgames.waystones.items.WarpScroll;
 import com.simmgames.waystones.permissions.Perm;
 import com.simmgames.waystones.structure.Vector3;
+import org.bukkit.NamespacedKey;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
+import org.checkerframework.checker.units.qual.N;
+import sun.awt.ConstrainableGraphics;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -22,6 +29,8 @@ public final class Waystones extends JavaPlugin {
     private Logger out;
     private Data data;
     private TeleportEffects effects;
+    private NamespacedKey itemTypeKey;
+    private BukkitTask task;
 
     @Override
     public void onEnable() {
@@ -42,21 +51,46 @@ public final class Waystones extends JavaPlugin {
         WaystoneBlockEvents events = new WaystoneBlockEvents(out, data, this.getServer(), effects);
         getServer().getPluginManager().registerEvents(events, this);
 
+
         out.log(Level.INFO, "Registering Commands");
         getCommand("Waystone").setExecutor(new WaystoneCommand(out, data, events, this));
         getCommand("Waystone").setTabCompleter(new WaystoneTabComplete(out, data, events, this));
 
         getCommand("Webug").setExecutor(new DebugCommand(out, data, events, effects,this));
 
+
+        if(Config.CustomItems())
+        {
+            WarpItem.Setup(this);
+
+            WarpItemEvents warpItemEvents = new WarpItemEvents(out, data, this.getServer(), events);
+            getServer().getPluginManager().registerEvents(warpItemEvents, this);
+
+            if(Config.UseWarpScroll())
+            {
+                WarpScroll.Setup(this);
+                WarpScroll.AddRecipe();
+                out.log(Level.INFO, "Enabled Warp Scrolls");
+            }
+            if(Config.UseWarpCrystal())
+            {
+                WarpCrystal.Setup(this);
+                WarpCrystal.AddRecipe();
+                out.log(Level.INFO, "Enabled Warp Crystals");
+            }
+        }
+
         out.log(Level.INFO, "Waystones is now setup!");
 
-        BukkitTask task = new UpdateWaystoneNametags(this, data).runTaskTimer(this, 10, 10);
+        task = new UpdateWaystoneNametags(this, data).runTaskTimer(this, 10, 10);
     }
 
     @Override
     public void onDisable() {
         // Plugin shutdown logic
         out.log(Level.INFO, "Waystones is now shutting down...");
+        task.cancel();
+        out.log(Level.INFO, "Stopping tasks");
         data.Save();
         out.log(Level.INFO, "All waystone data has been saved. Goodbye!");
     }

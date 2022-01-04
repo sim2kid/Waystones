@@ -35,12 +35,17 @@ public class TeleportEffects {
         this.data = data;
         out = plugin.getLogger();
     }
-
     public void RunTeleportEvents(Waystone waystone, Player player)
+    {
+        this.RunTeleportEvents(waystone, player, 1);
+    }
+
+    public void RunTeleportEvents(Waystone waystone, Player player, int karmaToAdd)
     {
         // Update Karma
         WayPlayer wp = data.GrabPlayer(player.getUniqueId().toString());
-        wp.OldTeleports.add(currentTimeMillis());
+        for(int i = 0; i < karmaToAdd; i++)
+            wp.OldTeleports.add(currentTimeMillis());
 
         // Short Circuit
         WaystoneShortCircuit(waystone, player);
