@@ -150,7 +150,7 @@ spawn-endermites-chance: 0.05
 # When enabled, a player may get a variety of negative potion effects after teleporting
 # This is best used with karma as the chances will scale when a player has more karma
 teleport-sickness: true
-teleport-sickness-chance: 0.0.1
+teleport-sickness-chance: 0.01
 
 
 

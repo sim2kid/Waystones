@@ -109,7 +109,7 @@ public class WaystoneTabComplete implements TabCompleter
                 if(args.length == 3)
                 {
                     if(sender.hasPermission(Perm.CreateDiscoverable))
-                        toReturn.add("default");
+                        toReturn.add("discoverable");
                     if(sender.hasPermission(Perm.CreatePrivate) && !adminOnly)
                         toReturn.add("private");
                     if(sender.hasPermission(Perm.CreatePublic))

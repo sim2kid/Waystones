@@ -20,6 +20,7 @@ import java.util.UUID;
 import static java.lang.System.currentTimeMillis;
 
 public class Waystone {
+    public String uuid;
     public String owner;
     public BlockLocation location;
     public Accessibility access;
@@ -36,6 +37,7 @@ public class Waystone {
 
     public Waystone()
     {
+        uuid = UUID.randomUUID().toString();
         reactivatedEventRan = true;
         owner = Default.UUIDZero;
         location = new BlockLocation();
@@ -49,6 +51,7 @@ public class Waystone {
     public Waystone(@NotNull String OwnerUUID, BlockLocation BlockLocation, @NotNull String WaystoneName,
                     Accessibility WaystoneAccessibility, int windupTime, boolean hasNametag)
     {
+        uuid = UUID.randomUUID().toString();
         owner = OwnerUUID;
         location = BlockLocation;
         name = WaystoneName;

@@ -16,6 +16,7 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -150,6 +151,30 @@ public class Data {
     public void RetirePlayer(WayPlayer player)
     {
         players.remove(player);
+    }
+
+    public Waystone WaystoneFromUUID(UUID waystoneUUID) {
+        return WaystoneFromUUID(waystoneUUID.toString());
+    }
+    public Waystone WaystoneFromUUID(String waystoneUUID) {
+        for(Waystone wei: AllWaystones)
+        {
+            if(wei.uuid.equalsIgnoreCase(waystoneUUID))
+                return wei;
+        }
+        return null;
+    }
+
+    public List<Waystone> WaystonesFromStringList(List<String> waystoneUUIDs)
+    {
+        List<Waystone> waylist = new ArrayList<>();
+        for(String uuid: waystoneUUIDs)
+        {
+            Waystone stone = WaystoneFromUUID(uuid);
+            if(stone != null)
+                waylist.add(stone);
+        }
+        return waylist;
     }
 
     private WayPlayer playerInList(String uuid)
