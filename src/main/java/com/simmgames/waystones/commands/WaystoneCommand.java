@@ -37,6 +37,7 @@ public class WaystoneCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
+        args = Work.PreProcessArgs(args);
         if(!sender.hasPermission(Perm.Waystone))
         {
             sender.sendMessage(Local.NoPermsCommand());

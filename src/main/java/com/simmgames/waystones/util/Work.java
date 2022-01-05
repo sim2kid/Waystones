@@ -317,4 +317,49 @@ public class Work {
                 return true;
         }
     }
+
+    public static String[] PreProcessArgs(String[] args)
+    {
+        List<String> strList = new ArrayList<>();
+        for(int i = 0; i < args.length; i++)
+        {
+            if(args[i] == null)
+            {
+                continue;
+            }
+            if(args[i].startsWith("\"") && args[i].length() > 1)
+            {
+                int end;
+                boolean succeeded = false;
+                String UseThis = "";
+                for(end = i; end < args.length; end++)
+                {
+                    boolean skipSub = false;
+                    if(args[end].endsWith("\\\""))
+                    {
+                        skipSub = true;
+
+                    }
+                    UseThis += args[end] + " ";
+                    if(args[end].endsWith("\"") && !skipSub)
+                    {
+                        UseThis = UseThis.substring(0, UseThis.length()-2);
+                        break;
+                    }
+                }
+                i = end;
+                UseThis = UseThis.substring(1);
+                UseThis = UseThis.replace("\\\"", "\"");
+                strList.add(UseThis);
+            } else {
+                if(args[i].startsWith("\\\"") && args[i].length() > 2)
+                    args[i] = args[i].substring(1);
+                strList.add((args[i]));
+            }
+        }
+        String[] array = new String[strList.size()];
+        for(int i = 0; i < array.length; i++)
+            array[i] = strList.get(i);
+        return array;
+    }
 }

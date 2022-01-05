@@ -39,6 +39,14 @@ public final class Waystones extends JavaPlugin {
         out = this.getLogger();
         out.log(Level.INFO, "Waystones is now starting up...");
 
+
+        out.log(Level.INFO, "Loading all waystones.");
+        data = new Data(out, this);
+        data.Load();
+
+        out.log(Level.INFO, data.AllWaystones.size() + " waystones have been loaded!");
+
+
         saveResource("LICENSE.md", true);
         File f = new File(getDataFolder(), File.separator + "config.yml");
         if(!f.exists()) {
@@ -48,18 +56,11 @@ public final class Waystones extends JavaPlugin {
             out.log(Level.INFO, "Configuration found, processing load");
         }
 
-
-        out.log(Level.INFO, "Loading all waystones.");
-        data = new Data(out, this);
-        data.Load();
-        effects = new TeleportEffects(this, data);
-
-        out.log(Level.INFO, data.AllWaystones.size() + " waystones have been loaded!");
-
         Perm.Setup(this.getServer());
         Config.Setup(this, data);
 
         out.log(Level.INFO, "Adding Event Listeners");
+        effects = new TeleportEffects(this, data);
         WaystoneBlockEvents events = new WaystoneBlockEvents(out, data, this.getServer(), effects);
         getServer().getPluginManager().registerEvents(events, this);
 

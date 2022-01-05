@@ -4,6 +4,7 @@ import com.simmgames.waystones.data.Data;
 import com.simmgames.waystones.data.WayPlayer;
 import com.simmgames.waystones.events.TeleportEffects;
 import com.simmgames.waystones.events.WaystoneBlockEvents;
+import com.simmgames.waystones.util.Work;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -32,7 +33,7 @@ public class DebugCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-
+        args = Work.PreProcessArgs(args);
         if(!(sender instanceof Player))
             return true;
         Player p = (Player) sender;

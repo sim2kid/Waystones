@@ -40,6 +40,7 @@ public class WaystoneTabComplete implements TabCompleter
 
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
+        args = Work.PreProcessArgs(args);
         List<String> toReturn = new ArrayList<String>();
         if(!sender.hasPermission(Perm.Waystone))
             return toReturn;

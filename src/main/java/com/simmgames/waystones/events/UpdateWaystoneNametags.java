@@ -35,6 +35,8 @@ public class UpdateWaystoneNametags extends BukkitRunnable {
     public void run() {
         runTimes++;
         runTimes %= 20;
+        if(data == null)
+            return;
         if(data.players == null)
             return;
         for(WayPlayer p: data.players)
