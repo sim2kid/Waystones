@@ -1,12 +1,14 @@
 package com.simmgames.waystones.events;
 
 import com.destroystokyo.paper.event.inventory.PrepareResultEvent;
+import com.simmgames.waystones.Accessibility;
 import com.simmgames.waystones.data.Config;
 import com.simmgames.waystones.data.Data;
 import com.simmgames.waystones.data.Waystone;
 import com.simmgames.waystones.items.WarpCrystal;
 import com.simmgames.waystones.items.WarpItem;
 import com.simmgames.waystones.items.WarpScroll;
+import com.simmgames.waystones.permissions.Perm;
 import com.simmgames.waystones.util.Default;
 import com.simmgames.waystones.util.Work;
 import org.bukkit.*;
@@ -80,27 +82,36 @@ public class WarpItemEvents implements Listener {
             //if it, set the item to this waystone
             if(waystone != null)
             {
-                ItemStack NewItem = warpItem.SetWaystone(waystone.uuid, waystone.decodeNameNoUseState(data));
-                WarpItem newWarp = new WarpItem(NewItem);
-                if(WarpCrystal.IsWarpCrystal(newWarp.item)) {
-                    newWarp.AppendLore(WarpCrystal.ExtraLore(newWarp.item));
-                    newWarp.SetNotStackable();
-                }
-                // Give new item to player
-                Map<Integer, ItemStack> couldNotFit = p.getInventory().addItem(newWarp.item);
-                for(Map.Entry<Integer, ItemStack> kvp: couldNotFit.entrySet())
-                {
-                    p.getWorld().dropItem(p.getLocation().add(0, 1, 0), kvp.getValue());
-                }
-                // Effects?
+                // Permission Check
+                if(p.hasPermission(Perm.MakeWayItem)) {
+                    // Private check
+                    if(waystone.access != Accessibility.Private || waystone.owner.equalsIgnoreCase(p.getUniqueId().toString())){
+                        ItemStack NewItem = warpItem.SetWaystone(waystone.uuid, waystone.decodeNameNoUseState(data));
+                        WarpItem newWarp = new WarpItem(NewItem);
+                        if (WarpCrystal.IsWarpCrystal(newWarp.item)) {
+                            newWarp.AppendLore(WarpCrystal.ExtraLore(newWarp.item));
+                            newWarp.SetNotStackable();
+                        }
+                        // Give new item to player
+                        Map<Integer, ItemStack> couldNotFit = p.getInventory().addItem(newWarp.item);
+                        for (Map.Entry<Integer, ItemStack> kvp : couldNotFit.entrySet()) {
+                            p.getWorld().dropItem(p.getLocation().add(0, 1, 0), kvp.getValue());
+                        }
+                        // Effects?
 
-                if(WarpCrystal.IsWarpCrystal(newWarp.item))
-                    p.playSound(p.getLocation(), Sound.BLOCK_AMETHYST_CLUSTER_STEP, SoundCategory.PLAYERS, 1f, 2f);
-                else if(WarpScroll.IsWarpScroll(newWarp.item))
-                    p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_WORK_LIBRARIAN, SoundCategory.PLAYERS, 1f, 1.5f);
-                else
-                    p.playSound(p.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, SoundCategory.PLAYERS, 1f, 2f);
-                return;
+                        if (WarpCrystal.IsWarpCrystal(newWarp.item))
+                            p.playSound(p.getLocation(), Sound.BLOCK_AMETHYST_CLUSTER_STEP, SoundCategory.PLAYERS, 1f, 2f);
+                        else if (WarpScroll.IsWarpScroll(newWarp.item))
+                            p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_WORK_LIBRARIAN, SoundCategory.PLAYERS, 1f, 1.5f);
+                        else
+                            p.playSound(p.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, SoundCategory.PLAYERS, 1f, 2f);
+                        return;
+                    } else {
+                        p.sendMessage(ChatColor.RED + "You can't make a WayItem of a Private Waystone that you don't own.");
+                    }
+                } else {
+                    p.sendMessage(ChatColor.RED + "You don't have permission to make a WayItem.");
+                }
             }
         }
 
@@ -119,6 +130,13 @@ public class WarpItemEvents implements Listener {
         {
             Waystone waystone = data.WaystoneFromUUID(warpItem.waystoneUUID);
             boolean waystoneDNE = false;
+
+            // Check permissions
+            if(!p.hasPermission(Perm.UseWayItem))
+            {
+                p.sendMessage(ChatColor.RED + "You don't have permission to use a WayItem.");
+                return;
+            }
 
             if(waystone != null) {
                 if(waystone.canUse()) {

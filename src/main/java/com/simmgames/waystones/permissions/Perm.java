@@ -44,6 +44,9 @@ public class Perm {
     public static Permission TitleEnter;
     public static Permission TitleDiscover;
 
+    public static Permission UseWayItem;
+    public static Permission MakeWayItem;
+
     public static void Setup(Server server)
     {
         Default = new Permission("waystone.default", "All of the normal commands to use this plugin.");
@@ -113,8 +116,16 @@ public class Perm {
         TitleEnter.addParent(Default, true);
         Title.addParent(TitleDiscover, true);
 
+        MakeWayItem = new Permission("waystone.wayitem.make", "Allows a player to make wayitmes");
+        UseWayItem = new Permission("waystone.wayitem.use", "Allows a player to use wayitmes");
+
+        MakeWayItem.addParent(Default, true);
+        UseWayItem.addParent(Default, true);
 
         // Recalc & Register Perms
+
+        SetPerm(MakeWayItem, server);
+        SetPerm(UseWayItem, server);
 
         SetPerm(Charge, server);
         SetPerm(ChargeBypass, server);
