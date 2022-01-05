@@ -139,7 +139,7 @@ public class WarpItemEvents implements Listener {
             }
 
             if(waystone != null) {
-                if(waystone.canUse()) {
+                if(waystone.canUse() && waystone.location.WorldUUID.equalsIgnoreCase(p.getWorld().getUID().toString())) {
                     double chance = 1;
                     if(WarpCrystal.IsWarpCrystal(item)) {
                         chance = WarpCrystal.GetChanceRate(warpItem.item);
