@@ -102,7 +102,8 @@ public final class Waystones extends JavaPlugin {
     public void onDisable() {
         // Plugin shutdown logic
         out.log(Level.INFO, "Waystones is now shutting down...");
-        task.cancel();
+        if(task != null)
+            task.cancel();
         out.log(Level.INFO, "Stopping tasks");
         data.Save();
         out.log(Level.INFO, "All waystone data has been saved. Goodbye!");
