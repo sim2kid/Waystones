@@ -59,11 +59,7 @@ public class WaystoneCommand implements CommandExecutor {
             {
                 list(sender, args);
                 return true;
-            } else if(args[0].equalsIgnoreCase("tp"))
-            {
-                tp(sender, args);
-                return true;
-            } else if(args[0].equalsIgnoreCase("teleport"))
+            } else if(args[0].equalsIgnoreCase("tp") || args[0].equalsIgnoreCase("teleport"))
             {
                 teleport(sender, args);
                 return true;
@@ -72,7 +68,7 @@ public class WaystoneCommand implements CommandExecutor {
 
             if(sender instanceof Player)
             {
-                Player p = (Player) sender;
+                help(sender, args);
             } else {
                 out.log(Level.INFO, ChatColor.RED + "You must be a player to teleport using Waystones. Run '/Waystone help' for more info.");
             }
@@ -92,8 +88,7 @@ public class WaystoneCommand implements CommandExecutor {
         if(sender.hasPermission(Perm.Nametag))
             message += ChatColor.GOLD + "/waystone nametag <toggle>" + ChatColor.AQUA +  " Turns on/off a Waystone's nametag.";
         if(sender.hasPermission(Perm.Teleport)) {
-            message += ChatColor.GOLD + "/waystone tp <public/own waystone name>" + ChatColor.AQUA + " Teleport to your waystone or to a public waystone.";
-            message += ChatColor.GOLD + "/waystone teleport <creator username> <waystone name>" + ChatColor.AQUA +  " Teleport to any accessible waystone.";
+            message += ChatColor.GOLD + "/waystone teleport <[Creator:]<Waystone>> [Creator]" + ChatColor.AQUA + " Teleport to an accessible Waystone.";
         }
 
 
@@ -524,75 +519,6 @@ public class WaystoneCommand implements CommandExecutor {
         return Results;
     }
 
-    void tp(CommandSender sender, String[] args)
-    {
-        if(!sender.hasPermission(Perm.Teleport))
-        {
-            sender.sendMessage(Local.NoPermsCommand());
-            return;
-        }
-
-        if(!(sender instanceof Player))
-        {
-            out.log(Level.INFO, ChatColor.RED + "You must be a player to teleport to a Waystone.");
-            return;
-        }
-        Player p = (Player) sender;
-        WayPlayer WeiPlayer = data.GrabPlayer(p.getUniqueId().toString());
-        if(!(WeiPlayer.InWaystoneUse || sender.hasPermission(Perm.TeleportIgnoreWaystone)))
-        {
-            p.sendMessage(ChatColor.RED + "You must be near a Waystone to teleport.");
-            return;
-        }
-        if(!WeiPlayer.LastVisited.canUse() && !sender.hasPermission(Perm.TeleportIgnoreWaystone))
-        {
-            if(WeiPlayer.LastVisited.timeLeftUntilFunctional() > 0)
-                p.sendMessage(ChatColor.RED + "Origin Waystone is still charging! T-" + WeiPlayer.LastVisited.FormattedTimeLeft()
-                    + " left until usable.");
-            else
-                p.sendMessage(ChatColor.RED + "Origin Waystone Unavailable");
-            return;
-        }
-
-        List<Waystone> context = Work.GetOwnAndPublicWaystones(p, data);
-
-        if(args.length >= 2)
-        {
-            String wayName = args[1];
-            Waystone way = null;
-            for(Waystone wei: context)
-                if(wei.name.equalsIgnoreCase(wayName)) {
-                    way = wei;
-                    break;
-                }
-            if(way == null)
-            {
-                sender.sendMessage(ChatColor.RED + "Could not access Waystone '" + wayName + "'.");
-                return;
-            }
-            if(!way.canUse())
-            {
-                if(WeiPlayer.LastVisited.timeLeftUntilFunctional() > 0)
-                    p.sendMessage(ChatColor.RED + "Destination Waystone is still charging. T-" + way.FormattedTimeLeft()
-                            + " left until usable.");
-                else
-                    p.sendMessage(ChatColor.RED + "Destination Waystone Unavailable");
-                return;
-            }
-
-            Waystone origin = null;
-            if(WeiPlayer.InWaystoneUse)
-            {
-                origin = WeiPlayer.LastVisited;
-            }
-            events.OnTeleport(p, way, origin);
-        } else {
-            sender.sendMessage(ChatColor.RED + "You must provide a Waystone to teleport to.\n" + ChatColor.GOLD +
-                    "/waystone tp <public/own waystone name>");
-            return;
-        }
-    }
-
     void teleport(CommandSender sender, String[] args)
     {
         if(!sender.hasPermission(Perm.Teleport))
@@ -600,7 +526,6 @@ public class WaystoneCommand implements CommandExecutor {
             sender.sendMessage(Local.NoPermsCommand());
             return;
         }
-
         if(!(sender instanceof Player))
         {
             out.log(Level.INFO, ChatColor.RED + "You must be a player to teleport to a Waystone.");
@@ -631,77 +556,98 @@ public class WaystoneCommand implements CommandExecutor {
         else
             context = data.AllWaystones;
 
-        if(args.length >= 2)
-        {
-            String username = args[1];
-            if(username.trim().length() == 0)
-            {
-                sender.sendMessage(ChatColor.RED + "Username cannot be blank.");
-                return;
-            }
-            String playerUUID = Default.UUIDZero;
-            OfflinePlayer op = server.getOfflinePlayerIfCached(username);
-            if(op != null)
-                if (op.hasPlayedBefore())
-                    playerUUID = op.getUniqueId().toString();
 
-            if(username.equals("Admin"))
-            {
-                playerUUID = Default.UUIDOne;
-            }
+        if(args.length >= 2) {
+            String UserStone = args[1];
 
-            List<Waystone> ways = Work.FilterToUser(context, playerUUID);
-
-            if(ways.size() == 0)
+            // Breakup namespaced waystones
+            String username = null;
+            String waystone = "";
+            if(UserStone.contains(":"))
             {
-                sender.sendMessage(ChatColor.RED + "The user, '" + username + "', does not have a waystone accessible to us.");
-                return;
-            }
-
-            if(args.length >= 3)
-            {
-                String waystoneName = args[2];
-                if(waystoneName.trim().length() == 0)
+                String[] strs = UserStone.split(":");
+                if(strs.length > 1)
                 {
-                    sender.sendMessage(ChatColor.RED + "Waystone name cannot be blank.");
-                    return;
+                    username = strs[0];
+                    waystone = "";
+                    for (int i = 1; i < strs.length; i++)
+                        waystone += strs[i] + " ";
+                    waystone = waystone.substring(0, waystone.length()-1);
+                } else
+                {
+                    waystone = UserStone;
                 }
-                Waystone way = null;
-                for(Waystone wei: ways)
-                    if(wei.name.equalsIgnoreCase(waystoneName)) {
-                        way = wei;
-                        break;
+            }
+            else
+            {
+                waystone = UserStone;
+            }
+
+            // Fill in username if possible
+            if(username != null)
+                context = Work.FilterToUser(context, Work.PlayerUserToUUID(username, server));
+
+
+            // Find waystones in context
+            List<Waystone> stones = new ArrayList<>();
+            for(Waystone wei: context)
+            {
+                if(wei.name.equalsIgnoreCase(waystone))
+                {
+                    if(wei.canUse())
+                    {
+                        if(username != null)
+                            if(!Work.PlayerUUIDtoUser(wei.owner, server).equalsIgnoreCase(username))
+                                continue;
+                        stones.add(wei);
                     }
-                if(way == null)
-                {
-                    sender.sendMessage(ChatColor.RED + "Could not access Waystone '" + waystoneName + "'.");
-                    return;
                 }
-                if(!way.canUse())
-                {
-                    if(way.timeLeftUntilFunctional() > 0)
-                        p.sendMessage(ChatColor.RED + "Destination Waystone is still charging. T-" + way.FormattedTimeLeft()
-                            + " left until usable.");
-                    else
-                        p.sendMessage(ChatColor.RED + "Waystone is currently Unavailable");
-                    return;
-                }
-                Waystone origin = null;
-                if(WeiPlayer.InWaystoneUse)
-                {
-                    origin = WeiPlayer.LastVisited;
-                }
-                events.OnTeleport(p, way, origin);
-            } else {
-                sender.sendMessage(ChatColor.RED + "You must provide a Waystone to teleport to.\n" + ChatColor.GOLD +
-                        "/waystone teleport <owner's name> <waystone name>");
-                return;
             }
-        } else {
-            sender.sendMessage(ChatColor.RED + "You must provide a username whom owns a waystone.\n" + ChatColor.GOLD +
-                    "/waystone teleport <owner's name> <waystone name>");
-            return;
-        }
 
+            // Get the origin stone
+            Waystone origin = null;
+            if(WeiPlayer.InWaystoneUse)
+            {
+                origin = WeiPlayer.LastVisited;
+            }
+
+            // results
+            if(stones.size() == 0)
+            {
+                // No Stones to TP to
+                if(username != null)
+                {
+                    // User doesn't have a waystone in this world
+                    sender.sendMessage(ChatColor.RED + "Could not find/access Waystone '" + waystone + "' built by " + username + ".");
+                } else {
+                    // Waystone can not be found
+                    sender.sendMessage(ChatColor.RED + "Could not find/access Waystone '" + waystone + "'.");
+                }
+            }
+            else if(stones.size() == 1)
+            {
+                // TP to this stone
+                events.OnTeleport(p, stones.get(0), origin);
+            } else {
+                // Multiple stones to distinguish from
+                Waystone myWaystone = null;
+                for(Waystone accessStones : stones)
+                    if(accessStones.owner.equalsIgnoreCase(WeiPlayer.UUID))
+                        myWaystone = accessStones;
+
+                if(myWaystone != null)
+                {
+                    events.OnTeleport(p, myWaystone, origin);
+                    return;
+                }
+                sender.sendMessage(ChatColor.RED + "You need to specify who's waystone to teleport to.\n" + ChatColor.GOLD +
+                        "/teleport <[Creator:]<Waystone>> [Creator]");
+            }
+        }
+        else
+        {
+            sender.sendMessage(ChatColor.RED + "You must provide a waystone to teleport to.\n" + ChatColor.GOLD +
+                    "/waystone teleport <[Creator:]<Waystone>> [Creator]");
+        }
     }
 }

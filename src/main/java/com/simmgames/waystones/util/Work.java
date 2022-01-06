@@ -377,4 +377,19 @@ public class Work {
         }
         return playerUUID;
     }
+
+    public static String PlayerUUIDtoUser(String uuid, Server server)
+    {
+        String username = "Unknown";
+        OfflinePlayer op = server.getOfflinePlayer(UUID.fromString(uuid));
+        if(op != null)
+            if (op.hasPlayedBefore())
+                username = op.getName();
+
+        if(uuid.equals(Default.UUIDOne))
+        {
+            username = "Admin";
+        }
+        return username;
+    }
 }

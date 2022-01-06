@@ -94,11 +94,15 @@ public class TeleportCommand implements CommandExecutor {
                     waystone = "";
                     for (int i = 1; i < strs.length; i++)
                         waystone += strs[i] + " ";
-                    waystone.substring(0, waystone.length()-1);
+                    waystone = waystone.substring(0, waystone.length()-1);
                 } else
                 {
                     waystone = UserStone;
                 }
+            }
+            else
+            {
+                waystone = UserStone;
             }
 
             // Fill in username if possible

@@ -21,6 +21,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class WaystoneTabComplete implements TabCompleter
@@ -60,7 +61,6 @@ public class WaystoneTabComplete implements TabCompleter
                 {
                     if (wp.LastVisited.canUse() && wp.InWaystoneUse) {
                         toReturn.add("teleport");
-                        toReturn.add("tp");
                     }
                 }
             }
@@ -159,7 +159,7 @@ public class WaystoneTabComplete implements TabCompleter
                         {
                             if(!wei.canUse())
                                 continue;
-                            String username = data.GrabPlayer(wei.owner).lastUsername;
+                            String username = Work.PlayerUUIDtoUser(wei.owner, server);
                             if(!toReturn.contains(username))
                                 toReturn.add(username);
                         }
@@ -180,7 +180,8 @@ public class WaystoneTabComplete implements TabCompleter
                     }
                 }
 
-            } else if(args[0].equalsIgnoreCase("teleport") && sender.hasPermission(Perm.Teleport))
+            } else if((args[0].equalsIgnoreCase("tp") || args[0].equalsIgnoreCase("teleport"))
+                    && sender.hasPermission(Perm.Teleport))
             {
                 if(!(sender instanceof Player))
                     return toReturn;
@@ -205,65 +206,86 @@ public class WaystoneTabComplete implements TabCompleter
                 else
                     context = data.AllWaystones;
 
-                if(args.length == 2)
-                {
-                    // usernames
-                    for(Waystone wei: context)
-                    {
-                        if(!wei.canUse())
-                            continue;
-                        String username = data.GrabPlayer(wei.owner).lastUsername;
-                        if(!toReturn.contains(username))
-                            toReturn.add(username);
-                    }
-                }
-                if(args.length == 3)
-                {
-                    String username = args[1];
-                    if(username.trim().length() == 0)
-                        return toReturn;
-                    String playerUUID = Default.UUIDZero;
-                    OfflinePlayer op = server.getOfflinePlayerIfCached(username);
-                    if(op != null)
-                        if (op.hasPlayedBefore())
-                            playerUUID = op.getUniqueId().toString();
+                String username = null;
+                String waystone = "";
 
-                    if(username.equals("Admin"))
-                    {
-                        playerUUID = Default.UUIDOne;
-                    }
-                    for(Waystone wei: Work.FilterToUser(context, playerUUID)) {
-                        if(wei.canUse())
-                            toReturn.add(wei.name);
-                    }
-                }
-            } else if(args[0].equalsIgnoreCase("tp") && sender.hasPermission(Perm.Teleport))
-            {
-                if(!(sender instanceof Player))
-                    return toReturn;
-                Player p = (Player)sender;
-                WayPlayer wp = data.GrabPlayer(p.getUniqueId().toString());
+                if(args.length >= 2)
+                {
 
-                if(!sender.hasPermission(Perm.TeleportIgnoreWaystone)) {
-                    if (wp.LastVisited != null) {
-                        if (!(wp.LastVisited.canUse() && wp.InWaystoneUse)) {
-                            return toReturn;
+                    String UserStone = args[1];
+                    // Breakup namespaced waystones
+                    if(UserStone.contains(":"))
+                    {
+                        String[] strs = UserStone.split(":");
+                        if(strs.length > 1)
+                        {
+                            username = strs[0];
+                            waystone = "";
+                            for (int i = 1; i < strs.length; i++)
+                                waystone += strs[i] + " ";
+                            waystone = waystone.substring(0, waystone.length()-1);
                         }
-                    } else {
-                        return toReturn;
+                        else
+                        {
+                            username = strs[0];
+                        }
+                    }
+                    else
+                    {
+                        waystone = UserStone;
                     }
                 }
 
-
-                List<Waystone> context = Work.GetOwnAndPublicWaystones(p, data);
-
                 if(args.length == 2)
                 {
-                    // locations
-                    for(Waystone wei: context) {
-                        if(wei.canUse())
-                            toReturn.add(wei.name);
-                    }
+                    // all possible waystones based on updated context
+                    for(Waystone wei: context)
+                        if(wei.canUse()) {
+                            if(username == null && waystone.length() > 0 ) {
+                                if (!(Work.PlayerUUIDtoUser(wei.owner, server).toLowerCase().startsWith(waystone.toLowerCase()) ||
+                                        wei.name.toLowerCase().startsWith(waystone.toLowerCase())))
+                                    continue;
+                            }
+                            else if(username != null)
+                            {
+                                // use username and cull waystones
+                                if (!Work.PlayerUUIDtoUser(wei.owner, server).equalsIgnoreCase(username))
+                                    continue;
+                                if (!wei.name.toLowerCase().startsWith(waystone.toLowerCase()))
+                                    continue;
+                            }
+
+                            toReturn.add("" + Work.PlayerUUIDtoUser(wei.owner, server) + ":" + wei.name);
+
+                            if (waystone.length() > 0) {
+                                if (wei.name.startsWith(waystone))
+                                    toReturn.add("" + Work.PlayerUUIDtoUser(wei.owner, server) + ":" + wei.name);
+                            } else {
+
+                            }
+                        }
+
+                }
+                if(args.length == 3 && username == null)
+                {
+                    username = args[2];
+
+                    // Find waystones in context
+                    List<Waystone> updatedContext = new ArrayList<>();
+                    for(Waystone wei: context)
+                        if(wei.name.equalsIgnoreCase(waystone) && wei.canUse())
+                            updatedContext.add(wei);
+
+                    // If username was blank, list it now
+                    for(Waystone wei: updatedContext)
+                        if(wei.name.equalsIgnoreCase(waystone))
+                            if(wei.canUse())
+                            {
+                                // cull based on usernames alone
+                                if (!Work.PlayerUUIDtoUser(wei.owner, server).toLowerCase().startsWith(username.toLowerCase()))
+                                    continue;
+                                toReturn.add(Work.PlayerUUIDtoUser(wei.owner, server));
+                            }
                 }
             }
         }
