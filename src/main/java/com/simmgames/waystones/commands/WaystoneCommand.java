@@ -583,6 +583,11 @@ public class WaystoneCommand implements CommandExecutor {
                 waystone = UserStone;
             }
 
+            if(args.length >= 3 && username == null)
+            {
+                username = args[2];
+            }
+
             // Fill in username if possible
             if(username != null)
                 context = Work.FilterToUser(context, Work.PlayerUserToUUID(username, server));

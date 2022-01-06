@@ -38,6 +38,8 @@ public class TeleportCommand implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
         args = Work.PreProcessArgs(args);
+        if(sender.hasPermission(Perm.Teleport))
+            teleport(sender, args);
         return true;
     }
 
@@ -82,6 +84,11 @@ public class TeleportCommand implements CommandExecutor {
         if(args.length >= 1) {
             String UserStone = args[0];
 
+            if(args.length >= 2)
+            {
+
+            }
+
             // Breakup namespaced waystones
             String username = null;
             String waystone = "";
@@ -105,6 +112,11 @@ public class TeleportCommand implements CommandExecutor {
                 waystone = UserStone;
             }
 
+            if(args.length >= 2 && username == null)
+            {
+                username = args[1];
+            }
+
             // Fill in username if possible
             if(username != null)
                 context = Work.FilterToUser(context, Work.PlayerUserToUUID(username, server));
@@ -118,6 +130,9 @@ public class TeleportCommand implements CommandExecutor {
                 {
                     if(wei.canUse())
                     {
+                        if(username != null)
+                            if(!Work.PlayerUUIDtoUser(wei.owner, server).equalsIgnoreCase(username))
+                                continue;
                         stones.add(wei);
                     }
                 }
@@ -153,9 +168,10 @@ public class TeleportCommand implements CommandExecutor {
                 for(Waystone accessStones : stones)
                     if(accessStones.owner.equalsIgnoreCase(WeiPlayer.UUID))
                         myWaystone = accessStones;
+
                 if(myWaystone != null)
                 {
-                    events.OnTeleport(p, stones.get(0), origin);
+                    events.OnTeleport(p, myWaystone, origin);
                     return;
                 }
                 sender.sendMessage(ChatColor.RED + "You need to specify who's waystone to teleport to.\n" + ChatColor.GOLD +
@@ -165,7 +181,7 @@ public class TeleportCommand implements CommandExecutor {
         else
         {
             sender.sendMessage(ChatColor.RED + "You must provide a waystone to teleport to.\n" + ChatColor.GOLD +
-                    "/teleport <[Creator:]<Waystone>> [Creator]");
+                    "/waystone teleport <[Creator:]<Waystone>> [Creator]");
         }
     }
 }

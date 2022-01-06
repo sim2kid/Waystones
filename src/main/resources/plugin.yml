@@ -9,14 +9,20 @@ database: false
 softdepend: [Vault]
 commands:
   waystone:
-    description: 'Teleport to another waystone'
+    description: 'Interact with a Waystone'
     usage: '/waystone'
     permission: 'waystone.command'
     aliases:
-      - ws
-      - way
       - lodestone
       - waypoint
+      - warpstone
+  warp:
+    description: 'Teleport to another waystone'
+    usage: '/warp <[Creator:]<Waystone>> [Creator]'
+    permission: 'waystone.teleport'
+    aliases:
+      - teleport
+      - way
   webug:
     description: 'debug'
     usage: '/webug'

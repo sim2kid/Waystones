@@ -55,7 +55,6 @@ public class WaystoneTabComplete implements TabCompleter
                 WayPlayer wp = data.GrabPlayer(p.getUniqueId().toString());
                 if(sender.hasPermission(Perm.TeleportIgnoreWaystone)) {
                     toReturn.add("teleport");
-                    toReturn.add("tp");
                 }
                 else if(wp.LastVisited != null)
                 {
@@ -254,17 +253,8 @@ public class WaystoneTabComplete implements TabCompleter
                                 if (!wei.name.toLowerCase().startsWith(waystone.toLowerCase()))
                                     continue;
                             }
-
                             toReturn.add("" + Work.PlayerUUIDtoUser(wei.owner, server) + ":" + wei.name);
-
-                            if (waystone.length() > 0) {
-                                if (wei.name.startsWith(waystone))
-                                    toReturn.add("" + Work.PlayerUUIDtoUser(wei.owner, server) + ":" + wei.name);
-                            } else {
-
-                            }
                         }
-
                 }
                 if(args.length == 3 && username == null)
                 {
