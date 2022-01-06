@@ -19,7 +19,7 @@ commands:
   warp:
     description: 'Teleport to another waystone'
     usage: '/warp <[Creator:]<Waystone>> [Creator]'
-    permission: 'waystone.teleport'
+    permission: 'waystone.command.teleport'
     aliases:
       - teleport
       - way

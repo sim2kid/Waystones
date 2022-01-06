@@ -12,6 +12,7 @@ public class Perm {
     public static Permission Admin;
 
     public static Permission Waystone;
+    public static Permission CommandTeleport;
 
     public static Permission Create;
     public static Permission CreateDiscoverable;
@@ -57,6 +58,9 @@ public class Perm {
 
         Waystone = new Permission("waystone.command", "Access to the Waystone command.");
         Waystone.addParent(Default, true);
+
+        CommandTeleport = new Permission("waystone.command.teleport", "Access to the /teleport /warp command.");
+        CommandTeleport.addParent(Default, true);
 
         Create = new Permission("waystone.create", "Allows players to create new waystone.");
         Create.addParent(Default, true);

@@ -38,7 +38,7 @@ public class TeleportTabComplete implements TabCompleter {
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
         args = Work.PreProcessArgs(args);
         List<String> toReturn = new ArrayList<String>();
-        if(!sender.hasPermission(Perm.Teleport))
+        if(sender.hasPermission(Perm.CommandTeleport) && sender.hasPermission(Perm.Teleport))
             return toReturn;
 
         if(!(sender instanceof Player))

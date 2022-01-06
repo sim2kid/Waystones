@@ -38,7 +38,7 @@ public class TeleportCommand implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
         args = Work.PreProcessArgs(args);
-        if(sender.hasPermission(Perm.Teleport))
+        if(sender.hasPermission(Perm.CommandTeleport) && sender.hasPermission(Perm.Teleport))
             teleport(sender, args);
         return true;
     }
