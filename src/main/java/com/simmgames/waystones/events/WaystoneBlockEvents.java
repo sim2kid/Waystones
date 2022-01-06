@@ -412,14 +412,7 @@ public class WaystoneBlockEvents implements Listener
 
     public Waystone GetWaystoneAt(Location location)
     {
-        for(Waystone wei : data.AllWaystones)
-        {
-            if(!wei.location.WorldUUID.equalsIgnoreCase(location.getWorld().getUID().toString()))
-                continue;
-            if(wei.location.Position.equals(new Vector3(location)))
-                return wei;
-        }
-        return null;
+        return Work.GetWaystoneAt(location, data);
     }
 
     private void OnDiscoverEnter(Player player, Waystone waystone)

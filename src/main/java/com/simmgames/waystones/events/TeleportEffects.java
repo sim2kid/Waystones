@@ -4,6 +4,7 @@ import com.simmgames.waystones.data.Config;
 import com.simmgames.waystones.data.Data;
 import com.simmgames.waystones.data.WayPlayer;
 import com.simmgames.waystones.data.Waystone;
+import com.simmgames.waystones.tasks.PlaySoundAfterTime;
 import com.simmgames.waystones.util.Default;
 import org.bukkit.Particle;
 import org.bukkit.Server;
@@ -12,7 +13,6 @@ import org.bukkit.SoundCategory;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
-import sun.awt.ConstrainableGraphics;
 
 import java.util.Random;
 import java.util.logging.Level;

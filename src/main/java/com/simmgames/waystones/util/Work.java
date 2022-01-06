@@ -392,4 +392,16 @@ public class Work {
         }
         return username;
     }
+
+    public static Waystone GetWaystoneAt(Location location, Data data)
+    {
+        for(Waystone wei : data.AllWaystones)
+        {
+            if(!wei.location.WorldUUID.equalsIgnoreCase(location.getWorld().getUID().toString()))
+                continue;
+            if(wei.location.Position.equals(new Vector3(location)))
+                return wei;
+        }
+        return null;
+    }
 }

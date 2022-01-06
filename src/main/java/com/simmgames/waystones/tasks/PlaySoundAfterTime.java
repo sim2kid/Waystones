@@ -1,4 +1,4 @@
-package com.simmgames.waystones.events;
+package com.simmgames.waystones.tasks;
 
 import org.bukkit.Location;
 import org.bukkit.Sound;

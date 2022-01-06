@@ -1,4 +1,4 @@
-package com.simmgames.waystones.events;
+package com.simmgames.waystones.tasks;
 
 import com.simmgames.waystones.data.Data;
 import com.simmgames.waystones.data.WayPlayer;
@@ -10,7 +10,6 @@ import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitScheduler;
 
 import java.util.ArrayList;
 import java.util.Random;

@@ -135,7 +135,7 @@ public class WaystoneCommand implements CommandExecutor {
         }
 
         // check if waystone already exists there
-        if(events.GetWaystoneAt(lode) != null)
+        if(Work.GetWaystoneAt(lode, data) != null)
         {
             p.sendMessage(ChatColor.RED + "Lodestone is already a Waystone. Can't build a new one here.");
             return;

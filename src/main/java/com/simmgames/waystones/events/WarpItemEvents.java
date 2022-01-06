@@ -77,7 +77,7 @@ public class WarpItemEvents implements Listener {
         if(event.getAction() == Action.RIGHT_CLICK_BLOCK && event.getClickedBlock().getType() == Material.LODESTONE)
         {
             // Check if lodestone
-            Waystone waystone = waystoneEvents.GetWaystoneAt(event.getClickedBlock().getLocation());
+            Waystone waystone = Work.GetWaystoneAt(event.getClickedBlock().getLocation(), data);
 
             //if it, set the item to this waystone
             if(waystone != null)
