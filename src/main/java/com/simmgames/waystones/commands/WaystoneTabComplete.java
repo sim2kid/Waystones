@@ -267,6 +267,14 @@ public class WaystoneTabComplete implements TabCompleter
                 }
             }
         }
+
+        // Preprocess spaces
+        for(int i = 0; i < toReturn.size(); i++)
+        {
+            if(toReturn.get(i).contains(" "))
+                toReturn.set(i, "\"" + toReturn.get(i) + "\"");
+        }
+
         return toReturn;
     }
 }

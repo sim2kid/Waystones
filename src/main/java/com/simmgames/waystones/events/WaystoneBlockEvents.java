@@ -267,10 +267,12 @@ public class WaystoneBlockEvents implements Listener
         WayPlayer p = data.GrabPlayer(player.getUniqueId().toString());
         // Update a player's known waystone list (remove bad waystones)
 
-        if(p.LastNear != null) {
-            int index = data.AllWaystones.indexOf(p.LastNear);
-            if (index == -1)
-                p.LastNear = null;
+        for(int i = p.LastNear.size()-1; i >= 0; i--) {
+            if (p.LastNear.get(i) != null) {
+                int index = data.AllWaystones.indexOf(p.LastNear.get(i));
+                if (index == -1)
+                    p.LastNear.remove(i);
+            }
         }
         if(p.LastVisited != null) {
             int index = data.AllWaystones.indexOf(p.LastVisited);
@@ -345,6 +347,18 @@ public class WaystoneBlockEvents implements Listener
                 continue;
             }
 
+            if(distance < Config.WaystoneNearDistance())
+            {
+                p.InWaystoneNearby = true;
+                if(!p.LastNear.contains(wei))
+                    p.LastNear.add(wei);
+            } else if(p.LastNear.contains(wei)) {
+                p.LastNear.remove(wei);
+                if(p.LastNear.size() == 0)
+                    p.InWaystoneNearby = false;
+                Work.DestroyHologram(wei.getLocation(server), UUID.fromString(wei.hologramUUID));
+            }
+
             // Within waystone use distance
             if (closestDistance == -1 || distance < closestDistance) {
                 closestDistance = distance;
@@ -359,18 +373,6 @@ public class WaystoneBlockEvents implements Listener
                 p.InWaystoneDiscover = false;
                 p.InWaystoneUse = false;
             }
-
-            if(p.LastNear != null)
-                if(!closest.equals(p.LastNear))
-                {
-                    // Destroy hologram
-                    if(!Work.DestroyHologram(p.LastNear.getLocation(server), UUID.fromString(p.LastNear.hologramUUID)))
-                        Work.DestroyUnmarkedHolograms(p.LastNear.getLocation(server));
-                    p.LastNear = null; // on exit into another closest
-                }
-
-
-
 
             Block block = player.getWorld().getBlockAt(new Location(player.getWorld(), (int) closest.location.getX(),
                     (int) closest.location.getY(), (int) closest.location.getZ()));
@@ -404,15 +406,7 @@ public class WaystoneBlockEvents implements Listener
                     OnDiscoverExit(player, closest);
                 p.InWaystoneDiscover = false;
             }
-            if(closestDistance != -1 && closestDistance <= Config.WaystoneNearDistance())
-            {
-                p.InWaystoneNearby = true;
-                p.LastNear = closest;
-            } else {
-                p.InWaystoneNearby = false;
-                if(p.LastNear != null) //on exit into nothing
-                    Work.DestroyHologram(p.LastNear.getLocation(server), UUID.fromString(p.LastNear.hologramUUID));
-            }
+
         }
     }
 

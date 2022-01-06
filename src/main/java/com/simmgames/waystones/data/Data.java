@@ -15,6 +15,7 @@ import java.io.*;
 import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -45,9 +46,10 @@ public class Data {
         for(Player p: server.getOnlinePlayers())
             online.add(p.getUniqueId().toString());
         if(players != null) {
-            for (WayPlayer p : players)
-                if (!online.contains(p.UUID))
-                    RetirePlayer(p);
+            for (int i = players.size()-1; i >= 0; i--)
+                if (!online.contains(players.get(i).UUID))
+                    RetirePlayer(players.get(i));
+
         } else {
             out.log(Level.SEVERE, "Players list is null. Nothing is being saved for players.");
         }

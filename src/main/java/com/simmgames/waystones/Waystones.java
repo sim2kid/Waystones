@@ -105,7 +105,10 @@ public final class Waystones extends JavaPlugin {
         if(task != null)
             task.cancel();
         out.log(Level.INFO, "Stopping tasks");
-        data.Save();
+        if(data != null)
+            data.Save();
+        else
+            out.log(Level.SEVERE, "Could not save Waystone data!!");
         out.log(Level.INFO, "All waystone data has been saved. Goodbye!");
     }
 }

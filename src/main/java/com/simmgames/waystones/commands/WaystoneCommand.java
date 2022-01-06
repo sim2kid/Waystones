@@ -275,8 +275,8 @@ public class WaystoneCommand implements CommandExecutor {
         WayPlayer wp = data.GrabPlayer(p.getUniqueId().toString());
 
         // check if waystone is nearby
-        Waystone wei = wp.LastNear;
-        if(wei == null)
+        Waystone wei = wp.Closest();
+        if(wp.LastNear == null)
         {
             p.sendMessage(ChatColor.RED + "No Waystone nearby. Make sure you are within " + Config.LodestoneSearchRadius()
                     + " blocks of one.");
