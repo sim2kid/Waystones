@@ -362,4 +362,19 @@ public class Work {
             array[i] = strList.get(i);
         return array;
     }
+
+    public static String PlayerUserToUUID(String username, Server server)
+    {
+        String playerUUID = Default.UUIDZero;
+        OfflinePlayer op = server.getOfflinePlayerIfCached(username);
+        if(op != null)
+            if (op.hasPlayedBefore())
+                playerUUID = op.getUniqueId().toString();
+
+        if(username.equals("Admin"))
+        {
+            playerUUID = Default.UUIDOne;
+        }
+        return playerUUID;
+    }
 }
