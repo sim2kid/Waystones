@@ -1,4 +1,4 @@
-# Waystones
+![Waystones Title Image](https://raw.githubusercontent.com/sim2kid/Waystones/main/img/waystones.png)
 A simple waystone plugin for paper-mc servers
 
 ## How To Use Blerb
