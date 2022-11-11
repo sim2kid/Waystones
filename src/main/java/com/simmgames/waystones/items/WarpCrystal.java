@@ -1,8 +1,10 @@
 package com.simmgames.waystones.items;
 
+import com.simmgames.waystones.Waystones;
 import com.simmgames.waystones.data.Config;
 import com.simmgames.waystones.data.Waystone;
 import com.simmgames.waystones.util.Default;
+import de.tr7zw.nbtapi.NBTItem;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -55,6 +57,13 @@ public class WarpCrystal {
         lore.add(ChatColor.LIGHT_PURPLE + "Unlinked");
         lore.add(ChatColor.WHITE + "Used 0 Times");
 
+        if(((Waystones)plugin).SupportsNBT)
+        {
+            NBTItem nbti = new NBTItem(Crystal);
+            nbti.setInteger("CustomModelData", 1);
+            Crystal = nbti.getItem();
+        }
+
         ItemMeta metadata = Crystal.getItemMeta();
         metadata.getPersistentDataContainer().set(WarpItem.customItem, PersistentDataType.STRING, crystalValue);
         metadata.getPersistentDataContainer().set(WarpItem.waystone, PersistentDataType.STRING, Default.UUIDZero);
@@ -74,7 +83,9 @@ public class WarpCrystal {
         {
             String value = data.get(WarpItem.customItem, PersistentDataType.STRING);
             if(value.equalsIgnoreCase(crystalValue))
+            {
                 return true;
+            }
         }
         return false;
     }

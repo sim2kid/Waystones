@@ -1,6 +1,8 @@
 package com.simmgames.waystones.items;
 
+import com.simmgames.waystones.Waystones;
 import com.simmgames.waystones.util.Default;
+import de.tr7zw.nbtapi.NBTItem;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -48,6 +50,13 @@ public class WarpScroll {
 
         List<String> lore = new ArrayList<>();
         lore.add(ChatColor.LIGHT_PURPLE + "Unlinked");
+
+        if(((Waystones)plugin).SupportsNBT)
+        {
+            NBTItem nbti = new NBTItem(Scroll);
+            nbti.setInteger("CustomModelData", 1);
+            Scroll = nbti.getItem();
+        }
 
         ItemMeta metadata = Scroll.getItemMeta();
         metadata.getPersistentDataContainer().set(WarpItem.customItem, PersistentDataType.STRING, scrollValue);

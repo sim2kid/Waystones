@@ -12,6 +12,8 @@ import com.simmgames.waystones.items.WarpItem;
 import com.simmgames.waystones.items.WarpScroll;
 import com.simmgames.waystones.permissions.Perm;
 import org.bukkit.NamespacedKey;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -26,6 +28,8 @@ public final class Waystones extends JavaPlugin {
     private TeleportEffects effects;
     private NamespacedKey itemTypeKey;
     private BukkitTask task;
+    public Plugin NbtApi;
+    public boolean SupportsNBT = false;
 
     @Override
     public void onEnable() {
@@ -68,6 +72,16 @@ public final class Waystones extends JavaPlugin {
 
         getCommand("Webug").setExecutor(new DebugCommand(out, data, events, effects,this));
 
+        NbtApi = getServer().getPluginManager().getPlugin("NBTApi");
+        if(NbtApi == null)
+        {
+            out.log(Level.WARNING, "Missing NBTApi. Without it, items will not spawn with correct texture data.");
+        }
+        else
+        {
+            out.log(Level.INFO, "NBTApi Detected. Items will spawn with vanilla texture data. Requires Resource Pack to function.");
+            SupportsNBT = true;
+        }
 
         if(Config.CustomItems())
         {

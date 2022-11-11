@@ -6,7 +6,7 @@ authors: [ sim2kid ]
 description: Adds Teleportation via Lodestones in Survival Minecraft
 website: https://github.com/sim2kid/waystones
 database: false
-softdepend: [Vault]
+softdepend: [Vault, NBTApi]
 commands:
   waystone:
     description: 'Interact with a Waystone'
