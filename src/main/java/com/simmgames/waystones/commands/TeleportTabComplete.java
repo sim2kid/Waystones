@@ -7,6 +7,7 @@ import com.simmgames.waystones.data.Waystone;
 import com.simmgames.waystones.events.WaystoneBlockEvents;
 import com.simmgames.waystones.permissions.Perm;
 import com.simmgames.waystones.util.Work;
+import jdk.jfr.internal.LogLevel;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -18,6 +19,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class TeleportTabComplete implements TabCompleter {
@@ -38,7 +40,7 @@ public class TeleportTabComplete implements TabCompleter {
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
         args = Work.PreProcessArgs(args);
         List<String> toReturn = new ArrayList<String>();
-        if(sender.hasPermission(Perm.CommandTeleport) && sender.hasPermission(Perm.Teleport))
+        if(!sender.hasPermission(Perm.CommandTeleport) || !sender.hasPermission(Perm.Teleport))
             return toReturn;
 
         if(!(sender instanceof Player))
@@ -57,15 +59,22 @@ public class TeleportTabComplete implements TabCompleter {
         }
 
         List<Waystone> context;
-        if(sender.hasPermission(Perm.TeleportUnknown))
-            context = Work.GetKnownAndUnknownWaystones(p, data);
-        else if(sender.hasPermission(Perm.TeleportAll))
-            context = Work.GetKnownWaystones(p, data);
-        else
+        if(sender.hasPermission(Perm.TeleportAll))
+        {
             context = data.AllWaystones;
+        }
+        else if(sender.hasPermission(Perm.TeleportUnknown))
+        {
+            context = Work.GetKnownAndUnknownWaystones(p, data);
+        }
+        else
+        {
+            context = Work.GetKnownWaystones(p, data);
+        }
 
         String username = null;
         String waystone = "";
+
 
         if(args.length >= 1)
         {

@@ -70,33 +70,43 @@ public class Perm {
         CreatePublic = new Permission("waystone.create.public", "Allows players to create public waystones.");
         Create.addParent(CreatePublic, true);
         CreatePublic.addParent(Admin, true);
+        CreatePublic.addParent(Default, false);
         CreatePrivate = new Permission("waystone.create.private", "Allows players to create private waystones.");
         Create.addParent(CreatePrivate, true);
         CreatePrivate.addParent(Default, true);
         CreateAdmin = new Permission("waystone.create.admin", "Allows players to create new admin owned waystone.");
         Create.addParent(CreateAdmin, true);
         CreateAdmin.addParent(Admin, true);
+        CreateAdmin.addParent(Default, false);
         CreateBypass = new Permission("waystone.create.limit.ignore", "Allows players to bypass waystone creation limit.");
+        CreateBypass.addParent(Default, false);
         CreateLimit = new Permission("waystone.create.limit.0", "Limits a player to 0 waystones. Can increase 0 for higer limit.");
+        CreateLimit.addParent(Default, false);
 
         Charge = new Permission("waystone.charge.0", "Time player has to wait to use the waystone after creation. Replace 0 with any higher value (in seconds)");
+        Charge.addParent(Default, false);
         ChargeBypass = new Permission("waystone.charge.ignore", "Ignores the charge time for waystones.");
+        ChargeBypass.addParent(Default, false);
 
         Nametag = new Permission("waystone.nametag", "Allows players to toggle nametags for their waystones.");
         Nametag.addParent(Default, true);
         NametagOther= new Permission("waystone.nametag.other", "Allows players to toggle nametags for other people's waystones.");
         NametagOther.addParent(Mod,true);
         Nametag.addParent(NametagOther,true);
+        NametagOther.addParent(Default, false);
 
         DestroyOther = new Permission("waystone.destroy.other", "Allows player to destroy other's waystones.");
         DestroyOther.addParent(Admin, true);
+        DestroyOther.addParent(Default, false);
 
         List = new Permission("waystone.list", "Allows a player to see all known and public waystones.");
         List.addParent(Default, true);
         ListUnknown = new Permission("waystone.list.unknown", "Allows a player to see all known, unknown, and public waystones.");
         List.addParent(ListUnknown, true);
+        ListUnknown.addParent(Default, false);
         ListAll = new Permission("waystone.list.all", "Allows a player to see all waystones.");
         ListUnknown.addParent(ListAll, true);
+        ListAll.addParent(Default, false);
 
         Teleport = new Permission("waystone.teleport", "Allows a player to teleport to all known and public waystones.");
         Teleport.addParent(Default, true);
@@ -104,9 +114,12 @@ public class Perm {
         Teleport.addParent(TeleportUnknown, true);
         TeleportAll = new Permission("waystone.teleport.all", "Allows a player to teleport to all waystones.");
         TeleportUnknown.addParent(TeleportAll, true);
+        TeleportUnknown.addParent(Default, false);
+        TeleportAll.addParent(Default, false);
 
         TeleportIgnoreWaystone = new Permission("waystone.teleport.ignorewaystone", "Allows a player to teleport without a nearby waystone.");
         Teleport.addParent(TeleportIgnoreWaystone, true);
+        TeleportIgnoreWaystone.addParent(Default, false);
 
         Title = new Permission("waystone.title", "Allow a player to see titles from waystones");
         Title.addParent(Default, true);

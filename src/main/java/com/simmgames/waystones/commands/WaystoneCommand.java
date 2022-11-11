@@ -82,13 +82,13 @@ public class WaystoneCommand implements CommandExecutor {
     {
         String message = ChatColor.AQUA + "This is the main command to use this plugin.\n";
         if(sender.hasPermission(Perm.Create))
-            message += ChatColor.GOLD + "/waystone create <name> [accessibility]" + ChatColor.AQUA +  " Make a new Waystone.";
+            message += ChatColor.GOLD + "\n/waystone create <name> [accessibility]" + ChatColor.AQUA +  " Make a new Waystone.";
         if(sender.hasPermission(Perm.List))
-            message += ChatColor.GOLD + "/waystone list" + ChatColor.AQUA +  " See all known Waystones.";
+            message += ChatColor.GOLD + "\n/waystone list" + ChatColor.AQUA +  " See all known Waystones.";
         if(sender.hasPermission(Perm.Nametag))
-            message += ChatColor.GOLD + "/waystone nametag <toggle>" + ChatColor.AQUA +  " Turns on/off a Waystone's nametag.";
+            message += ChatColor.GOLD + "\n/waystone nametag <toggle>" + ChatColor.AQUA +  " Turns on/off a Waystone's nametag.";
         if(sender.hasPermission(Perm.Teleport)) {
-            message += ChatColor.GOLD + "/waystone teleport <[Creator:]<Waystone>> [Creator]" + ChatColor.AQUA + " Teleport to an accessible Waystone.";
+            message += ChatColor.GOLD + "\n/waystone teleport <[Creator:]<Waystone>> [Creator]" + ChatColor.AQUA + " Teleport to an accessible Waystone.";
         }
 
 
@@ -549,12 +549,18 @@ public class WaystoneCommand implements CommandExecutor {
         }
 
         List<Waystone> context;
-        if(sender.hasPermission(Perm.TeleportUnknown))
-            context = Work.GetKnownAndUnknownWaystones(p, data);
-        else if(sender.hasPermission(Perm.TeleportAll))
-            context = Work.GetKnownWaystones(p, data);
-        else
+        if(sender.hasPermission(Perm.TeleportAll))
+        {
             context = data.AllWaystones;
+        }
+        else if(sender.hasPermission(Perm.TeleportUnknown))
+        {
+            context = Work.GetKnownAndUnknownWaystones(p, data);
+        }
+        else
+        {
+            context = Work.GetKnownWaystones(p, data);
+        }
 
 
         if(args.length >= 2) {

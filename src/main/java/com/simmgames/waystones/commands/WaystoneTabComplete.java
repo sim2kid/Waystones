@@ -198,15 +198,22 @@ public class WaystoneTabComplete implements TabCompleter
                 }
 
                 List<Waystone> context;
-                if(sender.hasPermission(Perm.TeleportUnknown))
-                    context = Work.GetKnownAndUnknownWaystones(p, data);
-                else if(sender.hasPermission(Perm.TeleportAll))
-                    context = Work.GetKnownWaystones(p, data);
-                else
+                if(sender.hasPermission(Perm.TeleportAll))
+                {
                     context = data.AllWaystones;
+                }
+                else if(sender.hasPermission(Perm.TeleportUnknown))
+                {
+                    context = Work.GetKnownAndUnknownWaystones(p, data);
+                }
+                else
+                {
+                    context = Work.GetKnownWaystones(p, data);
+                }
 
                 String username = null;
                 String waystone = "";
+
 
                 if(args.length >= 2)
                 {
